@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Pedidos — Cafetería MYPE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        Cafetería MYPE
+        <span id="sidebar-usuario"></span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/pages/mesero/pedidos.html" class="sidebar-link">Nuevo Pedido</a>
+        <a href="/pages/mesero/mis-pedidos.html" class="sidebar-link active">Mis Pedidos</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" id="btn-logout" style="width:100%">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="page-content">
+        <div class="section-header">
+          <h1 class="section-title">Mis Pedidos del Turno</h1>
+          <button class="btn btn-secondary btn-sm" id="btn-refrescar">Refrescar</button>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Ticket</th>
+                  <th>Productos</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="pedidos-tbody">
+                <tr><td colspan="5"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/pages/mis-pedidos.js"></script>
+  <script type="module">
+    import { obtenerUsuario, logout } from '/js/core/auth.js';
+    document.getElementById('sidebar-usuario').textContent = obtenerUsuario().nombre ?? '';
+    document.getElementById('btn-logout').addEventListener('click', logout);
+  </script>
+</body>
+</html>
