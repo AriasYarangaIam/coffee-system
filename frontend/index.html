@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Cafetería MYPE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages/login.css">
+</head>
+<body>
+  <main class="login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <h1>Cafetería MYPE</h1>
+        <p>Sistema de Gestión</p>
+      </div>
+
+      <form class="login-form" id="login-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="correo">Correo electrónico</label>
+          <input class="form-input" type="email" id="correo" placeholder="usuario@ejemplo.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="clave">Contraseña</label>
+          <input class="form-input" type="password" id="clave" placeholder="••••••••" required>
+        </div>
+
+        <p id="error-msg" class="form-error"></p>
+
+        <button class="btn btn-primary" type="submit" id="btn-login" style="width:100%">
+          Ingresar
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <script type="module" src="/js/pages/login.js"></script>
+</body>
+</html>

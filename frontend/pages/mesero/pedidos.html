@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar Pedido — Cafetería MYPE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/pages/pedidos.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        Cafetería MYPE
+        <span id="sidebar-usuario"></span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/pages/mesero/pedidos.html" class="sidebar-link active">Nuevo Pedido</a>
+        <a href="/pages/mesero/mis-pedidos.html" class="sidebar-link">Mis Pedidos</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" id="btn-logout" style="width:100%">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <!-- Contenido -->
+    <div class="main-content">
+      <div class="pos-layout">
+        <!-- Productos -->
+        <section class="pos-products">
+          <h1 class="section-title" style="margin-bottom:16px">Menú</h1>
+          <div class="products-grid" id="productos-grid"></div>
+        </section>
+
+        <!-- Carrito -->
+        <aside class="pos-cart">
+          <h2 class="cart-title">Pedido actual</h2>
+          <div class="cart-items" id="cart-items">
+            <p class="text-muted text-sm" style="text-align:center;padding:16px">El carrito está vacío</p>
+          </div>
+          <div class="cart-footer">
+            <div class="cart-total">
+              <span>Total</span>
+              <span id="cart-total">S/ 0.00</span>
+            </div>
+            <button class="btn btn-primary" style="width:100%" id="btn-confirmar" disabled>
+              Confirmar Pedido
+            </button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/pages/pedidos.js"></script>
+  <script type="module">
+    import { obtenerUsuario, logout } from '/js/core/auth.js';
+    document.getElementById('sidebar-usuario').textContent = obtenerUsuario().nombre ?? '';
+    document.getElementById('btn-logout').addEventListener('click', logout);
+  </script>
+</body>
+</html>

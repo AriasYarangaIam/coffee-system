@@ -1,0 +1,97 @@
+/* ── Variables globales + Reset ─────────────────────────────────────── */
+:root {
+  /* Paleta — Design system "Modern Artisanal POS" */
+  --color-primary:       #4B2E2B;
+  --color-primary-dark:  #331917;
+  --color-secondary:     #675D4E;
+  --color-secondary-light: #EFE0CD;
+  --color-success:       #4A7A1E;
+  --color-danger:        #BA1A1A;
+  --color-warning:       #D97706;
+  --color-bg:            #F5E6D3;
+  --color-surface:       #FAFAFA;
+  --color-surface-high:  #EEEEEE;
+  --color-text:          #1A1C1C;
+  --color-text-muted:    #504443;
+  --color-border:        #D4C3C0;
+
+  /* Tipografía */
+  --font-family:     'Inter', sans-serif;
+  --font-size-sm:    0.875rem;
+  --font-size-base:  1rem;
+  --font-size-lg:    1.125rem;
+  --font-size-xl:    1.5rem;
+  --font-size-2xl:   2rem;
+
+  /* Espaciado */
+  --spacing-xs:  4px;
+  --spacing-sm:  8px;
+  --spacing-md:  16px;
+  --spacing-lg:  24px;
+  --spacing-xl:  40px;
+
+  /* Radios */
+  --border-radius-sm:  4px;
+  --border-radius-md:  8px;
+  --border-radius-lg:  16px;
+  --border-radius-xl:  24px;
+  --border-radius-full: 9999px;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(75, 46, 43, 0.08);
+  --shadow-md: 0 4px 12px rgba(75, 46, 43, 0.12);
+  --shadow-lg: 0 8px 24px rgba(75, 46, 43, 0.16);
+}
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-family);
+}
+
+input, select, textarea {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+}
+
+/* Utilidades */
+.text-muted    { color: var(--color-text-muted); }
+.text-sm       { font-size: var(--font-size-sm); }
+.text-center   { text-align: center; }
+.font-semibold { font-weight: 600; }
+.font-bold     { font-weight: 700; }
+.hidden        { display: none !important; }
