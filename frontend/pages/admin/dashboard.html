@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Cafetería MYPE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/pages/dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        Cafetería MYPE
+        <span id="sidebar-usuario"></span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/pages/admin/dashboard.html" class="sidebar-link active">Dashboard</a>
+        <a href="/pages/admin/productos.html" class="sidebar-link">Productos</a>
+        <a href="/pages/admin/insumos.html" class="sidebar-link">Insumos</a>
+        <a href="/pages/admin/stock.html" class="sidebar-link">Control de Stock</a>
+        <a href="/pages/admin/usuarios.html" class="sidebar-link">Usuarios</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" id="btn-logout" style="width:100%">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="page-content">
+        <h1 class="section-title" style="margin-bottom:24px">Dashboard</h1>
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <p class="kpi-card__label">Ventas del día</p>
+            <p class="kpi-card__value" id="kpi-ventas">—</p>
+          </div>
+          <div class="kpi-card">
+            <p class="kpi-card__label">Pedidos del día</p>
+            <p class="kpi-card__value" id="kpi-pedidos">—</p>
+          </div>
+          <div class="kpi-card">
+            <p class="kpi-card__label">Producto estrella</p>
+            <p class="kpi-card__value" id="kpi-estrella" style="font-size:1.25rem">—</p>
+          </div>
+          <div class="kpi-card">
+            <p class="kpi-card__label">Alertas de stock</p>
+            <p class="kpi-card__value" id="kpi-stock-alerta">—</p>
+          </div>
+        </div>
+
+        <!-- Gráfico -->
+        <div class="chart-card">
+          <h2 class="chart-card__title">Ventas del mes</h2>
+          <div class="chart-container">
+            <canvas id="chart-ventas"></canvas>
+          </div>
+        </div>
+
+        <!-- Stock bajo -->
+        <div class="chart-card">
+          <h2 class="chart-card__title">Insumos con stock bajo</h2>
+          <div id="stock-bajo-lista">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/pages/dashboard.js"></script>
+  <script type="module">
+    import { obtenerUsuario, logout } from '/js/core/auth.js';
+    document.getElementById('sidebar-usuario').textContent = obtenerUsuario().nombre ?? '';
+    document.getElementById('btn-logout').addEventListener('click', logout);
+  </script>
+</body>
+</html>

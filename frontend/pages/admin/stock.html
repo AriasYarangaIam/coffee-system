@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Stock — Cafetería MYPE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        Cafetería MYPE
+        <span id="sidebar-usuario"></span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/pages/admin/dashboard.html" class="sidebar-link">Dashboard</a>
+        <a href="/pages/admin/productos.html" class="sidebar-link">Productos</a>
+        <a href="/pages/admin/insumos.html" class="sidebar-link">Insumos</a>
+        <a href="/pages/admin/stock.html" class="sidebar-link active">Control de Stock</a>
+        <a href="/pages/admin/usuarios.html" class="sidebar-link">Usuarios</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" id="btn-logout" style="width:100%">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="page-content">
+        <h1 class="section-title" style="margin-bottom:24px">Control de Stock</h1>
+
+        <div style="display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start">
+          <!-- Tabla de stock -->
+          <div class="card">
+            <h2 class="font-semibold" style="margin-bottom:16px">Stock actual</h2>
+            <div class="table-wrapper">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Insumo</th>
+                    <th>Cantidad</th>
+                    <th>Almacén</th>
+                  </tr>
+                </thead>
+                <tbody id="stock-tbody">
+                  <tr><td colspan="3"><div class="spinner"></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Formulario ingreso -->
+          <div class="card">
+            <h2 class="font-semibold" style="margin-bottom:16px">Registrar ingreso</h2>
+            <form id="form-ingreso" class="login-form">
+              <div class="form-group">
+                <label class="form-label" for="select-insumo">Insumo</label>
+                <select class="form-select" id="select-insumo" required>
+                  <option value="">Cargando...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="input-cantidad">Cantidad</label>
+                <input class="form-input" type="number" id="input-cantidad" min="0.001" step="0.001" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="select-almacen">Almacén</label>
+                <select class="form-select" id="select-almacen" required>
+                  <option value="">Seleccionar almacén...</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" type="submit" style="width:100%">Registrar ingreso</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/pages/stock.js"></script>
+  <script type="module">
+    import { obtenerUsuario, logout } from '/js/core/auth.js';
+    document.getElementById('sidebar-usuario').textContent = obtenerUsuario().nombre ?? '';
+    document.getElementById('btn-logout').addEventListener('click', logout);
+  </script>
+</body>
+</html>
