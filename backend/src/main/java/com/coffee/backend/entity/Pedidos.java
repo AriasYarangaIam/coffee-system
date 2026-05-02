@@ -12,9 +12,8 @@ import java.util.List;
 @Table(name = "pedidos")
 public class Pedidos {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pedido_id")
-    @SequenceGenerator(name = "pedido_rol",sequenceName ="pedido_rol",allocationSize = 1)
-    @GeneratedValue(generator = "pedido_rol",strategy = GenerationType.SEQUENCE)
     private Long pedidoId;
     @Column(name = "alias_ticket",nullable = false,unique = true)
     private String aliasTicket;
@@ -25,5 +24,5 @@ public class Pedidos {
     @JoinColumn(name = "usuario_id",nullable = false)
     private Usuarios usuario;
     @OneToMany (mappedBy = "pedidos", cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE} )
-    private List<DetallePedido> detallePedido;
+    private List<DetallePedido> detallePedidos;
 }

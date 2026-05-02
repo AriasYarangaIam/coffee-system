@@ -10,8 +10,7 @@ import java.util.List;
 @Table(name = "roles")
 public class Roles {
     @Id
-    @SequenceGenerator(name = "secuencia_rol",sequenceName ="secuencia_rol",allocationSize = 1)
-    @GeneratedValue(generator = "secuencia_rol",strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "rol_id")
     private Long rolID;
     @Column(name = "nombre_rol",nullable = false)

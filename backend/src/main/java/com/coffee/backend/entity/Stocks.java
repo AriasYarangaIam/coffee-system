@@ -8,10 +8,9 @@ import lombok.Data;
 @Table(name = "stocks")
 public class Stocks {
     @Id
-    @SequenceGenerator(name = "secuenciaStock",sequenceName = "secuenciaStock",allocationSize = 1)
-    @GeneratedValue(generator ="secuenciaStock",strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "codigo_stock")
-    private Long codigo_Stock;
+    private Long codigoStock;
     @Column(nullable = false)
     private Long cantidad;
     @ManyToOne
