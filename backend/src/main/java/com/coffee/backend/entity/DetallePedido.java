@@ -8,15 +8,14 @@ import lombok.Data;
 @Data
 public class DetallePedido {
     @Id
-    @SequenceGenerator(name = "secuenciaDetallePedido",sequenceName = "secuenciaDetallePedido",allocationSize = 1)
-    @GeneratedValue(generator ="secuenciaDetallePedido" ,strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "detallePedido_id")
     private Long detallePedidoId;
     @Min(value = 1, message = "La cantidad debe ser mayor a 0")
     @Column(name = "cantidad_pedida",nullable = false)
     private Long cantidadPedida;
-    @Column(name = "precio_actual")
-    private Double precioActual;
+    @Column(name = "precio_unitario")
+    private Double precioUnitario;
     @ManyToOne
     @JoinColumn(name = "producto_id",nullable = false)
     private Productos productos;
