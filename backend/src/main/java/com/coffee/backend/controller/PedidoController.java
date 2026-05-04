@@ -20,7 +20,9 @@ public class PedidoController {
     @PostMapping
     public ResponseEntity<PedidoResponseDTO> registrarPedido(
             @Valid @RequestBody PedidoRequestDTO dto) {
+        // Por ahora puse  puse un ocrreo como para testear "mesero@test.com"
+        // hasta que llegue el JWT ahi si utilizare userDetails.getUsername()
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(pedidoService.registrarPedido(dto));
+                .body(pedidoService.registrarPedido(dto, "mesero@test.com"));
     }
 }

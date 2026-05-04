@@ -10,34 +10,33 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class PedidoServiceImpl implements PedidoService {
 
     private final PedidoRepository pedidosRepository;
-    private final DetallePedidoRepository detallePedidoRepository;
     private final RecetaRepository recetaRepository;
     private final StockRepository stocksRepository;
     private final ProductoRepository productosRepository;
     private final UsuarioRepository usuariosRepository;
 
+    // DetallePedidoRepository eliminado — usa Cascada
+
     @Transactional
     @Override
-    public PedidoResponseDTO registrarPedido(PedidoRequestDTO dto) {
+    public PedidoResponseDTO registrarPedido(PedidoRequestDTO dto, String correoUsuarioLogueado) {
 
-        // VALIDAR STOCK Y GUARDAR RECETAS EN MEMORIA
+        // 1. VALIDAR STOCK Y GUARDAR RECETAS EN MEMORIA
         Map<Long, List<Recetas>> recetasPorProducto = new HashMap<>();
 
         for (DetallePedidoRequestDTO detalle : dto.detalles()) {
-
             List<Recetas> recetas = recetaRepository
                     .findByProductos_ProductoId(detalle.productoId());
-
             recetasPorProducto.put(detalle.productoId(), recetas);
 
             for (Recetas receta : recetas) {
@@ -57,18 +56,19 @@ public class PedidoServiceImpl implements PedidoService {
             }
         }
 
-        // CREAR PEDIDO, DETALLES Y DESCONTAR STOCK
-        Usuarios usuario = usuariosRepository.findById(dto.usuarioId())
+        // 2. BUSCAR USUARIO POR CORREO
+        Usuarios usuario = usuariosRepository.findByCorreoUsuario(correoUsuarioLogueado)
                 .orElseThrow(() -> new RuntimeException(
-                        "Usuario no encontrado: " + dto.usuarioId()
+                        "Usuario no encontrado: " + correoUsuarioLogueado
                 ));
 
+        // 3. ARMAR EL PEDIDO EN MEMORIA
         Pedidos pedido = new Pedidos();
         pedido.setAliasTicket(dto.aliasTicket());
         pedido.setUsuario(usuario);
-        pedido.setFechaPedido(new java.sql.Date(System.currentTimeMillis()));
-        pedidosRepository.save(pedido);
+        pedido.setFechaPedido(LocalDateTime.now());
 
+        // 4. CREAR DETALLES Y DESCONTAR STOCK
         for (DetallePedidoRequestDTO detalle : dto.detalles()) {
 
             Productos producto = productosRepository.findById(detalle.productoId())
@@ -81,35 +81,31 @@ public class PedidoServiceImpl implements PedidoService {
             detallePedido.setPedidos(pedido);
             detallePedido.setProductos(producto);
             detallePedido.setPrecioUnitario(producto.getPrecioActual());
-            detallePedidoRepository.save(detallePedido);
 
+            // Agrega el detalle a la lista del pedido EN MEMORIA
+            pedido.getDetalles().add(detallePedido);
+
+            // Descontar stock
             List<Recetas> recetas = recetasPorProducto.get(detalle.productoId());
-
             for (Recetas receta : recetas) {
                 Long necesario = receta.getCantidadUsada() * detalle.cantidadPedida();
-
                 Stocks stock = stocksRepository
                         .findByInsumos_IdInsumo(receta.getInsumos().getIdInsumo())
                         .orElseThrow(() -> new StockInsuficienteException(
                                 "Stock no encontrado para: " + receta.getInsumos().getNombreInsumo()
                         ));
-
                 stock.setCantidad(stock.getCantidad() - necesario);
                 stocksRepository.save(stock);
             }
         }
+
+        // 5. UN SOLO GUARDADO — Spring guarda pedido y detalles por Cascada
+        pedidosRepository.save(pedido);
 
         return new PedidoResponseDTO(
                 pedido.getPedidoId(),
                 pedido.getAliasTicket(),
                 pedido.getFechaPedido()
         );
-    }
-
-    private String generarAlias() {
-        return UUID.randomUUID().toString()
-                .replace("-", "")
-                .substring(0, 8)
-                .toUpperCase();
     }
 }

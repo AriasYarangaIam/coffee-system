@@ -5,6 +5,8 @@ import lombok.Data;
 import org.hibernate.annotations.CurrentTimestamp;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,10 +21,11 @@ public class Pedidos {
     private String aliasTicket;
     @CurrentTimestamp
     @Column(name = "fecha_pedido")
-    private Date fechaPedido;
+    private LocalDateTime fechaPedido;
     @ManyToOne
     @JoinColumn(name = "usuario_id",nullable = false)
     private Usuarios usuario;
-    @OneToMany (mappedBy = "pedidos", cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE} )
-    private List<DetallePedido> detallePedidos;
+    @OneToMany(mappedBy = "pedidos", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DetallePedido> detalles = new ArrayList<>();
+
 }
