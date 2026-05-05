@@ -3,6 +3,6 @@
 target/
 node_modules/
 dist/
-.env
+backend/.env
 application-dev.yml
 application-local.yml
