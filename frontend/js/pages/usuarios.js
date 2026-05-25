@@ -1,17 +1,37 @@
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
-import { mostrarToast, mostrarSpinner, crearModal } from '../utils/dom.js';
+import { mostrarToast, mostrarSpinner } from '../utils/dom.js';
 
 requireRole('ADMIN');
 
 const tablaBody = document.getElementById('usuarios-tbody');
 const btnNuevo = document.getElementById('btn-nuevo-usuario');
 
+// Modal crear/editar
+const modalUsuario = document.getElementById('modal-usuario');
+const modalTitulo = document.getElementById('modal-usuario-titulo');
+const formUsuario = document.getElementById('form-usuario');
+const inputId = document.getElementById('usuario-id');
+const inputNombre = document.getElementById('usuario-nombre');
+const inputCorreo = document.getElementById('usuario-correo');
+const inputRol = document.getElementById('usuario-rol');
+const inputClave = document.getElementById('usuario-clave');
+const hintClave = document.getElementById('hint-clave');
+
+// Modal eliminar
+const modalEliminar = document.getElementById('modal-eliminar-usuario');
+const spanNombreEliminar = document.getElementById('nombre-usuario-eliminar');
+const btnConfirmarEliminar = document.getElementById('btn-confirmar-eliminar-usuario');
+
+let usuariosCache = [];
+let idAEliminar = null;
+
+// ── Cargar ────────────────────────────────────────────────────────────────
 async function cargarUsuarios() {
   mostrarSpinner(tablaBody);
   try {
-    const usuarios = await apiFetch('/admin/usuarios');
-    renderizarTabla(usuarios);
+    usuariosCache = await apiFetch('/admin/usuarios');
+    renderizarTabla(usuariosCache);
   } catch (error) {
     mostrarToast(error?.message || 'Error al cargar usuarios', 'error');
   }
@@ -27,7 +47,7 @@ function renderizarTabla(usuarios) {
       <td>${u.nombreUsuario} ${u.apellidoUsuario}</td>
       <td>${u.correoUsuario}</td>
       <td><span class="badge ${u.rol === 'ADMIN' ? 'badge-pagado' : 'badge-pendiente'}">${u.rol}</span></td>
-      <td>
+      <td style="text-align:right">
         <button class="btn btn-outline btn-sm" onclick="editarUsuario(${u.usuarioId})">Editar</button>
         <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarUsuario(${u.usuarioId}, '${u.nombreUsuario}')">Eliminar</button>
       </td>
@@ -35,26 +55,99 @@ function renderizarTabla(usuarios) {
   `).join('');
 }
 
-async function eliminarUsuario(id, nombre) {
-  crearModal({
-    titulo: 'Eliminar usuario',
-    contenido: `<p>¿Seguro que deseas eliminar a <strong>${nombre}</strong>?</p>`,
-    labelConfirm: 'Eliminar',
-    onConfirm: async () => {
-      try {
-        await apiFetch(`/admin/usuarios/${id}`, { method: 'DELETE' });
-        mostrarToast('Usuario eliminado', 'success');
-        cargarUsuarios();
-      } catch (error) {
-        mostrarToast(error?.message || 'No se pudo eliminar', 'error');
-      }
-    },
-  });
+// ── Modal crear/editar ─────────────────────────────────────────────────────
+function abrirModalCrear() {
+  modalTitulo.textContent = 'Nuevo Usuario';
+  inputId.value = '';
+  formUsuario.reset();
+  inputClave.required = true;
+  hintClave.style.display = 'none';
+  modalUsuario.classList.remove('hidden');
 }
 
-window.editarUsuario = (id) => { /* TODO: abrir modal de edición */ };
-window.eliminarUsuario = eliminarUsuario;
+function abrirModalEditar(id) {
+  const usuario = usuariosCache.find(u => u.usuarioId === id);
+  if (!usuario) return;
+  modalTitulo.textContent = 'Editar Usuario';
+  inputId.value = usuario.usuarioId;
+  inputNombre.value = `${usuario.nombreUsuario} ${usuario.apellidoUsuario}`.trim();
+  inputCorreo.value = usuario.correoUsuario;
+  inputRol.value = usuario.rol;
+  inputClave.value = '';
+  inputClave.required = false;
+  hintClave.style.display = 'block';
+  modalUsuario.classList.remove('hidden');
+}
 
-btnNuevo.addEventListener('click', () => { /* TODO: abrir modal de creación */ });
+function cerrarModalUsuario() {
+  modalUsuario.classList.add('hidden');
+}
+
+// ── Guardar (crear o editar) ───────────────────────────────────────────────
+formUsuario.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = formUsuario.querySelector('button[type="submit"]');
+  btn.disabled = true;
+
+  const id = inputId.value;
+  const partes = inputNombre.value.trim().split(' ');
+  const body = {
+    nombreUsuario: partes[0],
+    apellidoUsuario: partes.slice(1).join(' ') || '',
+    correoUsuario: inputCorreo.value.trim(),
+    rol: inputRol.value,
+    ...(inputClave.value && { claveUsuario: inputClave.value }),
+  };
+
+  try {
+    if (id) {
+      await apiFetch(`/admin/usuarios/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+      mostrarToast('Usuario actualizado', 'success');
+    } else {
+      await apiFetch('/admin/usuarios', { method: 'POST', body: JSON.stringify(body) });
+      mostrarToast('Usuario creado', 'success');
+    }
+    cerrarModalUsuario();
+    cargarUsuarios();
+  } catch (error) {
+    mostrarToast(error?.message || 'No se pudo guardar el usuario', 'error');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// ── Eliminar ───────────────────────────────────────────────────────────────
+function abrirModalEliminar(id, nombre) {
+  idAEliminar = id;
+  spanNombreEliminar.textContent = nombre;
+  modalEliminar.classList.remove('hidden');
+}
+
+function cerrarModalEliminar() {
+  modalEliminar.classList.add('hidden');
+  idAEliminar = null;
+}
+
+btnConfirmarEliminar.addEventListener('click', async () => {
+  if (!idAEliminar) return;
+  try {
+    await apiFetch(`/admin/usuarios/${idAEliminar}`, { method: 'DELETE' });
+    mostrarToast('Usuario eliminado', 'success');
+    cerrarModalEliminar();
+    cargarUsuarios();
+  } catch (error) {
+    mostrarToast(error?.message || 'No se pudo eliminar', 'error');
+  }
+});
+
+// ── Eventos ────────────────────────────────────────────────────────────────
+btnNuevo.addEventListener('click', abrirModalCrear);
+document.getElementById('modal-usuario-cerrar').addEventListener('click', cerrarModalUsuario);
+document.getElementById('btn-cancelar-usuario').addEventListener('click', cerrarModalUsuario);
+document.getElementById('modal-eliminar-usuario-cerrar').addEventListener('click', cerrarModalEliminar);
+document.getElementById('btn-cancelar-eliminar-usuario').addEventListener('click', cerrarModalEliminar);
+
+window.editarUsuario = (id) => abrirModalEditar(id);
+window.eliminarUsuario = (id, nombre) => abrirModalEliminar(id, nombre);
 
 cargarUsuarios();

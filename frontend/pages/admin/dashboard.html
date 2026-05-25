@@ -6,6 +6,7 @@
   <title>Dashboard — Cafetería MYPE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/layout.css">
@@ -20,11 +21,11 @@
         <span id="sidebar-usuario"></span>
       </div>
       <nav class="sidebar-nav">
-        <a href="/pages/admin/dashboard.html" class="sidebar-link active">Dashboard</a>
-        <a href="/pages/admin/productos.html" class="sidebar-link">Productos</a>
-        <a href="/pages/admin/insumos.html" class="sidebar-link">Insumos</a>
-        <a href="/pages/admin/stock.html" class="sidebar-link">Control de Stock</a>
-        <a href="/pages/admin/usuarios.html" class="sidebar-link">Usuarios</a>
+        <a href="/pages/admin/dashboard.html" class="sidebar-link active"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+        <a href="/pages/admin/productos.html" class="sidebar-link"><span class="material-symbols-outlined">coffee</span>Productos</a>
+        <a href="/pages/admin/insumos.html" class="sidebar-link"><span class="material-symbols-outlined">category</span>Insumos</a>
+        <a href="/pages/admin/stock.html" class="sidebar-link"><span class="material-symbols-outlined">inventory_2</span>Control de Stock</a>
+        <a href="/pages/admin/usuarios.html" class="sidebar-link"><span class="material-symbols-outlined">group</span>Usuarios</a>
       </nav>
       <div class="sidebar-footer">
         <button class="btn btn-outline btn-sm" id="btn-logout" style="width:100%">Cerrar sesión</button>
@@ -33,41 +34,88 @@
 
     <div class="main-content">
       <div class="page-content">
-        <h1 class="section-title" style="margin-bottom:24px">Dashboard</h1>
+        <div style="margin-bottom:var(--spacing-lg)">
+          <h1 class="section-title">Dashboard</h1>
+          <p class="text-muted text-sm" style="margin-top:4px">Resumen de ventas y métricas del día</p>
+        </div>
 
         <!-- KPIs -->
         <div class="kpi-grid">
+          <!-- Ventas del día -->
           <div class="kpi-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+              <div class="kpi-icon-box">
+                <span class="material-symbols-outlined">payments</span>
+              </div>
+              <span class="kpi-trend kpi-trend--up" id="kpi-ventas-trend" style="display:none">
+                <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">trending_up</span>
+                <span id="kpi-ventas-trend-val"></span>
+              </span>
+            </div>
             <p class="kpi-card__label">Ventas del día</p>
             <p class="kpi-card__value" id="kpi-ventas">—</p>
           </div>
+
+          <!-- Pedidos del día -->
           <div class="kpi-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+              <div class="kpi-icon-box">
+                <span class="material-symbols-outlined">receipt_long</span>
+              </div>
+              <span class="kpi-trend kpi-trend--up" id="kpi-pedidos-trend" style="display:none">
+                <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">trending_up</span>
+                <span id="kpi-pedidos-trend-val"></span>
+              </span>
+            </div>
             <p class="kpi-card__label">Pedidos del día</p>
             <p class="kpi-card__value" id="kpi-pedidos">—</p>
           </div>
+
+          <!-- Producto estrella -->
           <div class="kpi-card">
+            <div style="margin-bottom:16px">
+              <div class="kpi-icon-box">
+                <span class="material-symbols-outlined">local_cafe</span>
+              </div>
+            </div>
             <p class="kpi-card__label">Producto estrella</p>
             <p class="kpi-card__value" id="kpi-estrella" style="font-size:1.25rem">—</p>
           </div>
-          <div class="kpi-card">
+
+          <!-- Alertas de stock -->
+          <div class="kpi-card kpi-card--alert">
+            <div style="margin-bottom:16px">
+              <div class="kpi-icon-box kpi-icon-box--danger">
+                <span class="material-symbols-outlined">warning</span>
+              </div>
+            </div>
             <p class="kpi-card__label">Alertas de stock</p>
-            <p class="kpi-card__value" id="kpi-stock-alerta">—</p>
+            <p class="kpi-card__value kpi-card__value--danger" id="kpi-stock-alerta">—</p>
           </div>
         </div>
 
-        <!-- Gráfico -->
-        <div class="chart-card">
-          <h2 class="chart-card__title">Ventas del mes</h2>
-          <div class="chart-container">
-            <canvas id="chart-ventas"></canvas>
+        <!-- Fila media: Gráfico + Stock bajo -->
+        <div class="dashboard-mid-row">
+          <!-- Gráfico -->
+          <div class="chart-card" style="margin-bottom:0">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-lg)">
+              <h2 class="chart-card__title" style="margin-bottom:0">Ventas del mes</h2>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-ventas"></canvas>
+            </div>
           </div>
-        </div>
 
-        <!-- Stock bajo -->
-        <div class="chart-card">
-          <h2 class="chart-card__title">Insumos con stock bajo</h2>
-          <div id="stock-bajo-lista">
-            <div class="spinner"></div>
+          <!-- Stock bajo -->
+          <div class="chart-card" style="margin-bottom:0;display:flex;flex-direction:column">
+            <h2 class="chart-card__title">Ingredientes con bajo stock</h2>
+            <div id="stock-bajo-lista" style="flex:1">
+              <div class="spinner"></div>
+            </div>
+            <a href="/pages/admin/stock.html" class="dashboard-stock-link">
+              Ver inventario completo
+              <span class="material-symbols-outlined" style="font-size:18px">arrow_forward</span>
+            </a>
           </div>
         </div>
       </div>

@@ -6,9 +6,10 @@
   <title>Login — Cafetería MYPE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/frontend/css/main.css ">
-  <link rel="stylesheet" href="/frontend/css/components.css">
-  <link rel="stylesheet" href="/frontend/css/pages/login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages/login.css">
 
 </head>
 <body>
@@ -26,24 +27,22 @@
 
       <div class="role-tabs">
 
-        <button class="role-tab active" type="button">
+        <button class="role-tab active" type="button" id="tab-personal">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21a8 8 0 0 0-16 0"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>
-
           Personal
         </button>
 
-        <button class="role-tab" type="button">
+        <button class="role-tab" type="button" id="tab-admin">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
-
           Administrador
         </button>
       </div>

@@ -21,16 +21,16 @@ export function requireRole(rolRequerido) {
   const usuario = obtenerUsuario();
   const token = obtenerToken();
 
-  if (!token || !usuario.rol) {
-    window.location.href = '/index.html';
-    return;
-  }
+  // if (!token || !usuario.rol) {
+  //   window.location.href = '/index.html';
+  //   return;
+  // }
 
-  if (usuario.rol !== rolRequerido) {
-    if (usuario.rol === 'ADMIN') {
-      window.location.href = '/pages/admin/dashboard.html';
-    } else {
-      window.location.href = '/pages/mesero/pedidos.html';
-    }
-  }
+  // if (usuario.rol !== rolRequerido) {
+  //   if (usuario.rol === 'ADMIN') {
+  //     window.location.href = '/pages/admin/dashboard.html';
+  //   } else {
+  //     window.location.href = '/pages/mesero/pedidos.html';
+  //   }
+  // }
 }

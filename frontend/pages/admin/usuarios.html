@@ -6,9 +6,11 @@
   <title>Usuarios — Cafetería MYPE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/pages/usuarios.css">
 </head>
 <body>
   <div class="app-layout">
@@ -18,11 +20,11 @@
         <span id="sidebar-usuario"></span>
       </div>
       <nav class="sidebar-nav">
-        <a href="/pages/admin/dashboard.html" class="sidebar-link">Dashboard</a>
-        <a href="/pages/admin/productos.html" class="sidebar-link">Productos</a>
-        <a href="/pages/admin/insumos.html" class="sidebar-link">Insumos</a>
-        <a href="/pages/admin/stock.html" class="sidebar-link">Control de Stock</a>
-        <a href="/pages/admin/usuarios.html" class="sidebar-link active">Usuarios</a>
+        <a href="/pages/admin/dashboard.html" class="sidebar-link"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+        <a href="/pages/admin/productos.html" class="sidebar-link"><span class="material-symbols-outlined">coffee</span>Productos</a>
+        <a href="/pages/admin/insumos.html" class="sidebar-link"><span class="material-symbols-outlined">category</span>Insumos</a>
+        <a href="/pages/admin/stock.html" class="sidebar-link"><span class="material-symbols-outlined">inventory_2</span>Control de Stock</a>
+        <a href="/pages/admin/usuarios.html" class="sidebar-link active"><span class="material-symbols-outlined">group</span>Usuarios</a>
       </nav>
       <div class="sidebar-footer">
         <button class="btn btn-outline btn-sm" id="btn-logout" style="width:100%">Cerrar sesión</button>
@@ -32,8 +34,14 @@
     <div class="main-content">
       <div class="page-content">
         <div class="section-header">
-          <h1 class="section-title">Gestión de Usuarios</h1>
-          <button class="btn btn-primary" id="btn-nuevo-usuario">+ Nuevo Usuario</button>
+          <div>
+            <h1 class="section-title">Gestión de Usuarios</h1>
+            <p class="text-muted text-sm" style="margin-top:4px">Administra el acceso y roles del personal</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btn-nuevo-usuario">
+            <span class="material-symbols-outlined">person_add</span>
+            Nuevo Usuario
+          </button>
         </div>
         <div class="card">
           <div class="table-wrapper">
@@ -43,7 +51,7 @@
                   <th>Nombre</th>
                   <th>Correo</th>
                   <th>Rol</th>
-                  <th>Acciones</th>
+                  <th style="text-align:right;width:100px">Acciones</th>
                 </tr>
               </thead>
               <tbody id="usuarios-tbody">
@@ -52,6 +60,60 @@
             </table>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Crear / Editar Usuario -->
+  <div class="modal-overlay hidden" id="modal-usuario">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-usuario-titulo">Nuevo Usuario</h2>
+        <button class="modal-close" id="modal-usuario-cerrar" aria-label="Cerrar">&times;</button>
+      </div>
+      <form id="form-usuario">
+        <input type="hidden" id="usuario-id">
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label" for="usuario-nombre">Nombre completo</label>
+          <input class="form-input" type="text" id="usuario-nombre" placeholder="Ej: Juan Pérez" required>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label" for="usuario-correo">Correo electrónico</label>
+          <input class="form-input" type="email" id="usuario-correo" placeholder="usuario@ejemplo.com" required>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label" for="usuario-rol">Rol</label>
+          <select class="form-select" id="usuario-rol" required>
+            <option value="">Seleccionar rol...</option>
+            <option value="MESERO">Mesero</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:16px" id="grupo-clave">
+          <label class="form-label" for="usuario-clave">Contraseña</label>
+          <input class="form-input" type="password" id="usuario-clave" placeholder="•••••••••••">
+          <p class="text-muted text-sm" id="hint-clave" style="display:none">Deja vacío para no cambiar la contraseña</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" id="btn-cancelar-usuario">Cancelar</button>
+          <button class="btn btn-primary" type="submit">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Confirmar Eliminación -->
+  <div class="modal-overlay hidden" id="modal-eliminar-usuario">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-header">
+        <h2 class="modal-title">Eliminar Usuario</h2>
+        <button class="modal-close" id="modal-eliminar-usuario-cerrar" aria-label="Cerrar">&times;</button>
+      </div>
+      <p style="color:var(--color-text-muted);margin-bottom:8px">¿Estás seguro de que deseas eliminar al usuario <strong id="nombre-usuario-eliminar"></strong>?</p>
+      <p style="font-size:0.875rem;color:var(--color-danger)">Esta acción no se puede deshacer.</p>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" id="btn-cancelar-eliminar-usuario">Cancelar</button>
+        <button class="btn btn-danger" type="button" id="btn-confirmar-eliminar-usuario">Eliminar</button>
       </div>
     </div>
   </div>

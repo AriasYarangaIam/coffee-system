@@ -6,6 +6,7 @@
   <title>Productos — Cafetería MYPE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/layout.css">
@@ -18,11 +19,11 @@
         <span id="sidebar-usuario"></span>
       </div>
       <nav class="sidebar-nav">
-        <a href="/pages/admin/dashboard.html" class="sidebar-link">Dashboard</a>
-        <a href="/pages/admin/productos.html" class="sidebar-link active">Productos</a>
-        <a href="/pages/admin/insumos.html" class="sidebar-link">Insumos</a>
-        <a href="/pages/admin/stock.html" class="sidebar-link">Control de Stock</a>
-        <a href="/pages/admin/usuarios.html" class="sidebar-link">Usuarios</a>
+        <a href="/pages/admin/dashboard.html" class="sidebar-link"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+        <a href="/pages/admin/productos.html" class="sidebar-link active"><span class="material-symbols-outlined">coffee</span>Productos</a>
+        <a href="/pages/admin/insumos.html" class="sidebar-link"><span class="material-symbols-outlined">category</span>Insumos</a>
+        <a href="/pages/admin/stock.html" class="sidebar-link"><span class="material-symbols-outlined">inventory_2</span>Control de Stock</a>
+        <a href="/pages/admin/usuarios.html" class="sidebar-link"><span class="material-symbols-outlined">group</span>Usuarios</a>
       </nav>
       <div class="sidebar-footer">
         <button class="btn btn-outline btn-sm" id="btn-logout" style="width:100%">Cerrar sesión</button>
@@ -33,7 +34,23 @@
       <div class="page-content">
         <div class="section-header">
           <h1 class="section-title">Gestión de Productos</h1>
-          <button class="btn btn-primary" id="btn-nuevo-producto">+ Nuevo Producto</button>
+          <div style="display:flex;gap:var(--spacing-sm);align-items:center">
+            <div class="search-bar">
+              <span class="material-symbols-outlined">search</span>
+              <input type="text" id="input-buscar-producto" placeholder="Buscar producto...">
+            </div>
+            <select class="form-select" id="select-filtro-categoria" style="height:40px;width:180px;font-size:var(--font-size-sm)">
+              <option value="">Todas las categorías</option>
+              <option value="Bebidas">Bebidas</option>
+              <option value="Comidas">Comidas</option>
+              <option value="Postres">Postres</option>
+              <option value="Otros">Otros</option>
+            </select>
+            <button class="btn btn-primary btn-sm" id="btn-nuevo-producto">
+              <span class="material-symbols-outlined">add</span>
+              Nuevo Producto
+            </button>
+          </div>
         </div>
         <div class="card">
           <div class="table-wrapper">
@@ -42,8 +59,8 @@
                 <tr>
                   <th>Nombre</th>
                   <th>Categoría</th>
-                  <th>Precio</th>
-                  <th>Acciones</th>
+                  <th style="text-align:right">Precio</th>
+                  <th style="text-align:right;width:80px">Acciones</th>
                 </tr>
               </thead>
               <tbody id="productos-tbody">
@@ -52,6 +69,60 @@
             </table>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Crear / Editar Producto -->
+  <div class="modal-overlay hidden" id="modal-producto">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-producto-titulo">Nuevo Producto</h2>
+        <button class="modal-close" id="modal-producto-cerrar" aria-label="Cerrar">&times;</button>
+      </div>
+      <form id="form-producto">
+        <input type="hidden" id="producto-id">
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label" for="producto-nombre">Nombre</label>
+          <input class="form-input" type="text" id="producto-nombre" placeholder="Ej: Café Americano" required>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label" for="producto-categoria">Categoría</label>
+          <select class="form-select" id="producto-categoria" required>
+            <option value="">Seleccionar categoría...</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Comidas">Comidas</option>
+            <option value="Postres">Postres</option>
+            <option value="Otros">Otros</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label" for="producto-precio">Precio</label>
+          <div style="position:relative">
+            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--color-text-muted);font-weight:600;font-size:var(--font-size-sm)">S/.</span>
+            <input class="form-input" type="number" id="producto-precio" min="0.01" step="0.01" placeholder="0.00" required style="padding-left:40px">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" id="btn-cancelar-producto">Cancelar</button>
+          <button class="btn btn-primary" type="submit">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Confirmar Eliminación -->
+  <div class="modal-overlay hidden" id="modal-eliminar-producto">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-header">
+        <h2 class="modal-title">Eliminar Producto</h2>
+        <button class="modal-close" id="modal-eliminar-producto-cerrar" aria-label="Cerrar">&times;</button>
+      </div>
+      <p style="color:var(--color-text-muted);margin-bottom:8px">¿Estás seguro de que deseas eliminar el producto <strong id="nombre-producto-eliminar"></strong>?</p>
+      <p style="font-size:0.875rem;color:var(--color-danger)">Esta acción no se puede deshacer.</p>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" id="btn-cancelar-eliminar-producto">Cancelar</button>
+        <button class="btn btn-danger" type="button" id="btn-confirmar-eliminar-producto">Eliminar</button>
       </div>
     </div>
   </div>
