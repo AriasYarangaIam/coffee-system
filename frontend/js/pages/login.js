@@ -44,7 +44,12 @@ form.addEventListener('submit', async (e) => {
       }),
     });
 
-    guardarSesion(data.token, data.usuario);
+    const usuario = {
+      nombre: data.usuario?.nombreUsuario ?? data.usuario?.nombre ?? '',
+      rol:    data.usuario?.rol ?? '',
+      id:     data.usuario?.usuarioId ?? data.usuario?.id ?? null,
+    };
+    guardarSesion(data.token, usuario);
     redirigirPorRol();
   } catch (error) {
     errorMsg.textContent = error?.message || 'Correo o contraseña incorrectos';

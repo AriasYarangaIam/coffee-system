@@ -21,13 +21,12 @@ export async function apiFetch(endpoint, options = {}) {
     return;
   }
 
+  if (response.status === 204) return null;
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'Error del servidor' }));
     throw error;
   }
-
-  // 204 No Content
-  if (response.status === 204) return null;
 
   return response.json();
 }
