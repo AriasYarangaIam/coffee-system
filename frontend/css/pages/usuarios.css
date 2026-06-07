@@ -1,0 +1,31 @@
+/* ── Usuarios Admin ──────────────────────────────────────────────────── */
+.badge-rol-admin {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  background: #E8EAFF;
+  color: #1A237E;
+}
+
+.badge-rol-mesero {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  background: var(--color-secondary-light);
+  color: var(--color-primary);
+}
+
+.usuarios-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.usuarios-actions .btn {
+  min-height: 32px;
+  padding: 0 var(--spacing-md);
+  font-size: var(--font-size-sm);
+}

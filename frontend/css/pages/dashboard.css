@@ -1,16 +1,101 @@
 /* ── Dashboard Admin ────────────────────────────────────────────────── */
+
+/* Override kpi-grid to fixed 4 columns on dashboard */
+.kpi-grid {
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: var(--spacing-lg);
+}
+
+@media (max-width: 1100px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+}
+
+/* Override kpi-card to support icon+trend layout and add border */
+.kpi-card {
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-card--alert {
+  background: rgba(255, 218, 214, 0.2);
+  border-color: #FDDAD6;
+}
+
+/* Override value color to neutral (layout.css uses primary/brown) */
+.kpi-card__value {
+  color: var(--color-text);
+}
+
+.kpi-card__value--danger {
+  color: var(--color-danger);
+}
+
+/* KPI icon box */
+.kpi-icon-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--border-radius-md);
+  background: linear-gradient(135deg, var(--color-secondary-light), #E5CBA8);
+  color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(92, 51, 23, 0.12);
+}
+
+.kpi-icon-box--danger {
+  background: #FDDAD6;
+  color: var(--color-danger);
+}
+
+/* Trend badge */
+.kpi-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--border-radius-full);
+}
+
+.kpi-trend--up {
+  color: #27500A;
+  background: rgba(107, 142, 35, 0.12);
+}
+
+/* Middle row: chart (2/3) + low-stock table (1/3) */
+.dashboard-mid-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+@media (max-width: 900px) {
+  .dashboard-mid-row { grid-template-columns: 1fr; }
+}
+
+/* Chart card */
 .chart-card {
-  background-color: var(--color-surface);
+  background: var(--color-surface);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
 }
 
 .chart-card__title {
+  font-family: var(--font-heading);
   font-size: var(--font-size-lg);
-  font-weight: 600;
+  font-weight: 400;
   margin-bottom: var(--spacing-lg);
+  letter-spacing: -0.01em;
 }
 
 .chart-container {
@@ -18,28 +103,71 @@
   height: 280px;
 }
 
-.stock-alert-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.stock-alert-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: #FAEEDA;
-  border-radius: var(--border-radius-md);
+/* Low-stock table inside dashboard */
+.stock-bajo-table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: var(--font-size-sm);
 }
 
-.stock-alert-item__name {
+.stock-bajo-table th {
+  padding: 0 0 10px;
   font-weight: 500;
-  color: #633806;
+  color: var(--color-text-muted);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.stock-alert-item__qty {
+.stock-bajo-table th:not(:first-child) {
+  text-align: right;
+}
+
+.stock-bajo-table td {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.stock-bajo-table tr:last-child td {
+  border-bottom: none;
+}
+
+.stock-bajo-table td:not(:first-child) {
+  text-align: right;
   font-weight: 700;
-  color: #633806;
+}
+
+.stock-bajo-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.stock-bajo-dot--critico { background: var(--color-danger); }
+.stock-bajo-dot--bajo    { background: #d97706; }
+
+/* Link to full inventory */
+.dashboard-stock-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: var(--spacing-md);
+  padding: 10px;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: var(--color-surface-high);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.dashboard-stock-link:hover {
+  background: var(--color-border);
+  color: var(--color-text);
 }

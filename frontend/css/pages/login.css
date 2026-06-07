@@ -20,9 +20,12 @@
 .login-card {
   width: 100%;
   max-width: 420px;
-  background-color: var(--color-surface);
+  background: rgba(253, 246, 238, 0.90);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: var(--border-radius-xl);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 24px 64px rgba(30, 15, 6, 0.35);
   padding: var(--spacing-xl);
 }
 
@@ -31,9 +34,11 @@
   margin-bottom: var(--spacing-xl);
 }
 
-.login-logo h1 { 
-  font-size: var(--font-size-xl);
-  font-weight: 700;
+.login-logo h1 {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   color: var(--color-primary);
 }
 
@@ -51,12 +56,11 @@
 
 html {
   font-size: 16px;
-  font-family: Arial, Helvetica, sans-serif;
   -webkit-text-size-adjust: 100%;
-  background-image: linear-gradient(rgba(63,60,60,.55), rgba(62,59,59,.52)),
+  background-image: linear-gradient(rgba(30, 15, 6, 0.60), rgba(30, 15, 6, 0.55)),
   url("https://png.pngtree.com/background/20230518/original/pngtree-cafe-with-dark-wooden-furniture-and-windows-picture-image_2645159.jpg");
-  background-size: cover;      
-  background-position: center; 
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
   min-height: 100vh;
 }
@@ -107,13 +111,14 @@ body {
   gap: 7px;
   padding: 10px 0;
   border-radius: 7px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-family);
   font-size: .875rem;
   font-weight: 500;
   color: var(--color-text-mid);
   cursor: pointer;
   border: none;
   background: transparent;
+  transition: background 0.15s, color 0.15s;
 }
 
 .role-tab.active {
@@ -162,15 +167,15 @@ body {
 }
 
 .form-label {
-  font-size: 13px;
-  font-weight: 500;
-  margin: var(--spacing-xs);
-  color: var(--color-text-muted);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-family: var(--font-family);
 }
 
-.form-input{
+.form-input {
   width: 100%;
   height: 48px;
   padding: 0 var(--spacing-md);
@@ -178,33 +183,27 @@ body {
   border: 1.5px solid transparent;
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-base);
+  font-family: var(--font-family);
   color: var(--color-text);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s;
   outline: none;
-  font-family: Arial, Helvetica, sans-serif;
-
 }
 
-.btn.btn-primary{
+.btn.btn-primary {
   width: 100%;
-  margin-top: 2px;
-  padding: 13px;
-  background: linear-gradient(135deg, #6b1f1f 0%, #3b1a0e 100%);
-  color: #fff;
-  border: none;
+  margin-top: 4px;
+  background: linear-gradient(135deg, #6B3317 0%, #3A1F0A 100%);
+  color: #FDF6EE;
   border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-family);
   font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: .02em;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 4px 18px rgba(107,31,31,.38);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 18px rgba(58, 31, 10, 0.38);
 }
 
-.btn.btn-primary:hover{
-    opacity: .9;
+.btn.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #7D3D1E 0%, #4A2810 100%);
+  box-shadow: 0 6px 22px rgba(58, 31, 10, 0.45);
+  opacity: 1;
 }

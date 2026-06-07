@@ -1,0 +1,11 @@
+/* ── Insumos Admin ───────────────────────────────────────────────────── */
+.insumos-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.insumos-actions .btn {
+  min-height: 32px;
+  padding: 0 var(--spacing-md);
+  font-size: var(--font-size-sm);
+}

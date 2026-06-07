@@ -39,7 +39,7 @@ function renderizarGrafico(reporte) {
       datasets: [{
         label: 'Ventas (S/.)',
         data: reporte.map(r => r.total),
-        backgroundColor: '#4B2E2B',
+        backgroundColor: '#5C3317',
         borderRadius: 6,
       }],
     },
