@@ -9,11 +9,11 @@ export function redirigirPorRol() {
     return;
   }
 
-  if (usuario.rol === 'ADMIN') {
+if (usuario.rol === 'ADMINISTRADOR') {        // 👈
     window.location.href = '/pages/admin/dashboard.html';
-  } else if (usuario.rol === 'MESERO') {
+} else if (usuario.rol === 'MESERO') {        // verifica este también con el backend
     window.location.href = '/pages/mesero/pedidos.html';
-  } else {
+} else {
     window.location.href = '/index.html';
-  }
+}
 }

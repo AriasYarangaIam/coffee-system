@@ -20,11 +20,15 @@ form.addEventListener('submit', async (e) => {
       method: 'POST',
       body: JSON.stringify({
         correo: inputCorreo.value.trim(),
-        clave: inputClave.value,
+        contraseña: inputClave.value,         // 👈 fix 1
       }),
     });
 
-    guardarSesion(data.token, data.usuario);
+    guardarSesion(data.token, {             // 👈 fix 2
+      correo: data.correo,
+      rol: data.rol,
+      nombreCompleto: data.nombreCompleto
+    });
     redirigirPorRol();
   } catch (error) {
     errorMsg.textContent = error?.message || 'Correo o contraseña incorrectos';
