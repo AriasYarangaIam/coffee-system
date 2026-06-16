@@ -23,7 +23,7 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponseDTO iniciarSesion(LoginRequestDTO dto) {
         // Valida credenciales — lanza excepción automática si son incorrectas
         gestorAutenticacion.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.correo(), dto.password())
+                new UsernamePasswordAuthenticationToken(dto.correo(), dto.contraseña())
         );
 
         // Carga el usuario para armar la respuesta
