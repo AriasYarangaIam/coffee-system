@@ -1,0 +1,90 @@
+/* ── Control de Stock ────────────────────────────────────────────────── */
+.stock-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--spacing-lg);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .stock-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Status badges */
+.stock-badge-ok,
+.stock-badge-bajo,
+.stock-badge-critico {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.stock-badge-ok {
+  background: #EAF3DE;
+  color: #27500A;
+}
+
+.stock-badge-ok::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #27500A;
+  flex-shrink: 0;
+}
+
+.stock-badge-bajo {
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+
+.stock-badge-critico {
+  background: #FDDAD6;
+  color: #93000A;
+  border: 1px solid #FDDAD6;
+}
+
+/* Row highlighting */
+tr.stock-row-bajo {
+  background-color: #fff8e6;
+}
+tr.stock-row-bajo:hover {
+  background-color: #ffeed1 !important;
+}
+
+tr.stock-row-critico {
+  background-color: #fce8e8;
+}
+tr.stock-row-critico:hover {
+  background-color: #f9d0d0 !important;
+}
+
+/* Últimos ingresos list */
+.stock-ingreso-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.stock-ingreso-item:last-child {
+  border-bottom: none;
+}
+
+.stock-ingreso-qty {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #27500A;
+  background: #EAF3DE;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+}

@@ -3,11 +3,31 @@ import { guardarSesion } from '../core/auth.js';
 import { redirigirPorRol } from '../core/router.js';
 import { mostrarToast } from '../utils/dom.js';
 
-const form = document.getElementById('login-form');
-const btnSubmit = document.getElementById('btn-login');
+const form       = document.getElementById('login-form');
+const btnSubmit  = document.getElementById('btn-login');
 const inputCorreo = document.getElementById('correo');
-const inputClave = document.getElementById('clave');
-const errorMsg = document.getElementById('error-msg');
+const inputClave  = document.getElementById('clave');
+const errorMsg   = document.getElementById('error-msg');
+const tabPersonal = document.getElementById('tab-personal');
+const tabAdmin    = document.getElementById('tab-admin');
+
+const PLACEHOLDERS = {
+  personal: 'mesero@cafeteria.com',
+  admin:    'admin@cafeteria.com',
+};
+
+let rolSeleccionado = 'personal';
+
+function activarTab(rol) {
+  rolSeleccionado = rol;
+  tabPersonal.classList.toggle('active', rol === 'personal');
+  tabAdmin.classList.toggle('active', rol === 'admin');
+  inputCorreo.placeholder = PLACEHOLDERS[rol];
+  errorMsg.textContent = '';
+}
+
+tabPersonal.addEventListener('click', () => activarTab('personal'));
+tabAdmin.addEventListener('click',    () => activarTab('admin'));
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();

@@ -1,6 +1,6 @@
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
-import { mostrarToast, mostrarSpinner, crearModal } from '../utils/dom.js';
+import { mostrarToast, mostrarSpinner } from '../utils/dom.js';
 import { formatearMoneda } from '../utils/format.js';
 
 requireRole('ADMIN');
@@ -8,11 +8,29 @@ requireRole('ADMIN');
 const tablaBody = document.getElementById('productos-tbody');
 const btnNuevo = document.getElementById('btn-nuevo-producto');
 
+// Modal crear/editar
+const modalProducto = document.getElementById('modal-producto');
+const modalTitulo = document.getElementById('modal-producto-titulo');
+const formProducto = document.getElementById('form-producto');
+const inputId = document.getElementById('producto-id');
+const inputNombre = document.getElementById('producto-nombre');
+const inputCategoria = document.getElementById('producto-categoria');
+const inputPrecio = document.getElementById('producto-precio');
+
+// Modal eliminar
+const modalEliminar = document.getElementById('modal-eliminar-producto');
+const spanNombreEliminar = document.getElementById('nombre-producto-eliminar');
+const btnConfirmarEliminar = document.getElementById('btn-confirmar-eliminar-producto');
+
+let productosCache = [];
+let idAEliminar = null;
+
+// ── Cargar ────────────────────────────────────────────────────────────────
 async function cargarProductos() {
   mostrarSpinner(tablaBody);
   try {
-    const productos = await apiFetch('/admin/productos');
-    renderizarTabla(productos);
+    productosCache = await apiFetch('/admin/productos');
+    renderizarTabla(productosCache);
   } catch (error) {
     mostrarToast(error?.message || 'Error al cargar productos', 'error');
   }
@@ -27,8 +45,8 @@ function renderizarTabla(productos) {
     <tr>
       <td>${p.nombreProducto}</td>
       <td>${p.categoria ?? '—'}</td>
-      <td>${formatearMoneda(p.precio)}</td>
-      <td>
+      <td style="text-align:right">${formatearMoneda(p.precio)}</td>
+      <td style="text-align:right">
         <button class="btn btn-outline btn-sm" onclick="editarProducto(${p.productoId})">Editar</button>
         <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarProducto(${p.productoId}, '${p.nombreProducto}')">Eliminar</button>
       </td>
@@ -36,26 +54,91 @@ function renderizarTabla(productos) {
   `).join('');
 }
 
-async function eliminarProducto(id, nombre) {
-  crearModal({
-    titulo: 'Eliminar producto',
-    contenido: `<p>¿Seguro que deseas eliminar <strong>${nombre}</strong>?</p>`,
-    labelConfirm: 'Eliminar',
-    onConfirm: async () => {
-      try {
-        await apiFetch(`/admin/productos/${id}`, { method: 'DELETE' });
-        mostrarToast('Producto eliminado', 'success');
-        cargarProductos();
-      } catch (error) {
-        mostrarToast(error?.message || 'No se pudo eliminar', 'error');
-      }
-    },
-  });
+// ── Modal crear/editar ─────────────────────────────────────────────────────
+function abrirModalCrear() {
+  modalTitulo.textContent = 'Nuevo Producto';
+  inputId.value = '';
+  formProducto.reset();
+  modalProducto.classList.remove('hidden');
 }
 
-window.editarProducto = (id) => { /* TODO: abrir modal de edición */ };
-window.eliminarProducto = eliminarProducto;
+function abrirModalEditar(id) {
+  const producto = productosCache.find(p => p.productoId === id);
+  if (!producto) return;
+  modalTitulo.textContent = 'Editar Producto';
+  inputId.value = producto.productoId;
+  inputNombre.value = producto.nombreProducto;
+  inputCategoria.value = producto.categoria ?? '';
+  inputPrecio.value = producto.precio;
+  modalProducto.classList.remove('hidden');
+}
 
-btnNuevo.addEventListener('click', () => { /* TODO: abrir modal de creación */ });
+function cerrarModalProducto() {
+  modalProducto.classList.add('hidden');
+}
+
+// ── Guardar (crear o editar) ───────────────────────────────────────────────
+formProducto.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = formProducto.querySelector('button[type="submit"]');
+  btn.disabled = true;
+
+  const id = inputId.value;
+  const body = {
+    nombreProducto: inputNombre.value.trim(),
+    categoria: inputCategoria.value,
+    precio: parseFloat(inputPrecio.value),
+  };
+
+  try {
+    if (id) {
+      await apiFetch(`/admin/productos/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+      mostrarToast('Producto actualizado', 'success');
+    } else {
+      await apiFetch('/admin/productos', { method: 'POST', body: JSON.stringify(body) });
+      mostrarToast('Producto creado', 'success');
+    }
+    cerrarModalProducto();
+    cargarProductos();
+  } catch (error) {
+    mostrarToast(error?.message || 'No se pudo guardar el producto', 'error');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// ── Eliminar ───────────────────────────────────────────────────────────────
+function abrirModalEliminar(id, nombre) {
+  idAEliminar = id;
+  spanNombreEliminar.textContent = nombre;
+  modalEliminar.classList.remove('hidden');
+}
+
+function cerrarModalEliminar() {
+  modalEliminar.classList.add('hidden');
+  idAEliminar = null;
+}
+
+btnConfirmarEliminar.addEventListener('click', async () => {
+  if (!idAEliminar) return;
+  try {
+    await apiFetch(`/admin/productos/${idAEliminar}`, { method: 'DELETE' });
+    mostrarToast('Producto eliminado', 'success');
+    cerrarModalEliminar();
+    cargarProductos();
+  } catch (error) {
+    mostrarToast(error?.message || 'No se pudo eliminar', 'error');
+  }
+});
+
+// ── Eventos ────────────────────────────────────────────────────────────────
+btnNuevo.addEventListener('click', abrirModalCrear);
+document.getElementById('modal-producto-cerrar').addEventListener('click', cerrarModalProducto);
+document.getElementById('btn-cancelar-producto').addEventListener('click', cerrarModalProducto);
+document.getElementById('modal-eliminar-producto-cerrar').addEventListener('click', cerrarModalEliminar);
+document.getElementById('btn-cancelar-eliminar-producto').addEventListener('click', cerrarModalEliminar);
+
+window.editarProducto = (id) => abrirModalEditar(id);
+window.eliminarProducto = (id, nombre) => abrirModalEliminar(id, nombre);
 
 cargarProductos();
