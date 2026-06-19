@@ -1,6 +1,7 @@
 package com.coffee.backend.controller;
 
 import com.coffee.backend.dto.request.PedidoRequestDTO;
+import com.coffee.backend.dto.response.BoletaResponseDTO;
 import com.coffee.backend.dto.response.PedidoResponseDTO;
 import com.coffee.backend.service.PedidoService;
 import jakarta.validation.Valid;
@@ -26,5 +27,10 @@ public class PedidoController {
         // hasta que llegue el JWT ahi si utilizare userDetails.getUsername()
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(pedidoService.registrarPedido(dto, "mesero@test.com"));
+    }
+
+    @GetMapping("/{id}/boleta")
+    public ResponseEntity<BoletaResponseDTO> obtenerBoleta(@PathVariable Long id) {
+        return ResponseEntity.ok(pedidoService.obtenerBoleta(id));
     }
 }
