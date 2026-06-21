@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,13 +24,14 @@ public class PedidoController {
     @PreAuthorize("hasRole('MESERO')")
     @PostMapping
     public ResponseEntity<PedidoResponseDTO> registrarPedido(
-            @Valid @RequestBody PedidoRequestDTO dto) {
+            @Valid @RequestBody PedidoRequestDTO dto, @AuthenticationPrincipal UserDetails userDetails) {
         // Por ahora puse  puse un ocrreo como para testear "mesero@test.com"
         // hasta que llegue el JWT ahi si utilizare userDetails.getUsername()
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(pedidoService.registrarPedido(dto, "mesero@test.com"));
+                .body(pedidoService.registrarPedido(dto, userDetails.getUsername()));
     }
 
+    @PreAuthorize("hasRole('MESERO')")
     @GetMapping("/{id}/boleta")
     public ResponseEntity<BoletaResponseDTO> obtenerBoleta(@PathVariable Long id) {
         return ResponseEntity.ok(pedidoService.obtenerBoleta(id));
