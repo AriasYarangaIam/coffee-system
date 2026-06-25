@@ -2,6 +2,8 @@ package com.coffee.backend.service.implement;
 
 import com.coffee.backend.dto.request.DetallePedidoRequestDTO;
 import com.coffee.backend.dto.request.PedidoRequestDTO;
+import com.coffee.backend.dto.response.BoletaResponseDTO;
+import com.coffee.backend.dto.response.DetalleBoletaResponseDTO;
 import com.coffee.backend.dto.response.PedidoResponseDTO;
 import com.coffee.backend.entity.*;
 import com.coffee.backend.exception.StockInsuficienteException;
@@ -107,6 +109,36 @@ public class PedidoServiceImpl implements PedidoService {
                 pedido.getPedidoId(),
                 pedido.getAliasTicket(),
                 pedido.getFechaPedido()
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BoletaResponseDTO obtenerBoleta(Long pedidoId) {
+
+        Pedidos pedido = pedidosRepository.findById(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        List<DetalleBoletaResponseDTO> detalleDTO = pedido.getDetalles()
+                .stream()
+                .map(d -> new DetalleBoletaResponseDTO(
+                        d.getProductos().getNombreProducto(),
+                        d.getCantidadPedida(),
+                        d.getPrecioUnitario()
+                ))
+                .toList();
+
+        double total = pedido.getDetalles()
+                .stream()
+                .mapToDouble(d -> d.getCantidadPedida() * d.getPrecioUnitario())
+                .sum();
+
+        return new BoletaResponseDTO(
+                pedido.getPedidoId(),
+                pedido.getAliasTicket(),
+                pedido.getFechaPedido(),
+                detalleDTO,
+                total
         );
     }
 }

@@ -1,5 +1,6 @@
 package com.coffee.backend.controller;
 
+import com.coffee.backend.dto.response.ProductoListadoResponseDTO;
 import com.coffee.backend.dto.response.ProductoRecetaResponseDTO;
 import com.coffee.backend.service.ProductoService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -22,5 +24,11 @@ public class ProductoController {
     @GetMapping("/{id}/receta")
     public ResponseEntity<ProductoRecetaResponseDTO> obtenerReceta(@PathVariable Long id) {
         return ResponseEntity.ok(productoService.obtenerRecetaDeProducto(id));
+    }
+
+    @PreAuthorize("hasAnyRole('MESERO')")
+    @GetMapping
+    public ResponseEntity<List<ProductoListadoResponseDTO>> listarProductos() {
+        return ResponseEntity.ok(productoService.listarProductos());
     }
 }

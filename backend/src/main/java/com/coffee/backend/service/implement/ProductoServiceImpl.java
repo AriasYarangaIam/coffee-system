@@ -1,10 +1,15 @@
 package com.coffee.backend.service.implement;
 
 import com.coffee.backend.dto.response.InsumoRecetaDTO;
+import com.coffee.backend.dto.response.ProductoListadoResponseDTO;
 import com.coffee.backend.dto.response.ProductoRecetaResponseDTO;
 import com.coffee.backend.entity.Productos;
+import com.coffee.backend.entity.Recetas;
+import com.coffee.backend.entity.Stocks;
 import com.coffee.backend.exception.ProductoNoEncontradoException;
+import com.coffee.backend.mapper.ProductoMapper;
 import com.coffee.backend.repository.ProductoRepository;
+import com.coffee.backend.repository.StockRepository;
 import com.coffee.backend.service.ProductoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +22,8 @@ import java.util.List;
 public class ProductoServiceImpl implements ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final StockRepository stocksRepository;
+    private final ProductoMapper productoMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -37,5 +44,32 @@ public class ProductoServiceImpl implements ProductoService {
                 producto.getNombreProducto(),
                 insumos
         );
+    }
+
+    @Override
+    @Transactional
+    public List<ProductoListadoResponseDTO> listarProductos() {
+        return productoRepository.findAll()
+                .stream()
+                .map(producto -> { boolean disponible = calcularDisponibilidad(producto);
+                    return productoMapper.toListadoDTO(producto, disponible);
+                })
+                .toList();
+    }
+
+    private boolean calcularDisponibilidad(Productos producto) {
+        List<Recetas> recetas = producto.getRecetas();
+        if (recetas == null || recetas.isEmpty()) {
+            return true;
+        }
+        for (Recetas receta : recetas) {
+            Stocks stock = stocksRepository
+                    .findByInsumos_IdInsumo(receta.getInsumos().getIdInsumo())
+                    .orElse(null);
+            if (stock == null || stock.getCantidad() < receta.getCantidadUsada()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
