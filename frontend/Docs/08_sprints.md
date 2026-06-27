@@ -25,7 +25,10 @@ tiempo es **compartida**.
   `/api/admin/*` y el `GET /api/pedidos` a inicios del Sprint 1 (ver track back, tareas
   4-7). Coordinar el contrato exacto vía [05_api_design.md](05_api_design.md).
 
-## Sprint 1 (26 jun → 02 jul) — Arreglar y limpiar
+## Sprint 1 (26 jun → 02 jul) — Arreglar y limpiar — ✅ COMPLETADO
+
+> **Estado:** F1–F4 en commit `494b839`; F5–F6 en `e887998` (con los GET de
+> categorías/almacenes que el back entregó en `5aea1ae`). Sprint 1 cerrado.
 
 | # | Tarea | Backlog | Responsable |
 |---|---|---|---|

@@ -2,25 +2,28 @@
 
 # 09 · Backlog de brechas — Frontend ⚠️
 
-Brechas del frontend y divergencias con el back. **Nada se aplicó en código** (fase
-solo documentación). El backlog del back (B-xx) está en
+Brechas del frontend y divergencias con el back. El backlog del back (B-xx) está en
 [backend/Docs/09_backlog_brechas.md](../../backend/Docs/09_backlog_brechas.md).
+
+> **Estado:** el **Sprint 1 ya se implementó** — resueltas B-F-01, B-F-02, B-F-04, B-F-05
+> (commit `494b839`) y B-F-06, B-F-09 (commit `e887998`, con los GET del back en `5aea1ae`).
+> Marcadas ✅ abajo. El resto sigue pendiente para Sprint 2.
 
 ## A. Bugs que rompen pantallas (prioridad ALTA)
 
 | ID | Brecha | Evidencia | Propuesta |
 |---|---|---|---|
-| B-F-01 | **Crear pedido falla**: body no coincide con `PedidoRequestDTO` | `pedidos.js:100-103` envía `{ detalle:[...] }` | ✅ **DECIDIDO**: contrato = `{ detalles:[...] }`. El back toma `usuarioId` del JWT y genera `aliasTicket`. Front: solo renombrar `detalle` → `detalles` |
-| B-F-02 | **Boleta no renderiza**: ID de DOM inexistente | `boleta.js:9` usa `#boleta-contenido`; `boleta.html` tiene `#boleta-detalle`/`#boleta-lineas`/`#boleta-total` | Alinear `boleta.js` a los IDs reales del HTML (o viceversa) |
-| B-F-04 | **Rol admin inconsistente** | `router.js:12` `ADMINISTRADOR` vs `auth.js:30` `ADMIN` | Unificar a `ADMIN` (coordinar con back B-03) |
+| B-F-01 | **Crear pedido falla**: body no coincide con `PedidoRequestDTO` | `pedidos.js:100-103` envía `{ detalle:[...] }` | ✅ **RESUELTO** (`494b839`): body = `{ detalles:[...] }`; el back toma `usuarioId` del JWT y genera `aliasTicket` |
+| B-F-02 | **Boleta no renderiza**: ID de DOM inexistente | `boleta.js:9` usa `#boleta-contenido`; `boleta.html` tiene `#boleta-detalle`/`#boleta-lineas`/`#boleta-total` | ✅ **RESUELTO** (`494b839`): `boleta.js` escribe en los IDs reales del HTML |
+| B-F-04 | **Rol admin inconsistente** | `router.js:12` `ADMINISTRADOR` vs `auth.js:30` `ADMIN` | ✅ **RESUELTO** (`494b839`): unificado a `ADMIN` |
 
 ## B. Divergencias Front↔Back (dependen del back)
 
 | ID | Brecha | Detalle | Propuesta |
 |---|---|---|---|
 | B-F-03 | Listar pedidos | `mis-pedidos.js` usa `GET /pedidos` con `total`/`estado` que el back no ofrece | Back añade `GET /api/pedidos` (B-07); definir si incluye `total` |
-| B-F-05 | Estados de pedido | UI Cobrado/Cancelar + `PATCH /pedidos/{id}/estado` + `renderBadgeEstado` | **Fuera de alcance** (Regla #6): quitar acciones, columna estado y `PATCH`; simplificar `mis-pedidos` a histórico de boletas |
-| B-F-06 | Categoría como nombre | `productos.js` envía/lee `categoria` string (hardcode Bebidas/Comidas/Postres/Otros) | Usar `categoriaId`; poblar el `<select>` desde un endpoint de categorías |
+| B-F-05 | Estados de pedido | UI Cobrado/Cancelar + `PATCH /pedidos/{id}/estado` + `renderBadgeEstado` | ✅ **RESUELTO** (`494b839`): quitados acciones, columna estado y `PATCH`; `mis-pedidos` es histórico |
+| B-F-06 | Categoría como nombre | `productos.js` envía/lee `categoria` string (hardcode Bebidas/Comidas/Postres/Otros) | ✅ **RESUELTO** (`e887998`): usa `categoriaId`/`precioActual`; `<select>` poblado desde `GET /admin/categorias` (back `5aea1ae`) |
 | B-F-07 | Usuarios sin `rol`/`usuarioId` | `usuarios.js` lee `u.usuarioId`, `u.rol`; `UsuarioResponseDTO` no los trae | Back amplía el DTO; front deja de partir el nombre por espacios |
 | B-F-08 | Endpoints admin ausentes | dashboard/reportes/productos/insumos/stocks/usuarios `/admin/*` | Implementar en back (B-04, B-05, B-06) |
 
@@ -28,7 +31,7 @@ solo documentación). El backlog del back (B-xx) está en
 
 | ID | Brecha | Evidencia | Propuesta |
 |---|---|---|---|
-| B-F-09 | `select-almacen` nunca se puebla | `stock.js` solo llena `select-insumo`; `stock.html:66` `<select id="select-almacen">` vacío | Poblar almacenes desde un endpoint o lista |
+| B-F-09 | `select-almacen` nunca se puebla | `stock.js` solo llena `select-insumo`; `stock.html:66` `<select id="select-almacen">` vacío | ✅ **RESUELTO** (`e887998`): poblado desde `GET /admin/almacenes` (back `5aea1ae`); ingreso envía `almacenId` |
 | B-F-10 | Dos estilos de modal conviven | `crearModal` (factory) sin uso vs modales `hidden` en HTML | Unificar a un solo patrón |
 | B-F-11 | Render con `innerHTML` sin escape | varias páginas interpolan datos del back | Escapar/sanitizar si se abre a más usuarios (XSS) |
 | B-F-12 | Sin estado de carga global ni dedupe | `apiFetch` | Aceptable hoy; revisar si crece |
