@@ -1,5 +1,8 @@
 # Solicitud del Frontend — Endpoints de listas (categorías y almacenes)
 
+> ✅ **ATENDIDO** por el back en commit `5aea1ae` (`GET /api/admin/categorias` y
+> `GET /api/admin/almacenes` + seed). El contrato coincide con el front; F5/F6 cerrados.
+
 > Solicitud del equipo **frontend** al **backend** · Fecha: 2026-06-26 · Bloquea: cierre
 > del Sprint 1 front (tareas F5 y F6, ver [frontend/Docs/08_sprints.md](../../frontend/Docs/08_sprints.md)).
 
