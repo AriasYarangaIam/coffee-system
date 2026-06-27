@@ -6,55 +6,45 @@ import { formatearMoneda, formatearFecha } from '../utils/format.js';
 requireRole('MESERO');
 
 const pedidoId = localStorage.getItem('ultimo_pedido_id');
-const boletaEl = document.getElementById('boleta-contenido');
+const spinnerEl = document.getElementById('boleta-spinner');
+const detalleEl = document.getElementById('boleta-detalle');
+
+function ocultarSpinner() {
+  spinnerEl?.remove();
+}
 
 async function cargarBoleta() {
   if (!pedidoId) {
-    boletaEl.innerHTML = '<p class="text-muted text-center">No hay pedido activo.</p>';
+    ocultarSpinner();
+    mostrarToast('No hay pedido activo', 'error');
     return;
   }
   try {
     const boleta = await apiFetch(`/pedidos/${pedidoId}/boleta`);
     renderizarBoleta(boleta);
   } catch (error) {
+    ocultarSpinner();
     mostrarToast(error?.message || 'Error al cargar la boleta', 'error');
   }
 }
 
 function renderizarBoleta(b) {
-  boletaEl.innerHTML = `
-    <div class="boleta-header">
-      <h2>Cafetería MYPE</h2>
-      <p class="text-muted text-sm">${formatearFecha(b.fechaPedido)}</p>
-      <p class="font-semibold" style="margin-top:8px">Ticket: ${b.aliasTicket}</p>
+  document.getElementById('boleta-ticket').textContent = b.aliasTicket;
+  document.getElementById('boleta-fecha').textContent = formatearFecha(b.fechaPedido);
+
+  document.getElementById('boleta-lineas').innerHTML = b.detalle.map(d => `
+    <div style="display:grid;grid-template-columns:auto 1fr auto;gap:8px;padding:4px 0">
+      <span class="text-sm">${d.cantidadPedida}x</span>
+      <span class="text-sm">${d.nombreProducto}</span>
+      <span class="text-sm" style="text-align:right">${formatearMoneda(d.precioUnitario * d.cantidadPedida)}</span>
     </div>
-    <hr style="margin:16px 0;border-color:var(--color-border)">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Cant.</th>
-          <th>P. Unit.</th>
-          <th>Subtotal</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${b.detalle.map(d => `
-          <tr>
-            <td>${d.nombreProducto}</td>
-            <td>${d.cantidadPedida}</td>
-            <td>${formatearMoneda(d.precioUnitario)}</td>
-            <td>${formatearMoneda(d.precioUnitario * d.cantidadPedida)}</td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-    <hr style="margin:16px 0;border-color:var(--color-border)">
-    <p class="cart-total">
-      <span>TOTAL</span>
-      <span>${formatearMoneda(b.total)}</span>
-    </p>
-  `;
+  `).join('');
+
+  document.getElementById('boleta-subtotal').textContent = formatearMoneda(b.total);
+  document.getElementById('boleta-total').textContent = formatearMoneda(b.total);
+
+  ocultarSpinner();
+  detalleEl.classList.remove('hidden');
 }
 
 document.getElementById('btn-nuevo-pedido').addEventListener('click', () => {

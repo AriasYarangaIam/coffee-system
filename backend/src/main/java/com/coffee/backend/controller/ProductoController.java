@@ -20,7 +20,7 @@ import java.util.List;
 public class ProductoController {
 
     private final ProductoService productoService;
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/receta")
     public ResponseEntity<ProductoRecetaResponseDTO> obtenerReceta(@PathVariable Long id) {
         return ResponseEntity.ok(productoService.obtenerRecetaDeProducto(id));

@@ -24,13 +24,3 @@ export function formatearFechaSolo(isoString) {
     year: 'numeric',
   });
 }
-
-export function renderBadgeEstado(estado) {
-  const config = {
-    PENDIENTE: { clase: 'badge-pendiente', texto: 'Pendiente' },
-    PAGADO:    { clase: 'badge-pagado',    texto: 'Pagado'    },
-    CANCELADO: { clase: 'badge-cancelado', texto: 'Cancelado' },
-  };
-  const { clase, texto } = config[estado] ?? { clase: '', texto: estado };
-  return `<span class="badge ${clase}">${texto}</span>`;
-}
