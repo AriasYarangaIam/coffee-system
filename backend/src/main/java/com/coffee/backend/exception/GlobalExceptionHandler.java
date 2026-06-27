@@ -15,4 +15,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of("error", ex.getMessage()));
     }
+
+    // 404 para recursos inexistentes (CRUD admin y producto/receta).
+    @ExceptionHandler({RecursoNoEncontradoException.class, ProductoNoEncontradoException.class})
+    public ResponseEntity<Map<String, String>> handleNoEncontrado(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ex.getMessage()));
+    }
 }
