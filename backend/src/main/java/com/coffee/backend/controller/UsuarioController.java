@@ -15,33 +15,36 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/usuario/")
+@RequestMapping("/api/admin/usuarios")
 @RequiredArgsConstructor
 public class UsuarioController {
     final UsuarioServiceImpl usuarioServiceImple;
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','MESERO')")
-    @PostMapping("/registrar")
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping
     public ResponseEntity<?> agregarUsuario(@RequestBody RegistrarUsuarioRequestDTO requestDTO) {
         usuarioServiceImple.registrarUsuario(requestDTO);
         return ResponseEntity.ok().build();
     }
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    @GetMapping("/obtenerMeseros")
-    public ResponseEntity<List <UsuarioResponseDTO>>obtenerUsuarios(){
-     return ResponseEntity.ok(usuarioServiceImple.obtenerUsuarios());
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping
+    public ResponseEntity<List<UsuarioResponseDTO>> obtenerUsuarios() {
+        return ResponseEntity.ok(usuarioServiceImple.obtenerUsuarios());
     }
 
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    @DeleteMapping("/delete")
-    public ResponseEntity<?>deleteUsuarios(@RequestBody DeleteUserDTO deleteUserDTO){
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping
+    public ResponseEntity<?> deleteUsuarios(@RequestBody DeleteUserDTO deleteUserDTO) {
         usuarioServiceImple.deleteMesero(deleteUserDTO.correo());
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','MESERO')")
+    // Edita al usuario logueado (deriva del JWT). Disponible para ADMIN y MESERO.
+    @PreAuthorize("hasAnyRole('ADMIN','MESERO')")
     @PatchMapping("/actualizar")
-    public ResponseEntity<?>actualizarUsuario(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UsuarioPatchDTO usuarioPatchDTO){
-        usuarioServiceImple.actualizarParcial(userDetails.getUsername(),usuarioPatchDTO);
+    public ResponseEntity<?> actualizarUsuario(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UsuarioPatchDTO usuarioPatchDTO) {
+        usuarioServiceImple.actualizarParcial(userDetails.getUsername(), usuarioPatchDTO);
         return ResponseEntity.ok().build();
     }
 
