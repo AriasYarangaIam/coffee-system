@@ -36,6 +36,16 @@ async function cargarProductos() {
   }
 }
 
+async function cargarCategorias() {
+  try {
+    const categorias = await apiFetch('/admin/categorias');
+    inputCategoria.innerHTML = '<option value="">Seleccionar categoría...</option>' +
+      categorias.map(c => `<option value="${c.categoriaId}">${c.nombreCategoria}</option>`).join('');
+  } catch (error) {
+    mostrarToast(error?.message || 'Error al cargar categorías', 'error');
+  }
+}
+
 function renderizarTabla(productos) {
   if (!productos.length) {
     tablaBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted" style="padding:24px">Sin productos registrados</td></tr>';
@@ -44,8 +54,8 @@ function renderizarTabla(productos) {
   tablaBody.innerHTML = productos.map(p => `
     <tr>
       <td>${p.nombreProducto}</td>
-      <td>${p.categoria ?? '—'}</td>
-      <td style="text-align:right">${formatearMoneda(p.precio)}</td>
+      <td>${p.nombreCategoria ?? '—'}</td>
+      <td style="text-align:right">${formatearMoneda(p.precioActual)}</td>
       <td style="text-align:right">
         <button class="btn btn-outline btn-sm" onclick="editarProducto(${p.productoId})">Editar</button>
         <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarProducto(${p.productoId}, '${p.nombreProducto}')">Eliminar</button>
@@ -68,8 +78,8 @@ function abrirModalEditar(id) {
   modalTitulo.textContent = 'Editar Producto';
   inputId.value = producto.productoId;
   inputNombre.value = producto.nombreProducto;
-  inputCategoria.value = producto.categoria ?? '';
-  inputPrecio.value = producto.precio;
+  inputCategoria.value = producto.categoriaId ?? '';
+  inputPrecio.value = producto.precioActual;
   modalProducto.classList.remove('hidden');
 }
 
@@ -86,8 +96,8 @@ formProducto.addEventListener('submit', async (e) => {
   const id = inputId.value;
   const body = {
     nombreProducto: inputNombre.value.trim(),
-    categoria: inputCategoria.value,
-    precio: parseFloat(inputPrecio.value),
+    precioActual: parseFloat(inputPrecio.value),
+    categoriaId: Number(inputCategoria.value),
   };
 
   try {
@@ -141,4 +151,5 @@ document.getElementById('btn-cancelar-eliminar-producto').addEventListener('clic
 window.editarProducto = (id) => abrirModalEditar(id);
 window.eliminarProducto = (id, nombre) => abrirModalEliminar(id, nombre);
 
+cargarCategorias();
 cargarProductos();
