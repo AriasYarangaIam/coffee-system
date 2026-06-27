@@ -4,6 +4,7 @@ import com.coffee.backend.dto.request.DetallePedidoRequestDTO;
 import com.coffee.backend.dto.request.PedidoRequestDTO;
 import com.coffee.backend.dto.response.BoletaResponseDTO;
 import com.coffee.backend.dto.response.DetalleBoletaResponseDTO;
+import com.coffee.backend.dto.response.PedidoListadoResponseDTO;
 import com.coffee.backend.dto.response.PedidoResponseDTO;
 import com.coffee.backend.entity.*;
 import com.coffee.backend.exception.StockInsuficienteException;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +69,7 @@ public class PedidoServiceImpl implements PedidoService {
 
         // 3. ARMAR EL PEDIDO EN MEMORIA
         Pedidos pedido = new Pedidos();
-        pedido.setAliasTicket(dto.aliasTicket());
+        pedido.setAliasTicket(generarAlias()); // el backend genera el alias (B-14)
         pedido.setUsuario(usuario);
         pedido.setFechaPedido(LocalDateTime.now());
 
@@ -140,5 +142,32 @@ public class PedidoServiceImpl implements PedidoService {
                 detalleDTO,
                 total
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PedidoListadoResponseDTO> listarPedidosDeMesero(String correoUsuarioLogueado) {
+        return pedidosRepository.findByUsuario_CorreoUsuario(correoUsuarioLogueado)
+                .stream()
+                .map(pedido -> {
+                    double total = pedido.getDetalles().stream()
+                            .mapToDouble(d -> d.getCantidadPedida() * d.getPrecioUnitario())
+                            .sum();
+                    return new PedidoListadoResponseDTO(
+                            pedido.getPedidoId(),
+                            pedido.getAliasTicket(),
+                            pedido.getFechaPedido(),
+                            total
+                    );
+                })
+                .toList();
+    }
+
+    // Alias de boleta único y corto (UUID de 8 chars en mayúsculas).
+    private String generarAlias() {
+        return UUID.randomUUID().toString()
+                .replace("-", "")
+                .substring(0, 8)
+                .toUpperCase();
     }
 }
