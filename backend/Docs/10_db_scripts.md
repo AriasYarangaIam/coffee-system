@@ -110,5 +110,19 @@ SELECT 'MESERO' WHERE NOT EXISTS (SELECT 1 FROM roles WHERE nombre_rol = 'MESERO
 > ⚠️ `UsuarioServiceImpl.registrarUsuario` asume `rol_id = 2` = MESERO. El orden de
 > inserción de arriba lo respeta solo si `ADMIN` queda con id 1 y `MESERO` con id 2.
 
+## Seed mínimo (categorías y almacenes)
+
+Necesario para poblar los `<select>` del front (tareas F5/F6). Idempotente.
+
+```sql
+INSERT INTO categorias (nombre_categoria)
+SELECT v FROM (VALUES ('Bebidas'),('Comidas'),('Postres'),('Otros')) AS s(v)
+WHERE NOT EXISTS (SELECT 1 FROM categorias WHERE nombre_categoria = s.v);
+
+INSERT INTO almacenes (nombre_almacen)
+SELECT 'Almacén Principal'
+WHERE NOT EXISTS (SELECT 1 FROM almacenes WHERE nombre_almacen = 'Almacén Principal');
+```
+
 ---
 Anterior: [« 09 · Backlog de brechas](09_backlog_brechas.md) · Fin del set numerado. Ver [MEMORY](MEMORY.md) y [design](design.md).
