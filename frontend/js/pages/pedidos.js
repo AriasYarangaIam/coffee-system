@@ -98,7 +98,7 @@ btnConfirmar.addEventListener('click', async () => {
   btnConfirmar.disabled = true;
   try {
     const body = {
-      detalle: carrito.map(i => ({ productoId: i.productoId, cantidadPedida: i.cantidad })),
+      detalles: carrito.map(i => ({ productoId: i.productoId, cantidadPedida: i.cantidad })),
     };
     const pedido = await apiFetch('/pedidos', { method: 'POST', body: JSON.stringify(body) });
     localStorage.setItem('ultimo_pedido_id', pedido.pedidoId);

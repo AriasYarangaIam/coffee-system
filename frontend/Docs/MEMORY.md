@@ -19,12 +19,18 @@ un `.html` por pantalla + un controlador en `js/pages/`. Detalle en [00_index.md
 - Sesión en `localStorage`: `jwt_token` + `usuario` ({correo, rol, nombreCompleto}).
 - Cada página: `requireRole(...)` arriba, render con `innerHTML`, feedback con toast/spinner.
 
+## Estado Sprint 1
+
+- ✅ **F1–F4 hechos** (commit `494b839`, rama `docs/metodologia-sdd`):
+  - F1 crear pedido envía `{detalles:[...]}` (B-F-01).
+  - F2 boleta renderiza en los IDs reales del HTML (B-F-02).
+  - F3 rol canónico `ADMIN` en `router.js` (B-F-04).
+  - F4 estados de pedido eliminados; `mis-pedidos` es histórico (B-F-05).
+- ⏳ **F5–F6 pospuestos**: dependen de endpoints que el back aún no expone (categorías
+  con `categoriaId`, almacenes). Esperando el Sprint 1 del backend.
+
 ## Gotchas (no tropezar de nuevo)
 
-- **Rol admin**: `router.js` usa `ADMINISTRADOR`, el resto `ADMIN`. Unificar a `ADMIN` (B-F-04).
-- **Crear pedido roto**: body `{detalle:[...]}` no coincide con el back (`detalles`+`usuarioId`+`aliasTicket`) — B-F-01.
-- **Boleta rota**: `boleta.js` apunta a `#boleta-contenido`, el HTML tiene `#boleta-detalle` — B-F-02.
-- **Estados de pedido** = fuera de alcance, a quitar (B-F-05).
 - Casi toda la sección **admin depende de endpoints `/admin/*` que el back no expone aún**.
 - `usuarios.js` parte el nombre por espacios (corrompe compuestos) y lee `rol`/`usuarioId` que el DTO no trae.
 
@@ -36,4 +42,5 @@ un `.html` por pantalla + un controlador en `js/pages/`. Detalle en [00_index.md
 
 ## Próximos pasos
 
-Arreglar bugs ALTA (B-F-01, B-F-02, B-F-04) y coordinar con el back los endpoints `/admin/*`.
+Esperando el Sprint 1 del back para retomar F5/F6 + cableado admin. F7 (Pila para
+deshacer en el carrito, RF-DS-03) es 100% front y se puede adelantar sin el back.

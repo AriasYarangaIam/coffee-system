@@ -9,9 +9,9 @@ export function redirigirPorRol() {
     return;
   }
 
-if (usuario.rol === 'ADMINISTRADOR') {        // 👈
+if (usuario.rol === 'ADMIN') {
     window.location.href = '/pages/admin/dashboard.html';
-} else if (usuario.rol === 'MESERO') {        // verifica este también con el backend
+} else if (usuario.rol === 'MESERO') {
     window.location.href = '/pages/mesero/pedidos.html';
 } else {
     window.location.href = '/index.html';
