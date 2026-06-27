@@ -39,6 +39,18 @@ function poblarSelectInsumos(stocks) {
     stocks.map(s => `<option value="${s.insumoId}">${s.nombreInsumo}</option>`).join('');
 }
 
+async function cargarAlmacenes() {
+  const select = document.getElementById('select-almacen');
+  if (!select) return;
+  try {
+    const almacenes = await apiFetch('/admin/almacenes');
+    select.innerHTML = '<option value="">Seleccionar almacén...</option>' +
+      almacenes.map(a => `<option value="${a.almacenId}">${a.nombreAlmacen}</option>`).join('');
+  } catch (error) {
+    mostrarToast(error?.message || 'Error al cargar almacenes', 'error');
+  }
+}
+
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const btn = form.querySelector('button[type="submit"]');
@@ -48,8 +60,8 @@ form?.addEventListener('submit', async (e) => {
       method: 'POST',
       body: JSON.stringify({
         insumoId: Number(document.getElementById('select-insumo').value),
+        almacenId: Number(document.getElementById('select-almacen').value),
         cantidad: Number(document.getElementById('input-cantidad').value),
-        codigoAlmacen: Number(document.getElementById('select-almacen').value),
       }),
     });
     mostrarToast('Ingreso registrado correctamente', 'success');
@@ -62,4 +74,5 @@ form?.addEventListener('submit', async (e) => {
   }
 });
 
+cargarAlmacenes();
 cargarStock();
