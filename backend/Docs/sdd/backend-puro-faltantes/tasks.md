@@ -25,13 +25,13 @@ Chain strategy: stacked-to-develop
 
 ## Phase 1: PR #1 `usuario-mapper-refactor` (ships first, no upstream dep)
 
-- [ ] 1.1 RED: write failing hermetic `@WebMvcTest` `UsuarioControllerWebMvcTest` — assert `usuarioId` (Long, JSON number) + `rol` (String) + nombre/apellido/correo/telefono on `GET /api/admin/usuarios`, AND non-ADMIN (MESERO) → 403 (REQ-UMR-02, REQ-UMR-03). REUSE upstream `application-test.yaml`. RED manifests: compile error (no `UsuarioMapper` bean wired / `@MockBean UsuarioServiceImpl` returns null list).
-- [ ] 1.2 GREEN: create `mapper/UsuarioMapper` `@Component` mirroring `mapper/ProductoMapper` (`Usuarios` → `UsuarioResponseDTO`) per design "Interfaces / Contracts".
-- [ ] 1.3 GREEN: modify `service/implement/UsuarioServiceImpl.obtenerUsuarios` (L43-53) — remove inline map; delegate to `UsuarioMapper` (REQ-UMR-01).
-- [ ] 1.4 GREEN: re-run `UsuarioControllerWebMvcTest` → green; verify shape + 403 locked.
-- [ ] 1.5 Doc: update `backend/Docs/08_01_sprints_backend_puro_faltantes.md` Item 3 (L17-21) — ✅ DONE, cite `UsuarioResponseDTO.java:4-11` + `UsuarioServiceImpl.java:43-53`; note the "rigid space separator" defect lives in `frontend/js/pages/usuarios.js:73,95-96` (REQ-UMR-04).
-- [ ] 1.6 Verify: `cd backend && ./mvnw test` green; `cd backend && ./mvnw -DskipTests test-compile` exits 0; `BackendApplicationTests.contextLoads` untouched green.
-- [ ] 1.7 Commit `refactor(back): extract UsuarioMapper` + `docs(back): mark 08_01 Item 3 done`. Push `feat/back/usuario-mapper-refactor` → open PR to `develop`.
+- [x] 1.1 RED: write failing hermetic `@WebMvcTest` `UsuarioControllerWebMvcTest` — assert `usuarioId` (Long, JSON number) + `rol` (String) + nombre/apellido/correo/telefono on `GET /api/admin/usuarios`, AND non-ADMIN (MESERO) → 403 (REQ-UMR-02, REQ-UMR-03). NOTE: `application-test.yaml` upstream aún NO mergeado → slice hermético vía `@WebMvcTest(UsuarioController.class)` + `@Import(GlobalExceptionHandler + TestSecurityConfig)` con `@EnableMethodSecurity` + `@WithMockUser`; JwtFilter pass-through satisfecho con `@MockitoBean JwtUtil`+`UserDetailsServiceImpl`. RED manifests: stub malformado `rol=null` => `jsonPath("$.rol") expected:<ADMIN> but was:<null>` (403 PASS). DC: `@MockBean`→`@MockitoBean` (Spring Boot 4 / spring 7 renombró el API).
+- [x] 1.2 GREEN: creado `mapper/UsuarioMapper` `@Component` mirroring `mapper/ProductoMapper` (`Usuarios` → `UsuarioResponseDTO`) per design "Interfaces / Contracts" (`toResponseDTO`).
+- [x] 1.3 GREEN: `service/implement/UsuarioServiceImpl.obtenerUsuarios` (post-refactor L45-49) — removido inline `new UsuarioResponseDTO(...)`; inyectado `final UsuarioMapper usuarioMapper` vía `@RequiredArgsConstructor`; delega `.map(usuarioMapper::toResponseDTO)` (REQ-UMR-01).
+- [x] 1.4 GREEN: re-run `UsuarioControllerWebMvcTest` → green; shape 6-campos + 403 locked. Adicional: `UsuarioMapperTest` (pure unit) cubre round-trip REQ-UMR-01 (ADMIN + nombre compuesto "Maria José" / MESERO) — ciclo RED (mapper inexistente → compile error) → GREEN real sobre producción.
+- [x] 1.5 Doc: `08_01_sprints_backend_puro_faltantes.md` Item 3 (L17-21) → ✅ DONE citando `UsuarioResponseDTO.java:4-11` + `UsuarioServiceImpl.java:45-49` + `mapper/UsuarioMapper.java:13-22`; nota "separación rígida por espacios" vive en `frontend/js/pages/usuarios.js:73,95-96` (split por espacio corrompe "Maria José"), NO en el backend (REQ-UMR-04).
+- [x] 1.6 Verify: `cd backend && ./mvnw test` green (5/5: BackendApplicationTests 1 + UsuarioMapperTest 2 + UsuarioControllerWebMvcTest 2); `cd backend && ./mvnw -DskipTests test-compile` exits 0; `BackendApplicationTests.contextLoads` untouched green.
+- [x] 1.7 Commits: `chore/back:` gitignore + 2 docs + `test(back): RED` + `refactor(back): GREEN` + `docs(back): Item 3`. Push `feat/back/usuario-mapper-refactor` → open PR `--base develop`.
 
 ## Phase 2: PR #2 `pedido-despacho-integration` (BLOCKED until iam-sprint-2-bundle merged)
 
