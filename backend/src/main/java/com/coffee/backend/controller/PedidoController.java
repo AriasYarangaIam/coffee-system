@@ -2,17 +2,19 @@ package com.coffee.backend.controller;
 
 import com.coffee.backend.dto.request.PedidoRequestDTO;
 import com.coffee.backend.dto.response.BoletaResponseDTO;
+import com.coffee.backend.dto.response.PedidoListadoResponseDTO;
 import com.coffee.backend.dto.response.PedidoResponseDTO;
 import com.coffee.backend.service.PedidoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/pedidos")
@@ -25,10 +27,16 @@ public class PedidoController {
     @PostMapping
     public ResponseEntity<PedidoResponseDTO> registrarPedido(
             @Valid @RequestBody PedidoRequestDTO dto, @AuthenticationPrincipal UserDetails userDetails) {
-        // Por ahora puse  puse un ocrreo como para testear "mesero@test.com"
-        // hasta que llegue el JWT ahi si utilizare userDetails.getUsername()
+        // El usuario se deriva del JWT (correo = username).
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(pedidoService.registrarPedido(dto, userDetails.getUsername()));
+    }
+
+    @PreAuthorize("hasRole('MESERO')")
+    @GetMapping
+    public ResponseEntity<List<PedidoListadoResponseDTO>> listarPedidos(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(pedidoService.listarPedidosDeMesero(userDetails.getUsername()));
     }
 
     @PreAuthorize("hasRole('MESERO')")
