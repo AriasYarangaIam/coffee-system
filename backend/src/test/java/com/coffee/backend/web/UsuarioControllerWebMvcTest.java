@@ -62,9 +62,9 @@ class UsuarioControllerWebMvcTest {
     @WithMockUser(roles = "ADMIN")
     void adminListaUsuarios_retornaShapeConUsuarioIdYRol_seisCampos() throws Exception {
         // REQ-UMR-02: wire shape locked — usuarioId (JSON number), rol (String), +4 campos.
-        // RED (commit 1): stub malformado con rol=null => jsonPath("rol") falla.
+        // Stub retorna los 6 campos; GREEN: locks la contract shape del GET.
         UsuarioResponseDTO dto = new UsuarioResponseDTO(
-                7L, "Ana", "Lopez", "ana@x.com", "555", null);
+                7L, "Ana", "Lopez", "ana@x.com", "555", "ADMIN");
 
         given(usuarioServiceImple.obtenerUsuarios()).willReturn(List.of(dto));
 
