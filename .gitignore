@@ -7,3 +7,5 @@ dist/
 backend/.env
 application-dev.yml
 application-local.yml
+# Credenciales de prueba (no versionar)
+seed_usuarios_prueba.sql

@@ -19,19 +19,22 @@ un `.html` por pantalla + un controlador en `js/pages/`. Detalle en [00_index.md
 - Sesión en `localStorage`: `jwt_token` + `usuario` ({correo, rol, nombreCompleto}).
 - Cada página: `requireRole(...)` arriba, render con `innerHTML`, feedback con toast/spinner.
 
-## Estado Sprint 1
+## Estado Sprint 1 — ✅ CERRADO (F1–F6)
 
-- ✅ **F1–F4 hechos** (commit `494b839`, rama `docs/metodologia-sdd`):
+- ✅ **F1–F4** (commit `494b839`):
   - F1 crear pedido envía `{detalles:[...]}` (B-F-01).
   - F2 boleta renderiza en los IDs reales del HTML (B-F-02).
   - F3 rol canónico `ADMIN` en `router.js` (B-F-04).
   - F4 estados de pedido eliminados; `mis-pedidos` es histórico (B-F-05).
-- ⏳ **F5–F6 pospuestos**: dependen de endpoints que el back aún no expone (categorías
-  con `categoriaId`, almacenes). Esperando el Sprint 1 del backend.
+- ✅ **F5–F6** (commit `e887998`): productos usa `categoriaId`/`precioActual`/`nombreCategoria`
+  y puebla el select desde `GET /admin/categorias`; stock puebla `select-almacen` desde
+  `GET /admin/almacenes` y envía `almacenId` (B-F-06, B-F-09). El back entregó esos GET +
+  seed en su commit `5aea1ae`; el contrato coincide, F5/F6 funcionan end-to-end.
 
 ## Gotchas (no tropezar de nuevo)
 
-- Casi toda la sección **admin depende de endpoints `/admin/*` que el back no expone aún**.
+- El back ya expone `/admin/{productos,insumos,stocks,usuarios,categorias,almacenes}`.
+  Aún **faltan** `/admin/dashboard` y `/admin/reportes/mensual` (Sprint 2).
 - `usuarios.js` parte el nombre por espacios (corrompe compuestos) y lee `rol`/`usuarioId` que el DTO no trae.
 
 ## Decisiones
@@ -42,5 +45,5 @@ un `.html` por pantalla + un controlador en `js/pages/`. Detalle en [00_index.md
 
 ## Próximos pasos
 
-Esperando el Sprint 1 del back para retomar F5/F6 + cableado admin. F7 (Pila para
-deshacer en el carrito, RF-DS-03) es 100% front y se puede adelantar sin el back.
+Sprint 1 cerrado. Pasar al **Sprint 2 (F7–F11)**, empezando por **F7** (Pila para deshacer
+en el carrito, RF-DS-03) que es 100% front y no depende del back.
