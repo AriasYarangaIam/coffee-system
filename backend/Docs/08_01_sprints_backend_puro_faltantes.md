@@ -16,6 +16,10 @@ Este documento contiene el listado filtrado de los requerimientos técnicos y fu
 
 ### **3\. Consistencia en el Payload de DTOs (Mapeo de Usuarios)**
 
-* \*\*Estado:\*\* Con discrepancias estructurales (Se utiliza un parche temporal).  
-* \*\*Bloqueo:\*\* Lógica rígida de transformación de datos en la capa de Mappers.  
-* **Descripción de la razón:** La serialización hacia JSON de la clase \`UsuarioResponseDTO\` implementa una concatenación manual defectuosa (separación rígida por espacios para nombres y apellidos) e introduce campos erróneos en las propiedades de \`usuarioId\` y \`rol\`. El bloqueo impide la correcta lectura en los clientes JS y su solución es netamente de refactorización de código Java y Mappers de datos, siendo completamente independiente de la persistencia física en PostgreSQL.
+* **Estado:** ✅ DONE (rama `feat/back/usuario-mapper-refactor`, cambio SDD `backend-puro-faltantes` cap. `usuario-mapper-refactor`).
+* **Resolución:** Se extrajo `mapper/UsuarioMapper` (`@Component`, mira `mapper/ProductoMapper`) y `UsuarioServiceImpl.obtenerUsuarios` delegates la conversión `Usuarios → UsuarioResponseDTO` sin lambda inline. El contrato de wire se cercó con `@WebMvcTest` hermético (`UsuarioControllerWebMvcTest`):
+  - `UsuarioResponseDTO.java:4-11` — record con los 6 campos separados (`usuarioId`, `nombreUsuario`, `apellidoUsuario`, `correoUsuario`, `telefonoUsuario`, `rol`); NO concatena nombre+apellido.
+  - `UsuarioServiceImpl.java:45-49` — delega a `usuarioMapper::toResponseDTO` (sin `new UsuarioResponseDTO(...)` inline).
+  - `mapper/UsuarioMapper.java:13-22` — `toResponseDTO(Usuarios)` produce los 6 campos.
+  - `web/UsuarioControllerWebMvcTest` — locks la wire shape (`usuarioId` Long + `rol` String + 4 campos) y el 403 para no-ADMIN (`REQ-UMR-02`, `REQ-UMR-03`); `UsuarioMapperTest` cubre el round-trip (`REQ-UMR-01`) incluyendo nombre compuesto "Maria José".
+* **NOTA — el defecto de "separación rígida por espacios" vive en el FRONT, no en el backend:** el backend expone `nombreUsuario` y `apellidoUsuario` por separado y correctamente. La concatenación manual defectuosa que rompe nombres compuestos (p. ej. "Maria José") está en `frontend/js/pages/usuarios.js:73,95-96`, donde se hace `inputNombre.value = `${nombre} ${apellido}`` (L73) y luego `inputNombre.value.trim().split(' ')` con `partes[0]` y `partes.slice(1).join(' ')` (L93-96). Corregir el front está fuera de scope de esta sección (es backend-puro); queda pendiente para un cambio frontend dedicado.
