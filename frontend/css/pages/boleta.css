@@ -1,0 +1,48 @@
+/* ── Boleta Mesero ───────────────────────────────────────────────────── */
+.boleta-linea {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  align-items: center;
+}
+
+.boleta-linea:last-child {
+  border-bottom: none;
+}
+
+.boleta-linea__nombre {
+  font-weight: 500;
+}
+
+.boleta-linea__cantidad {
+  text-align: center;
+  color: var(--color-text-muted);
+  min-width: 32px;
+}
+
+.boleta-linea__precio {
+  text-align: right;
+  font-weight: 600;
+  min-width: 64px;
+}
+
+/* Estilos de impresión */
+@media print {
+  .sidebar,
+  .btn,
+  .modal-overlay {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}

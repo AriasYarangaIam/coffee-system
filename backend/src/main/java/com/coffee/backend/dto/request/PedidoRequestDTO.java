@@ -9,5 +9,4 @@ public record PedidoRequestDTO(
         @NotNull String aliasTicket,
         @NotNull @Size(min = 1) @Valid List<DetallePedidoRequestDTO> detalles)
 {
-
 }

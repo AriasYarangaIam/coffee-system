@@ -6,17 +6,47 @@
   <title>Login — Cafetería MYPE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/main.css">
-  <link rel="stylesheet" href="/css/components.css">
-  <link rel="stylesheet" href="/css/pages/login.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/login.css">
+
 </head>
 <body>
   <main class="login-page">
     <div class="login-card">
       <div class="login-logo">
+        <div class="logo-icon">
+
+        </div>
+
         <h1>Cafetería MYPE</h1>
-        <p>Sistema de Gestión</p>
       </div>
+
+      <p class="role-label">Acceder como</p>
+
+      <div class="role-tabs">
+
+        <button class="role-tab active" type="button" id="tab-personal">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21a8 8 0 0 0-16 0"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          Personal
+        </button>
+
+        <button class="role-tab" type="button" id="tab-admin">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Administrador
+        </button>
+      </div>
+
+      <div class="linea-division"></div>
 
       <form class="login-form" id="login-form" novalidate>
         <div class="form-group">
@@ -26,7 +56,7 @@
 
         <div class="form-group">
           <label class="form-label" for="clave">Contraseña</label>
-          <input class="form-input" type="password" id="clave" placeholder="••••••••" required>
+          <input class="form-input" type="password" id="clave" placeholder="•••••••••••" required>
         </div>
 
         <p id="error-msg" class="form-error"></p>
@@ -35,6 +65,9 @@
           Ingresar
         </button>
       </form>
+
+      <a href="#" class="logo_password">¿Olvidó su contraseña?</a>
+      
     </div>
   </main>
 

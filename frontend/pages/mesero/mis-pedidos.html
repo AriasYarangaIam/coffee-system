@@ -6,9 +6,11 @@
   <title>Mis Pedidos — Cafetería MYPE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/pages/mis-pedidos.css">
 </head>
 <body>
   <div class="app-layout">
@@ -18,8 +20,8 @@
         <span id="sidebar-usuario"></span>
       </div>
       <nav class="sidebar-nav">
-        <a href="/pages/mesero/pedidos.html" class="sidebar-link">Nuevo Pedido</a>
-        <a href="/pages/mesero/mis-pedidos.html" class="sidebar-link active">Mis Pedidos</a>
+        <a href="/pages/mesero/pedidos.html" class="sidebar-link"><span class="material-symbols-outlined">add_circle</span>Nuevo Pedido</a>
+        <a href="/pages/mesero/mis-pedidos.html" class="sidebar-link active"><span class="material-symbols-outlined">receipt_long</span>Mis Pedidos</a>
       </nav>
       <div class="sidebar-footer">
         <button class="btn btn-outline btn-sm" id="btn-logout" style="width:100%">Cerrar sesión</button>
@@ -30,18 +32,36 @@
       <div class="page-content">
         <div class="section-header">
           <h1 class="section-title">Mis Pedidos del Turno</h1>
-          <button class="btn btn-secondary btn-sm" id="btn-refrescar">Refrescar</button>
+          <button class="btn btn-secondary btn-sm" id="btn-refrescar">
+            <span class="material-symbols-outlined">refresh</span>
+            Refrescar
+          </button>
         </div>
+
+        <!-- Barra de búsqueda + chips de filtro -->
+        <div style="display:flex;flex-wrap:wrap;gap:var(--spacing-md);align-items:center;margin-bottom:var(--spacing-lg)">
+          <div class="search-bar">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" id="input-buscar-pedido" placeholder="Buscar ticket o producto...">
+          </div>
+          <div class="filter-chips">
+            <button class="chip active" data-filtro="TODOS">Todos</button>
+            <button class="chip" data-filtro="PENDIENTE">Pendientes</button>
+            <button class="chip" data-filtro="PAGADO">Pagados</button>
+            <button class="chip" data-filtro="CANCELADO">Cancelados</button>
+          </div>
+        </div>
+
         <div class="card">
           <div class="table-wrapper">
             <table class="table">
               <thead>
                 <tr>
-                  <th>Ticket</th>
+                  <th style="width:110px">Ticket</th>
                   <th>Productos</th>
-                  <th>Total</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
+                  <th style="text-align:right;width:90px">Total</th>
+                  <th style="text-align:center;width:110px">Estado</th>
+                  <th style="text-align:center;width:180px">Acciones</th>
                 </tr>
               </thead>
               <tbody id="pedidos-tbody">
@@ -50,6 +70,46 @@
             </table>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detalle de Pedido -->
+  <div class="modal-overlay hidden" id="modal-detalle-pedido">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Detalle del Pedido <span id="modal-ticket-numero"></span></h2>
+        <button class="modal-close" id="modal-detalle-cerrar" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+        <div>
+          <p class="text-muted text-sm">Fecha</p>
+          <p class="font-semibold" id="modal-detalle-fecha">—</p>
+        </div>
+        <div style="text-align:right">
+          <p class="text-muted text-sm">Estado</p>
+          <span id="modal-detalle-estado"></span>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--color-border)">
+          <p class="text-muted text-sm font-semibold">Producto</p>
+          <p class="text-muted text-sm font-semibold" style="text-align:center">Cant.</p>
+          <p class="text-muted text-sm font-semibold" style="text-align:right">Precio</p>
+        </div>
+        <div id="modal-detalle-lineas"></div>
+      </div>
+
+      <div style="padding-top:12px;border-top:2px dashed var(--color-border);display:flex;justify-content:space-between;align-items:center">
+        <p class="font-semibold">Total</p>
+        <p class="font-bold" style="font-size:1.25rem;color:var(--color-primary)" id="modal-detalle-total">S/ 0.00</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" id="modal-detalle-cerrar-btn">Cerrar</button>
+        <button class="btn btn-primary" type="button" id="modal-detalle-ver-boleta">Ver Boleta</button>
       </div>
     </div>
   </div>

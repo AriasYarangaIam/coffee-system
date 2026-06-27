@@ -6,9 +6,11 @@
   <title>Insumos — Cafetería MYPE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/pages/insumos.css">
 </head>
 <body>
   <div class="app-layout">
@@ -18,11 +20,11 @@
         <span id="sidebar-usuario"></span>
       </div>
       <nav class="sidebar-nav">
-        <a href="/pages/admin/dashboard.html" class="sidebar-link">Dashboard</a>
-        <a href="/pages/admin/productos.html" class="sidebar-link">Productos</a>
-        <a href="/pages/admin/insumos.html" class="sidebar-link active">Insumos</a>
-        <a href="/pages/admin/stock.html" class="sidebar-link">Control de Stock</a>
-        <a href="/pages/admin/usuarios.html" class="sidebar-link">Usuarios</a>
+        <a href="/pages/admin/dashboard.html" class="sidebar-link"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+        <a href="/pages/admin/productos.html" class="sidebar-link"><span class="material-symbols-outlined">coffee</span>Productos</a>
+        <a href="/pages/admin/insumos.html" class="sidebar-link active"><span class="material-symbols-outlined">category</span>Insumos</a>
+        <a href="/pages/admin/stock.html" class="sidebar-link"><span class="material-symbols-outlined">inventory_2</span>Control de Stock</a>
+        <a href="/pages/admin/usuarios.html" class="sidebar-link"><span class="material-symbols-outlined">group</span>Usuarios</a>
       </nav>
       <div class="sidebar-footer">
         <button class="btn btn-outline btn-sm" id="btn-logout" style="width:100%">Cerrar sesión</button>
@@ -33,7 +35,16 @@
       <div class="page-content">
         <div class="section-header">
           <h1 class="section-title">Gestión de Insumos</h1>
-          <button class="btn btn-primary" id="btn-nuevo-insumo">+ Nuevo Insumo</button>
+          <div style="display:flex;gap:var(--spacing-sm);align-items:center">
+            <div class="search-bar">
+              <span class="material-symbols-outlined">search</span>
+              <input type="text" id="input-buscar-insumo" placeholder="Buscar insumo...">
+            </div>
+            <button class="btn btn-primary btn-sm" id="btn-nuevo-insumo">
+              <span class="material-symbols-outlined">add</span>
+              Nuevo Insumo
+            </button>
+          </div>
         </div>
         <div class="card">
           <div class="table-wrapper">
@@ -41,7 +52,7 @@
               <thead>
                 <tr>
                   <th>Nombre</th>
-                  <th>Acciones</th>
+                  <th style="text-align:right;width:80px">Acciones</th>
                 </tr>
               </thead>
               <tbody id="insumos-tbody">
@@ -50,6 +61,43 @@
             </table>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Crear / Editar Insumo -->
+  <div class="modal-overlay hidden" id="modal-insumo">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-insumo-titulo">Nuevo Insumo</h2>
+        <button class="modal-close" id="modal-insumo-cerrar" aria-label="Cerrar">&times;</button>
+      </div>
+      <form id="form-insumo">
+        <input type="hidden" id="insumo-id">
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label" for="insumo-nombre">Nombre</label>
+          <input class="form-input" type="text" id="insumo-nombre" placeholder="Ej: Café en grano" required>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" id="btn-cancelar-insumo">Cancelar</button>
+          <button class="btn btn-primary" type="submit">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Confirmar Eliminación -->
+  <div class="modal-overlay hidden" id="modal-eliminar-insumo">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-header">
+        <h2 class="modal-title">Eliminar Insumo</h2>
+        <button class="modal-close" id="modal-eliminar-insumo-cerrar" aria-label="Cerrar">&times;</button>
+      </div>
+      <p style="color:var(--color-text-muted);margin-bottom:8px">¿Estás seguro de que deseas eliminar el insumo <strong id="nombre-insumo-eliminar"></strong>?</p>
+      <p style="font-size:0.875rem;color:var(--color-danger)">Esta acción no se puede deshacer.</p>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" id="btn-cancelar-eliminar-insumo">Cancelar</button>
+        <button class="btn btn-danger" type="button" id="btn-confirmar-eliminar-insumo">Eliminar</button>
       </div>
     </div>
   </div>
