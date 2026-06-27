@@ -17,7 +17,8 @@ PostgreSQL en Supabase. Auth JWT stateless. Detalle en [00_index.md](00_index.md
 - Compila (`DeleteUserDTO` ya existe, B-01 ✅).
 - CORS: el front debe servirse en `http://localhost:5500` (Live Server).
 - **Seed mínimo de BD** (ddl-auto crea tablas, no datos): filas en `roles` (`ADMIN`, `MESERO`),
-  un usuario ADMIN y uno MESERO (BCrypt), al menos 1 categoría y 1 almacén.
+  un usuario ADMIN y uno MESERO (BCrypt), al menos 1 categoría y 1 almacén. `10_db_scripts.md`
+  ya trae seed idempotente de categorías/almacenes (antes solo sembraba roles).
 
 ## Convenciones
 
@@ -35,6 +36,10 @@ PostgreSQL en Supabase. Auth JWT stateless. Detalle en [00_index.md](00_index.md
 - Usuarios viven en `/api/admin/usuarios` (B-06 ✅); `registrar` acepta `rol` y puede crear ADMIN
   (B-12 ✅); `UsuarioResponseDTO` trae `usuarioId` y `rol`.
 - CRUD admin disponible: `/api/admin/{productos,insumos,stocks}` (B-04 ✅).
+- Listados para poblar selects del front: `GET /api/admin/categorias`
+  (`[{categoriaId, nombreCategoria}]`) y `GET /api/admin/almacenes`
+  (`[{almacenId, nombreAlmacen}]`, mapea `codigoAlmacen → almacenId`), ambos `ADMIN`.
+  Cierran F5/F6 del front (ver `SOLICITUD_FRONT_endpoints_listas.md`).
 - Endpoint debug `/api/auth/get` eliminado (B-11 ✅).
 - `GET /api/productos` solo MESERO (B-10, pendiente Sprint 2).
 - Dinero como `Double`/`double precision` (B-18); insumos enteros (B-19).
@@ -50,6 +55,7 @@ PostgreSQL en Supabase. Auth JWT stateless. Detalle en [00_index.md](00_index.md
 
 ## Próximos pasos
 
-Sprint S1 ✅ completado (B-01..B-08, B-11, B-12, B-14). **Sprint S2** ([08](08_sprints.md)):
+Sprint S1 ✅ completado al 100% (B-01..B-08, B-11, B-12, B-14) + solicitud del front de
+listas atendida (`GET /api/admin/categorias` y `/api/admin/almacenes`). **Sprint S2** ([08](08_sprints.md)):
 dashboard/reportes (matriz RF-DS-02), cola FIFO+prioridad (RF-DS-04), ampliar
 `GET /api/productos` a ADMIN (B-10), precisión monetaria `BigDecimal` (B-18).
