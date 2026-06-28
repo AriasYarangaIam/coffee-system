@@ -33,8 +33,13 @@ un `.html` por pantalla + un controlador en `js/pages/`. Detalle en [00_index.md
 
 ## Gotchas (no tropezar de nuevo)
 
-- El back ya expone `/admin/{productos,insumos,stocks,usuarios,categorias,almacenes}`.
-  Aún **faltan** `/admin/dashboard` y `/admin/reportes/mensual` (Sprint 2).
+- El back ya expone `/admin/{productos,insumos,stocks,usuarios,categorias,almacenes}` y
+  ahora **`/admin/dashboard`** (Sprint 2 ✅: `{ totalVentasDia, totalPedidosDia,
+  productoEstrella, stockBajo:[{nombreInsumo, cantidad, unidad}] }`; `unidad` puede venir
+  `null`). `GET /api/productos` ya lo lee ADMIN además de MESERO. **Aún falta**
+  `/admin/reportes/mensual` (matriz, tarea de Jonathan): `dashboard.js` lo pide en el mismo
+  `Promise.all` que `/admin/dashboard`, así que **mientras ese GET no exista el panel no
+  pinta** aunque el dashboard ya responda.
 - `usuarios.js` parte el nombre por espacios (corrompe compuestos) y lee `rol`/`usuarioId` que el DTO no trae.
 
 ## Decisiones

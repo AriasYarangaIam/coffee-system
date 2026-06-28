@@ -41,7 +41,13 @@ PostgreSQL en Supabase. Auth JWT stateless. Detalle en [00_index.md](00_index.md
   (`[{almacenId, nombreAlmacen}]`, mapea `codigoAlmacen → almacenId`), ambos `ADMIN`.
   Cierran F5/F6 del front (ver `SOLICITUD_FRONT_endpoints_listas.md`).
 - Endpoint debug `/api/auth/get` eliminado (B-11 ✅).
-- `GET /api/productos` solo MESERO (B-10, pendiente Sprint 2).
+- `GET /api/productos` lo leen MESERO **y** ADMIN (B-10 ✅, Sprint 2).
+- `GET /api/admin/dashboard` (B-05 ✅, Sprint 2): KPIs admin →
+  `{ totalVentasDia, totalPedidosDia, productoEstrella, stockBajo:[{nombreInsumo, cantidad, unidad}] }`.
+  Ventas/pedidos = del día; producto estrella = más vendido del mes; stock bajo = `cantidad < 10`
+  (umbral constante, `Insumos` no modela `unidad` → llega `null`). El front lo consume en
+  `dashboard.js` junto a `/api/admin/reportes/mensual` (matriz RF-DS-02, tarea de Jonathan,
+  aún pendiente: si falta, el `Promise.all` del front no pinta el panel).
 - Dinero como `Double`/`double precision` (B-18); insumos enteros (B-19).
 - Esquema por `ddl-auto`, sin migraciones (B-21).
 
@@ -57,5 +63,7 @@ PostgreSQL en Supabase. Auth JWT stateless. Detalle en [00_index.md](00_index.md
 
 Sprint S1 ✅ completado al 100% (B-01..B-08, B-11, B-12, B-14) + solicitud del front de
 listas atendida (`GET /api/admin/categorias` y `/api/admin/almacenes`). **Sprint S2** ([08](08_sprints.md)):
-dashboard/reportes (matriz RF-DS-02), cola FIFO+prioridad (RF-DS-04), ampliar
-`GET /api/productos` a ADMIN (B-10), precisión monetaria `BigDecimal` (B-18).
+Jose ✅ `GET /api/admin/dashboard` (B-05) y ampliar `GET /api/productos` a ADMIN (B-10).
+Pendiente S2: reporte mensual matriz (RF-DS-02) y cola FIFO+prioridad (RF-DS-04, Jonathan;
+TAD `tad/Cola`+`tad/ColaPrioridad` aún sin mergear a develop → integración de despacho de
+Iam bloqueada), precisión monetaria `BigDecimal` (B-18, Iam, si da tiempo).

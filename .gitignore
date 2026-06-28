@@ -9,3 +9,6 @@ application-dev.yml
 application-local.yml
 # Credenciales de prueba (no versionar)
 seed_usuarios_prueba.sql
+
+# opencode internal state (SDD skill scaffolding)
+.atl/
