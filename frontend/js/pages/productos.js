@@ -16,6 +16,8 @@ const inputId = document.getElementById('producto-id');
 const inputNombre = document.getElementById('producto-nombre');
 const inputCategoria = document.getElementById('producto-categoria');
 const inputPrecio = document.getElementById('producto-precio');
+const recetaRows = document.getElementById('receta-rows');
+const btnAgregarInsumo = document.getElementById('btn-agregar-insumo');
 
 // Modal eliminar
 const modalEliminar = document.getElementById('modal-eliminar-producto');
@@ -23,6 +25,7 @@ const spanNombreEliminar = document.getElementById('nombre-producto-eliminar');
 const btnConfirmarEliminar = document.getElementById('btn-confirmar-eliminar-producto');
 
 let productosCache = [];
+let insumosCache = [];
 let idAEliminar = null;
 
 // ── Cargar ────────────────────────────────────────────────────────────────
@@ -44,6 +47,64 @@ async function cargarCategorias() {
   } catch (error) {
     mostrarToast(error?.message || 'Error al cargar categorías', 'error');
   }
+}
+
+async function cargarInsumos() {
+  try {
+    insumosCache = await apiFetch('/admin/insumos');
+  } catch (error) {
+    mostrarToast(error?.message || 'Error al cargar insumos', 'error');
+  }
+}
+
+// ── Receta (filas dinámicas insumo + cantidad) ──────────────────────────────
+function opcionesInsumos() {
+  return '<option value="">Insumo...</option>' +
+    insumosCache.map(i => `<option value="${i.idInsumo}">${i.nombreInsumo}</option>`).join('');
+}
+
+function unidadDeInsumo(insumoId) {
+  const insumo = insumosCache.find(i => String(i.idInsumo) === String(insumoId));
+  return insumo?.unidad || '—';
+}
+
+function agregarFilaReceta(insumoId = '', cantidad = '') {
+  const fila = document.createElement('div');
+  fila.className = 'receta-row';
+  fila.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px';
+  fila.innerHTML = `
+    <select class="form-select receta-insumo" style="flex:1">${opcionesInsumos()}</select>
+    <input class="form-input receta-cantidad" type="number" min="1" step="1" placeholder="Cant." style="width:80px">
+    <span class="receta-unidad text-muted text-sm" style="min-width:42px" title="Se descuenta del stock en esta medida">—</span>
+    <button class="btn btn-danger btn-sm receta-quitar" type="button" title="Quitar">×</button>`;
+
+  const select = fila.querySelector('.receta-insumo');
+  const labelUnidad = fila.querySelector('.receta-unidad');
+  const refrescarUnidad = () => { labelUnidad.textContent = unidadDeInsumo(select.value); };
+
+  select.value = insumoId;
+  fila.querySelector('.receta-cantidad').value = cantidad;
+  refrescarUnidad();
+  select.addEventListener('change', refrescarUnidad);
+  fila.querySelector('.receta-quitar').addEventListener('click', () => fila.remove());
+  recetaRows.appendChild(fila);
+}
+
+// Lee las filas; valida sin duplicados y cantidad > 0. Devuelve [{insumoId, cantidadUsada}].
+function recolectarReceta() {
+  const items = [];
+  const vistos = new Set();
+  for (const fila of recetaRows.querySelectorAll('.receta-row')) {
+    const insumoId = fila.querySelector('.receta-insumo').value;
+    const cantidad = fila.querySelector('.receta-cantidad').value;
+    if (!insumoId && !cantidad) continue; // fila vacía → se ignora
+    if (!insumoId) throw new Error('Hay una fila de receta sin insumo seleccionado');
+    if (!(Number(cantidad) > 0)) throw new Error('La cantidad de cada insumo debe ser mayor a 0');
+    if (vistos.has(insumoId)) throw new Error('No repitas el mismo insumo en la receta');
+    vistos.add(insumoId);
+    items.push({ insumoId: Number(insumoId), cantidadUsada: Number(cantidad) });
+  }
+  return items;
 }
 
 function renderizarTabla(productos) {
@@ -69,6 +130,8 @@ function abrirModalCrear() {
   modalTitulo.textContent = 'Nuevo Producto';
   inputId.value = '';
   formProducto.reset();
+  recetaRows.innerHTML = '';
+  agregarFilaReceta(); // arranca con una fila vacía
   modalProducto.classList.remove('hidden');
 }
 
@@ -80,6 +143,9 @@ function abrirModalEditar(id) {
   inputNombre.value = producto.nombreProducto;
   inputCategoria.value = producto.categoriaId ?? '';
   inputPrecio.value = producto.precioActual;
+  recetaRows.innerHTML = '';
+  (producto.receta ?? []).forEach(r => agregarFilaReceta(String(r.idInsumo), r.cantidadUsada));
+  if (!recetaRows.children.length) agregarFilaReceta();
   modalProducto.classList.remove('hidden');
 }
 
@@ -94,10 +160,19 @@ formProducto.addEventListener('submit', async (e) => {
   btn.disabled = true;
 
   const id = inputId.value;
+  let receta;
+  try {
+    receta = recolectarReceta();
+  } catch (validacion) {
+    mostrarToast(validacion.message, 'error');
+    btn.disabled = false;
+    return;
+  }
   const body = {
     nombreProducto: inputNombre.value.trim(),
     precioActual: parseFloat(inputPrecio.value),
     categoriaId: Number(inputCategoria.value),
+    receta,
   };
 
   try {
@@ -143,6 +218,7 @@ btnConfirmarEliminar.addEventListener('click', async () => {
 
 // ── Eventos ────────────────────────────────────────────────────────────────
 btnNuevo.addEventListener('click', abrirModalCrear);
+btnAgregarInsumo.addEventListener('click', () => agregarFilaReceta());
 document.getElementById('modal-producto-cerrar').addEventListener('click', cerrarModalProducto);
 document.getElementById('btn-cancelar-producto').addEventListener('click', cerrarModalProducto);
 document.getElementById('modal-eliminar-producto-cerrar').addEventListener('click', cerrarModalEliminar);
@@ -152,4 +228,5 @@ window.editarProducto = (id) => abrirModalEditar(id);
 window.eliminarProducto = (id, nombre) => abrirModalEliminar(id, nombre);
 
 cargarCategorias();
+cargarInsumos();
 cargarProductos();

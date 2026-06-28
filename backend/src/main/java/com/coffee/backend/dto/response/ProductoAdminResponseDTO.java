@@ -1,11 +1,15 @@
 package com.coffee.backend.dto.response;
 
-// Respuesta de gestión de productos (ADMIN): incluye id de categoría y su nombre.
+import java.util.List;
+
+// Respuesta de gestión de productos (ADMIN): id/nombre de categoría + la receta
+// (insumos y cantidades) para que el modal de edición la precargue.
 public record ProductoAdminResponseDTO(
         Long productoId,
         String nombreProducto,
         Double precioActual,
         Long categoriaId,
-        String nombreCategoria
+        String nombreCategoria,
+        List<InsumoRecetaDTO> receta
 ) {
 }

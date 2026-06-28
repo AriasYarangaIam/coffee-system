@@ -4,11 +4,13 @@ import com.coffee.backend.dto.request.DetallePedidoRequestDTO;
 import com.coffee.backend.dto.request.PedidoRequestDTO;
 import com.coffee.backend.dto.response.BoletaResponseDTO;
 import com.coffee.backend.dto.response.DetalleBoletaResponseDTO;
+import com.coffee.backend.dto.response.PedidoDespachoTokenView;
 import com.coffee.backend.dto.response.PedidoListadoResponseDTO;
 import com.coffee.backend.dto.response.PedidoResponseDTO;
 import com.coffee.backend.entity.*;
 import com.coffee.backend.exception.StockInsuficienteException;
 import com.coffee.backend.repository.*;
+import com.coffee.backend.service.PedidoDespachoService;
 import com.coffee.backend.service.PedidoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class PedidoServiceImpl implements PedidoService {
     private final StockRepository stocksRepository;
     private final ProductoRepository productosRepository;
     private final UsuarioRepository usuariosRepository;
+    private final PedidoDespachoService pedidoDespachoService;
 
     // DetallePedidoRepository eliminado — usa Cascada
 
@@ -106,6 +109,11 @@ public class PedidoServiceImpl implements PedidoService {
 
         // 5. UN SOLO GUARDADO — Spring guarda pedido y detalles por Cascada
         pedidosRepository.save(pedido);
+
+        // 6. Encolar para despacho (RF-DS-04). Última sentencia tras el save: si el save
+        //    falla, el rollback ocurre antes y la cola en memoria no recibe un token fantasma.
+        pedidoDespachoService.enqueueDespacho(new PedidoDespachoTokenView(
+                pedido.getPedidoId(), pedido.getAliasTicket(), pedido.getFechaPedido()));
 
         return new PedidoResponseDTO(
                 pedido.getPedidoId(),

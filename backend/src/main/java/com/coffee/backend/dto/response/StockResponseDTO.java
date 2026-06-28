@@ -5,6 +5,7 @@ public record StockResponseDTO(
         Long codigoStock,
         Long insumoId,
         String nombreInsumo,
+        String unidad,
         Long almacenId,
         String nombreAlmacen,
         Long cantidad

@@ -43,10 +43,10 @@ tiempo es **compartida**.
 
 | # | Tarea | Backlog | Responsable |
 |---|---|---|---|
-| F7 | **RF-DS-03 Pila (deshacer en carrito)**: TAD propio en JS; push al modificar el carrito, botón "Deshacer" = pop | B-F-15 | **Joaquin** |
-| F8 | Cablear **dashboard** (KPIs + gráfico mensual) a `/admin/dashboard` y `/admin/reportes/mensual` reales | B-F-08 | **Yefrie** |
-| F9 | Cablear **productos / insumos / stock** a los CRUD `/admin/*` reales | B-F-08 | **Yefrie** |
-| F10 | Cablear **usuarios**: leer `usuarioId`/`rol`; dejar de partir el nombre por espacios | B-F-07 | **Joaquin** |
+| F7 | ✅ **RF-DS-03 Pila (deshacer en carrito)**: TAD propio `js/utils/pila.js` (+`pila.test.js`); push al modificar el carrito, botón "Deshacer" = pop | B-F-15 | **Joaquin** |
+| F8 | ✅ Cablear **dashboard**: KPIs a `/admin/dashboard` y gráfico **apilado producto×día** a `/admin/reportes/mensual` (matriz RF-DS-02) reales | B-F-08 | **Yefrie** |
+| F9 | ✅ Cablear **productos / insumos / stock** a los CRUD `/admin/*` reales | B-F-08 | **Yefrie** |
+| F10 | ✅ Cablear **usuarios**: lee `usuarioId`/`rol`; campos Nombre/Apellido separados (sin partir por espacios) | B-F-07 | **Joaquin** |
 | F11 | Integración end-to-end con el back + preparar demo | — | **Joaquin + Yefrie** |
 
 > Diferido sin riesgo de nota: unificar patrones de modal (B-F-10), escape XSS (B-F-11),

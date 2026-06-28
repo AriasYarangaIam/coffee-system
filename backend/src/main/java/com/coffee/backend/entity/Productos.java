@@ -22,6 +22,6 @@ public class Productos {
     private Categorias categorias;
     @OneToMany(mappedBy = "productos")
     private List<DetallePedido> detallePedidos;
-    @OneToMany(mappedBy = "productos",cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE})
+    @OneToMany(mappedBy = "productos",cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE},orphanRemoval = true)
     private List<Recetas> recetas;
 }

@@ -47,7 +47,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .map(s -> new StockBajoDTO(
                         s.getInsumos().getNombreInsumo(),
                         s.getCantidad(),
-                        null)) // Insumos no modela unidad de medida todavía
+                        s.getInsumos().getUnidad()))
                 .toList();
 
         return new DashboardResponseDTO(totalVentasDia, totalPedidosDia, productoEstrella, stockBajo);

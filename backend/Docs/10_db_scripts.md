@@ -52,7 +52,8 @@ CREATE TABLE IF NOT EXISTS productos (
 -- 5. INSUMOS
 CREATE TABLE IF NOT EXISTS insumos (
   id_insumo     BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  nombre_insumo VARCHAR(150) NOT NULL
+  nombre_insumo VARCHAR(150) NOT NULL,
+  unidad        VARCHAR(10)                          -- unidad de medida (ml, g, kg, L, unidad)
 );
 
 -- 6. RECETAS (producto N↔M insumo)

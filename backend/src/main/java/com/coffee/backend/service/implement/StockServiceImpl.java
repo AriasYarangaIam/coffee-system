@@ -60,6 +60,7 @@ public class StockServiceImpl implements StockService {
                 s.getCodigoStock(),
                 s.getInsumos().getIdInsumo(),
                 s.getInsumos().getNombreInsumo(),
+                s.getInsumos().getUnidad(),
                 s.getAlmacenes().getCodigoAlmacen(),
                 s.getAlmacenes().getNombreAlmacen(),
                 s.getCantidad()
