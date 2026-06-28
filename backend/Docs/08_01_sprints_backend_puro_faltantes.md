@@ -4,8 +4,8 @@ Este documento contiene el listado filtrado de los requerimientos técnicos y fu
 
 ## **1\. Restricción de Accesos Fina por Roles en Catálogos**
 
-* **Estado:** ✅ DONE (B-10, Sprint 2 · rama `feat/back/dashboard-y-roles-sprint-2`).
-* **Resolución:** `GET /api/productos` ahora se autoriza con `@PreAuthorize("hasAnyRole('MESERO','ADMIN')")` (`ProductoController.java:28`); antes solo `MESERO`, por lo que un ADMIN recibía 403. El `@PreAuthorize` se ejerce de verdad (method security ya estaba activo en `SecurityConfig` con `@EnableMethodSecurity`); no hubo defecto de deserialización del rol. Cercado con slice hermético `web/ProductoControllerWebMvcTest`: ADMIN → 200, MESERO → 200, rol no autorizado → 403, sin BD.
+* **Estado:** ✅ DONE (B-10, Sprint 2 · rama `feat/back/sprint-1-contrato-y-endpoints-admin`).
+* **Resolución:** `GET /api/productos` ahora se autoriza con `@PreAuthorize("hasAnyRole('MESERO','ADMIN')")` (`ProductoController.java:27`); antes solo `MESERO`, por lo que un ADMIN recibía 403. El `@PreAuthorize` se ejerce de verdad (method security ya estaba activo en `SecurityConfig` con `@EnableMethodSecurity`); no hubo defecto de deserialización del rol. Cercado con slice hermético `web/ProductoControllerWebMvcTest`: ADMIN → 200, MESERO → 200, rol no autorizado → 403, sin BD.
 
 ## **2\. Estructura FIFO (Cola) para el Despacho de Pedidos**
 
