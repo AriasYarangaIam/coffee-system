@@ -148,6 +148,14 @@ document.getElementById('btn-cancelar-usuario').addEventListener('click', cerrar
 document.getElementById('modal-eliminar-usuario-cerrar').addEventListener('click', cerrarModalEliminar);
 document.getElementById('btn-cancelar-eliminar-usuario').addEventListener('click', cerrarModalEliminar);
 
+// Filtro por nombre, apellido o correo.
+const inputBuscar = document.getElementById('input-buscar-usuario');
+inputBuscar?.addEventListener('input', () => {
+  const q = inputBuscar.value.trim().toLowerCase();
+  renderizarTabla(usuariosCache.filter(u =>
+    `${u.nombreUsuario} ${u.apellidoUsuario} ${u.correoUsuario}`.toLowerCase().includes(q)));
+});
+
 window.editarUsuario = (id) => abrirModalEditar(id);
 window.eliminarUsuario = (id, nombre) => abrirModalEliminar(id, nombre);
 

@@ -139,4 +139,11 @@ document.getElementById('btn-cancelar-eliminar-insumo').addEventListener('click'
 window.editarInsumo = (id) => abrirModalEditar(id);
 window.eliminarInsumo = (id, nombre) => abrirModalEliminar(id, nombre);
 
+// Filtro por nombre.
+const inputBuscar = document.getElementById('input-buscar-insumo');
+inputBuscar?.addEventListener('input', () => {
+  const q = inputBuscar.value.trim().toLowerCase();
+  renderizarTabla(insumosCache.filter(i => i.nombreInsumo.toLowerCase().includes(q)));
+});
+
 cargarInsumos();

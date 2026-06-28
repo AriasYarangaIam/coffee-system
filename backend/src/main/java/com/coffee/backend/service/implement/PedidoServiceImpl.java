@@ -161,11 +161,18 @@ public class PedidoServiceImpl implements PedidoService {
                     double total = pedido.getDetalles().stream()
                             .mapToDouble(d -> d.getCantidadPedida() * d.getPrecioUnitario())
                             .sum();
+                    List<DetalleBoletaResponseDTO> detalle = pedido.getDetalles().stream()
+                            .map(d -> new DetalleBoletaResponseDTO(
+                                    d.getProductos().getNombreProducto(),
+                                    d.getCantidadPedida(),
+                                    d.getPrecioUnitario()))
+                            .toList();
                     return new PedidoListadoResponseDTO(
                             pedido.getPedidoId(),
                             pedido.getAliasTicket(),
                             pedido.getFechaPedido(),
-                            total
+                            total,
+                            detalle
                     );
                 })
                 .toList();

@@ -18,6 +18,8 @@ const inputCategoria = document.getElementById('producto-categoria');
 const inputPrecio = document.getElementById('producto-precio');
 const recetaRows = document.getElementById('receta-rows');
 const btnAgregarInsumo = document.getElementById('btn-agregar-insumo');
+const inputBuscar = document.getElementById('input-buscar-producto');
+const selectFiltroCategoria = document.getElementById('select-filtro-categoria');
 
 // Modal eliminar
 const modalEliminar = document.getElementById('modal-eliminar-producto');
@@ -42,11 +44,23 @@ async function cargarProductos() {
 async function cargarCategorias() {
   try {
     const categorias = await apiFetch('/admin/categorias');
-    inputCategoria.innerHTML = '<option value="">Seleccionar categoría...</option>' +
-      categorias.map(c => `<option value="${c.categoriaId}">${c.nombreCategoria}</option>`).join('');
+    const opciones = categorias.map(c => `<option value="${c.categoriaId}">${c.nombreCategoria}</option>`).join('');
+    inputCategoria.innerHTML = '<option value="">Seleccionar categoría...</option>' + opciones;
+    if (selectFiltroCategoria) {
+      selectFiltroCategoria.innerHTML = '<option value="">Todas las categorías</option>' + opciones;
+    }
   } catch (error) {
     mostrarToast(error?.message || 'Error al cargar categorías', 'error');
   }
+}
+
+// Filtra la tabla por texto (nombre) y categoría seleccionada.
+function aplicarFiltros() {
+  const q = (inputBuscar?.value ?? '').trim().toLowerCase();
+  const cat = selectFiltroCategoria?.value ?? '';
+  renderizarTabla(productosCache.filter(p =>
+    p.nombreProducto.toLowerCase().includes(q) &&
+    (!cat || String(p.categoriaId) === cat)));
 }
 
 async function cargarInsumos() {
@@ -219,6 +233,8 @@ btnConfirmarEliminar.addEventListener('click', async () => {
 // ── Eventos ────────────────────────────────────────────────────────────────
 btnNuevo.addEventListener('click', abrirModalCrear);
 btnAgregarInsumo.addEventListener('click', () => agregarFilaReceta());
+inputBuscar?.addEventListener('input', aplicarFiltros);
+selectFiltroCategoria?.addEventListener('change', aplicarFiltros);
 document.getElementById('modal-producto-cerrar').addEventListener('click', cerrarModalProducto);
 document.getElementById('btn-cancelar-producto').addEventListener('click', cerrarModalProducto);
 document.getElementById('modal-eliminar-producto-cerrar').addEventListener('click', cerrarModalEliminar);
