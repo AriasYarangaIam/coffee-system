@@ -4,9 +4,8 @@ Este documento contiene el listado filtrado de los requerimientos técnicos y fu
 
 ## **1\. Restricción de Accesos Fina por Roles en Catálogos**
 
-* **Estado:** Incompleto (Movido al Sprint 2).  
-* **Bloqueo:** Fallas en la configuración del contexto de Spring Security y la cadena de autoridades (GrantedAuthorities).  
-* **Descripción de la razón:** El filtro JwtFilter valida correctamente la autenticidad del token, pero la lógica de extracción del rol dentro del SecurityContextHolder no se está mapeando de forma dinámica hacia las anotaciones @PreAuthorize en los controladores (como el endpoint GET /api/productos). El problema es puramente de deserialización en memoria RAM y configuración de seguridad, por lo que puede probarse inyectando cabeceras simuladas sin requerir consultas de base de datos.
+* **Estado:** ✅ DONE (B-10, Sprint 2 · rama `feat/back/sprint-1-contrato-y-endpoints-admin`).
+* **Resolución:** `GET /api/productos` ahora se autoriza con `@PreAuthorize("hasAnyRole('MESERO','ADMIN')")` (`ProductoController.java:27`); antes solo `MESERO`, por lo que un ADMIN recibía 403. El `@PreAuthorize` se ejerce de verdad (method security ya estaba activo en `SecurityConfig` con `@EnableMethodSecurity`); no hubo defecto de deserialización del rol. Cercado con slice hermético `web/ProductoControllerWebMvcTest`: ADMIN → 200, MESERO → 200, rol no autorizado → 403, sin BD.
 
 ## **2\. Estructura FIFO (Cola) para el Despacho de Pedidos**
 
