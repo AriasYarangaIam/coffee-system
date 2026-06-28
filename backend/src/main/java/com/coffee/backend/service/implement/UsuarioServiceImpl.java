@@ -6,6 +6,7 @@ import com.coffee.backend.dto.response.UsuarioResponseDTO;
 import com.coffee.backend.entity.Roles;
 import com.coffee.backend.entity.Usuarios;
 import com.coffee.backend.exception.RecursoNoEncontradoException;
+import com.coffee.backend.mapper.UsuarioMapper;
 import com.coffee.backend.repository.RolRepository;
 import com.coffee.backend.repository.UsuarioRepository;
 import com.coffee.backend.service.UsuarioService;
@@ -22,6 +23,7 @@ public class UsuarioServiceImpl implements UsuarioService {
    final UsuarioRepository usuarioRepository;
    final PasswordEncoder passwordEncoder;
    final RolRepository rolRepository;
+   final UsuarioMapper usuarioMapper;
 
     @Override
     public void registrarUsuario(RegistrarUsuarioRequestDTO requestDTO) {
@@ -42,14 +44,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
      public List<UsuarioResponseDTO> obtenerUsuarios(){
       return usuarioRepository.findAll().stream()
-              .map(u -> new UsuarioResponseDTO(
-                      u.getUsuarioId(),
-                      u.getNombreUsuario(),
-                      u.getApellidoUsuario(),
-                      u.getCorreoUsuario(),
-                      u.getTelefonoUsuario(),
-                      u.getRoles().getNombreRol()
-              )).toList();
+              .map(usuarioMapper::toResponseDTO)
+              .toList();
      }
 
     @Transactional
