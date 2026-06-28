@@ -15,6 +15,10 @@ public class Insumos {
     private Long idInsumo;
     @Column(name = "nombre_insumo",nullable = false)
     private String nombreInsumo;
+    // Unidad de medida (ej.: ml, g, kg, L, unidad). La cantidad de stock y de receta se
+    // interpretan en esta unidad.
+    @Column(name = "unidad")
+    private String unidad;
     @OneToMany(mappedBy = "insumos",cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE})
     private List<Recetas> recetas;
     @OneToMany(mappedBy = "insumos", cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE})

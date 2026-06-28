@@ -9,9 +9,10 @@ Este documento contiene el listado filtrado de los requerimientos técnicos y fu
 
 ## **2\. Estructura FIFO (Cola) para el Despacho de Pedidos**
 
-* **Estado:** Faltante.  
-* \*\*Bloqueo:\*\* Indefinición en el protocolo de comunicación de la API cliente-servidor.  
-* **Descripción de la razón:** Requiere el diseño e implementación de una estructura de datos de tipo cola (como \`Queue\` o \`ConcurrentLinkedQueue\` en Java) administrada en el Service de pedidos para gestionar el flujo FIFO de despacho. Se encuentra detenido debido a que no se ha cerrado la definición de red sobre si el cliente consumirá este recurso mediante peticiones síncronas repetitivas (*polling*) o a través de una conexión dúplex bidireccional continua (*WebSockets*). Su desarrollo es puramente de software en memoria.
+* **Estado:** ✅ DONE (RF-DS-04, Sprint 2 Task 11 · rama `feat/back/cola-despacho-fifo`).
+* **Resolución:** Se construyó el **TAD propio en el repo** (`tad/Cola<T>` + `tad/ColaPrioridad<T>` con nodos enlazados propios — NO `java.util.Queue`, como exige el sílabo). La premisa del diseño SDD "BLOCKED until `iam-sprint-2-bundle`" **queda anulada**: ese bundle nunca existió, así que el TAD vive aquí. Cola residente en `PedidoDespachoServiceImpl` (singleton ⇒ instancia única); `registrarPedido` encola el token tras el `save`; `DespachoBootstrapRunner` (ApplicationRunner) rehidrata la cola desde la BD al arrancar en orden FIFO (`findAllByOrderByFechaPedidoAsc`).
+* **Protocolo resuelto = polling.** El bloqueo polling-vs-WebSocket se cerró a favor de **polling**: se expone `GET /api/admin/despacho` (ADMIN) que devuelve la cola FIFO actual. WebSockets queda fuera de alcance (innecesario para el demo). `siguienteDespacho` es peek (sin dequeue); la máquina de estados PENDIENTE/DESPACHADO se difiere (necesita DDL `estado`).
+* **Tests (JUnit puro, sin Spring/BD):** `tad/ColaPrioridadTest` (FIFO, bandas de prioridad, peek/dequeue, vacía) + `service/PedidoDespachoServiceImplTest` (enqueue→listar FIFO, peek, rehidratación del runner con repo mockeado).
 
 ### **3\. Consistencia en el Payload de DTOs (Mapeo de Usuarios)**
 

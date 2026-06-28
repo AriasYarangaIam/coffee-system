@@ -52,11 +52,12 @@
               <thead>
                 <tr>
                   <th>Nombre</th>
+                  <th style="width:90px">Unidad</th>
                   <th style="text-align:right;width:80px">Acciones</th>
                 </tr>
               </thead>
               <tbody id="insumos-tbody">
-                <tr><td colspan="2"><div class="spinner"></div></td></tr>
+                <tr><td colspan="3"><div class="spinner"></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -77,6 +78,20 @@
         <div class="form-group" style="margin-bottom:16px">
           <label class="form-label" for="insumo-nombre">Nombre</label>
           <input class="form-input" type="text" id="insumo-nombre" placeholder="Ej: Café en grano" required>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label" for="insumo-unidad">Unidad de medida</label>
+          <select class="form-select" id="insumo-unidad" required>
+            <option value="">Seleccionar unidad...</option>
+            <option value="g">Gramos (g)</option>
+            <option value="kg">Kilogramos (kg)</option>
+            <option value="ml">Mililitros (ml)</option>
+            <option value="L">Litros (L)</option>
+            <option value="unidad">Unidad (u)</option>
+          </select>
+          <p id="hint-unidad" class="text-muted text-sm" style="display:none;margin-top:4px">
+            La unidad no se puede cambiar: este insumo ya tiene stock o se usa en una receta.
+          </p>
         </div>
         <div class="modal-footer">
           <button class="btn btn-secondary" type="button" id="btn-cancelar-insumo">Cancelar</button>

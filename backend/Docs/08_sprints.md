@@ -91,8 +91,8 @@ integre en el Sprint 2.
 | # | Tarea | Backlog | Responsable |
 |---|---|---|---|
 | 9 | ✅ `GET /api/admin/dashboard` (ventas día, pedidos día, producto estrella, stock bajo) con `@Query` | B-05 | **Jose** |
-| 10 | `GET /api/admin/reportes/mensual` con **RF-DS-02 (matriz producto × día)** | B-05, B-22 | **Jonathan** |
-| 11 | **RF-DS-04 Cola FIFO + prioridad** de despacho (TAD propio) e integración en el flujo de pedidos | B-23 | **Jonathan** |
+| 10 | ✅ `GET /api/admin/reportes/mensual` con **RF-DS-02 (matriz producto × día)** — `ReporteService` arma el `double[][]`; front lo grafica apilado (rama `feat/back/reporte-mensual-matriz`) | B-05, B-22 | **Jonathan** |
+| 11 | ✅ **RF-DS-04 Cola FIFO + prioridad** de despacho (TAD propio `tad/ColaPrioridad`) + enqueue en `registrarPedido` + rehidratación al boot + `GET /api/admin/despacho` (polling) (rama `feat/back/cola-despacho-fifo`) | B-23 | **Jonathan** |
 | 12 | ✅ Ampliar `GET /api/productos` a `MESERO` y `ADMIN` | B-10 | **Jose** |
 | 13 | Soporte de pruebas de integración con el front + ajustes de contrato | — | **Iam** |
 | 14 | (si da tiempo) precisión monetaria `BigDecimal`/handler de errores completo | B-13, B-18 | **Iam** |

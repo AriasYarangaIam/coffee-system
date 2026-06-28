@@ -2,14 +2,17 @@ import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast, mostrarSpinner, mostrarVacio } from '../utils/dom.js';
 import { formatearMoneda } from '../utils/format.js';
+import { Pila } from '../utils/pila.js';
 
 requireRole('MESERO');
 
 let carrito = [];
+const historial = new Pila(); // RF-DS-03: snapshots del carrito para "Deshacer"
 const productosGrid = document.getElementById('productos-grid');
 const cartItemsEl = document.getElementById('cart-items');
 const cartTotalEl = document.getElementById('cart-total');
 const btnConfirmar = document.getElementById('btn-confirmar');
+const btnDeshacer = document.getElementById('btn-deshacer');
 
 async function cargarProductos() {
   mostrarSpinner(productosGrid);
@@ -52,6 +55,7 @@ function renderizarProductos(productos) {
 }
 
 function agregarAlCarrito(producto) {
+  historial.push(structuredClone(carrito));
   const existente = carrito.find(i => i.productoId === producto.productoId);
   if (existente) {
     existente.cantidad++;
@@ -64,12 +68,14 @@ function agregarAlCarrito(producto) {
 function cambiarCantidad(productoId, delta) {
   const item = carrito.find(i => i.productoId === productoId);
   if (!item) return;
+  historial.push(structuredClone(carrito));
   item.cantidad += delta;
   if (item.cantidad <= 0) carrito = carrito.filter(i => i.productoId !== productoId);
   renderizarCarrito();
 }
 
 function renderizarCarrito() {
+  btnDeshacer.disabled = historial.estaVacia();
   if (!carrito.length) {
     cartItemsEl.innerHTML = '<p class="text-muted text-sm" style="text-align:center;padding:16px">El carrito está vacío</p>';
     cartTotalEl.textContent = formatearMoneda(0);
@@ -107,6 +113,12 @@ btnConfirmar.addEventListener('click', async () => {
     mostrarToast(error?.message || 'No se pudo registrar el pedido', 'error');
     btnConfirmar.disabled = false;
   }
+});
+
+btnDeshacer.addEventListener('click', () => {
+  if (historial.estaVacia()) return;
+  carrito = historial.pop();
+  renderizarCarrito();
 });
 
 // Exponer para los botones inline del carrito

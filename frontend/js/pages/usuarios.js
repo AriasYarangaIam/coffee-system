@@ -13,6 +13,7 @@ const modalTitulo = document.getElementById('modal-usuario-titulo');
 const formUsuario = document.getElementById('form-usuario');
 const inputId = document.getElementById('usuario-id');
 const inputNombre = document.getElementById('usuario-nombre');
+const inputApellido = document.getElementById('usuario-apellido');
 const inputCorreo = document.getElementById('usuario-correo');
 const inputRol = document.getElementById('usuario-rol');
 const inputClave = document.getElementById('usuario-clave');
@@ -70,7 +71,8 @@ function abrirModalEditar(id) {
   if (!usuario) return;
   modalTitulo.textContent = 'Editar Usuario';
   inputId.value = usuario.usuarioId;
-  inputNombre.value = `${usuario.nombreUsuario} ${usuario.apellidoUsuario}`.trim();
+  inputNombre.value = usuario.nombreUsuario;
+  inputApellido.value = usuario.apellidoUsuario;
   inputCorreo.value = usuario.correoUsuario;
   inputRol.value = usuario.rol;
   inputClave.value = '';
@@ -90,10 +92,9 @@ formUsuario.addEventListener('submit', async (e) => {
   btn.disabled = true;
 
   const id = inputId.value;
-  const partes = inputNombre.value.trim().split(' ');
   const body = {
-    nombreUsuario: partes[0],
-    apellidoUsuario: partes.slice(1).join(' ') || '',
+    nombreUsuario: inputNombre.value.trim(),
+    apellidoUsuario: inputApellido.value.trim(),
     correoUsuario: inputCorreo.value.trim(),
     rol: inputRol.value,
     ...(inputClave.value && { claveUsuario: inputClave.value }),

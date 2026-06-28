@@ -20,13 +20,14 @@ async function cargarStock() {
 
 function renderizarTabla(stocks) {
   if (!stocks.length) {
-    tablaBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted" style="padding:24px">Sin registros de stock</td></tr>';
+    tablaBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted" style="padding:24px">Sin registros de stock</td></tr>';
     return;
   }
   tablaBody.innerHTML = stocks.map(s => `
     <tr>
       <td>${s.nombreInsumo}</td>
-      <td>${s.cantidad}</td>
+      <td style="text-align:right">${s.cantidad}</td>
+      <td>${s.unidad ?? '—'}</td>
       <td>${s.nombreAlmacen ?? '—'}</td>
     </tr>
   `).join('');

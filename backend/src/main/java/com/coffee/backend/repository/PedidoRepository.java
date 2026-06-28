@@ -15,6 +15,34 @@ public interface PedidoRepository extends JpaRepository<Pedidos,Long> {
     // Pedidos del mesero logueado (se filtra por el correo del JWT).
     List<Pedidos> findByUsuario_CorreoUsuario(String correoUsuario);
 
+    // Rehidratación de la cola de despacho (RF-DS-04): pedidos en orden FIFO de llegada.
+    List<Pedidos> findAllByOrderByFechaPedidoAsc();
+
+    // --- Reporte mensual / Matriz producto × día (B-22, RF-DS-02) ---
+
+    // Proyección de una celda (producto, día del mes, ventas) del rango [inicio, fin).
+    interface VentaProductoDia {
+        String getProducto();
+        int getDia();
+        double getTotal();
+    }
+
+    // Ventas (cantidad * precio) agrupadas por producto y día del mes. EXTRACT(DAY ...)
+    // es portable a Postgres (Supabase). El servicio arma la matriz 2D con estas filas.
+    @Query(value = """
+            SELECT pr.nombre_producto AS producto,
+                   EXTRACT(DAY FROM p.fecha_pedido) AS dia,
+                   SUM(d.cantidad_pedida * d.precio_unitario) AS total
+            FROM detalle_pedido d
+            JOIN pedidos p ON d.pedido_id = p.pedido_id
+            JOIN productos pr ON d.producto_id = pr.producto_id
+            WHERE p.fecha_pedido >= :inicio AND p.fecha_pedido < :fin
+            GROUP BY pr.nombre_producto, EXTRACT(DAY FROM p.fecha_pedido)
+            ORDER BY pr.nombre_producto
+            """, nativeQuery = true)
+    List<VentaProductoDia> ventasPorProductoYDia(@Param("inicio") LocalDateTime inicio,
+                                                 @Param("fin") LocalDateTime fin);
+
     // --- Dashboard admin (B-05) ---
 
     // Suma de ventas (cantidad * precio) de los pedidos del rango [inicio, fin).

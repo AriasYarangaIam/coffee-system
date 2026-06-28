@@ -28,27 +28,35 @@ function renderizarKpis(kpis) {
   document.getElementById('kpi-stock-alerta').textContent = (kpis.stockBajo ?? []).length;
 }
 
+// Paleta para las series de producto (se cicla si hay más productos que colores).
+const PALETA = ['#5C3317', '#A0522D', '#C8964B', '#7B9E5E', '#4E6E81', '#8D6E63', '#B5651D'];
+
 function renderizarGrafico(reporte) {
   const ctx = document.getElementById('chart-ventas').getContext('2d');
   if (chartVentas) chartVentas.destroy();
 
+  // Matriz producto × día (RF-DS-02): una serie apilada por producto, eje X = días.
+  const datasets = reporte.productos.map((producto, i) => ({
+    label: producto,
+    data: reporte.dias.map((_, j) => reporte.celdas[i][j]),
+    backgroundColor: PALETA[i % PALETA.length],
+    borderRadius: 4,
+    stack: 'ventas',
+  }));
+
   chartVentas = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: reporte.map(r => `Día ${r.dia}`),
-      datasets: [{
-        label: 'Ventas (S/.)',
-        data: reporte.map(r => r.total),
-        backgroundColor: '#5C3317',
-        borderRadius: 6,
-      }],
+      labels: reporte.dias.map(d => `Día ${d}`),
+      datasets,
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      plugins: { legend: { display: datasets.length > 1 } },
       scales: {
-        y: { beginAtZero: true, ticks: { callback: v => `S/ ${v}` } },
+        x: { stacked: true },
+        y: { stacked: true, beginAtZero: true, ticks: { callback: v => `S/ ${v}` } },
       },
     },
   });

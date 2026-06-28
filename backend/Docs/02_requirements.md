@@ -48,9 +48,9 @@ Estado: ✅ implementado · 🟡 parcial · ⏳ pendiente · ⚠️ divergencia 
 | ID | Estructura | Unidad sílabo | Lado | Uso en el proyecto | Estado |
 |---|---|---|---|---|---|
 | RF-DS-01 | Arreglos 1D | U1 | A | catálogo, líneas de pedido (ya en uso) | ✅ |
-| RF-DS-02 | **Matriz (arreglo 2D)** | U1 | B (Java) | reporte mensual producto × día → `GET /api/admin/reportes/mensual` | ⏳ |
-| RF-DS-03 | **Pila (Stack)** | U3 | F (JS) | deshacer última acción del carrito (push/pop) | ⏳ |
-| RF-DS-04 | **Cola FIFO + prioridad** | U3 | B (Java) | cola lógica de **despacho** de pedidos (no estados de cocina) | ⏳ |
+| RF-DS-02 | **Matriz (arreglo 2D)** | U1 | B (Java) | reporte mensual producto × día → `GET /api/admin/reportes/mensual` | ✅ |
+| RF-DS-03 | **Pila (Stack)** | U3 | F (JS) | deshacer última acción del carrito (push/pop) → `frontend/js/utils/pila.js` | ✅ |
+| RF-DS-04 | **Cola FIFO + prioridad** | U3 | B (Java) | cola lógica de **despacho** → `tad/ColaPrioridad` + `GET /api/admin/despacho` | ✅ |
 
 ### Mapeo Sílabo ↔ Estructuras
 
