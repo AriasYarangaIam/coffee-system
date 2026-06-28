@@ -14,15 +14,23 @@ const cartTotalEl = document.getElementById('cart-total');
 const btnConfirmar = document.getElementById('btn-confirmar');
 const btnDeshacer = document.getElementById('btn-deshacer');
 
+let productosCache = [];
+const inputBuscarProducto = document.getElementById('input-buscar-producto-mesero');
+
 async function cargarProductos() {
   mostrarSpinner(productosGrid);
   try {
-    const productos = await apiFetch('/productos');
-    renderizarProductos(productos);
+    productosCache = await apiFetch('/productos');
+    renderizarProductos(productosCache);
   } catch (error) {
     mostrarToast(error?.message || 'Error al cargar productos', 'error');
   }
 }
+
+inputBuscarProducto?.addEventListener('input', () => {
+  const q = inputBuscarProducto.value.trim().toLowerCase();
+  renderizarProductos(productosCache.filter(p => p.nombreProducto.toLowerCase().includes(q)));
+});
 
 function renderizarProductos(productos) {
   if (!productos.length) {

@@ -10,11 +10,15 @@ const inputClave  = document.getElementById('clave');
 const errorMsg   = document.getElementById('error-msg');
 const tabPersonal = document.getElementById('tab-personal');
 const tabAdmin    = document.getElementById('tab-admin');
+const toggleClave = document.getElementById('toggle-clave');
 
 const PLACEHOLDERS = {
   personal: 'mesero@cafeteria.com',
   admin:    'admin@cafeteria.com',
 };
+
+// El perfil elegido en las pestañas debe coincidir con el rol real que devuelve el back.
+const ROL_ESPERADO = { personal: 'MESERO', admin: 'ADMIN' };
 
 let rolSeleccionado = 'personal';
 
@@ -28,6 +32,15 @@ function activarTab(rol) {
 
 tabPersonal.addEventListener('click', () => activarTab('personal'));
 tabAdmin.addEventListener('click',    () => activarTab('admin'));
+
+// Ojito: mostrar/ocultar la contraseña.
+toggleClave?.addEventListener('click', () => {
+  const ocultar = inputClave.type === 'text';
+  inputClave.type = ocultar ? 'password' : 'text';
+  toggleClave.setAttribute('aria-label', ocultar ? 'Mostrar contraseña' : 'Ocultar contraseña');
+  document.getElementById('icon-eye').hidden = !ocultar;
+  document.getElementById('icon-eye-off').hidden = ocultar;
+});
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -43,6 +56,13 @@ form.addEventListener('submit', async (e) => {
         contraseña: inputClave.value,         // 👈 fix 1
       }),
     });
+
+    // Validar que el perfil elegido coincida con el rol real de la cuenta.
+    if (data.rol !== ROL_ESPERADO[rolSeleccionado]) {
+      errorMsg.textContent = 'Esta cuenta no corresponde al perfil seleccionado';
+      mostrarToast('Esta cuenta no corresponde al perfil seleccionado', 'error');
+      return;
+    }
 
     guardarSesion(data.token, {             // 👈 fix 2
       correo: data.correo,

@@ -21,7 +21,7 @@ public class DashboardServiceImpl implements DashboardService {
     // El modelo no persiste un mínimo de stock por insumo; usamos un umbral fijo de
     // alerta. Suficiente para la cafetería MYPE (una sede). Si más adelante se necesita
     // por insumo, se añade una columna y se reemplaza esta constante.
-    private static final long UMBRAL_STOCK_BAJO = 10;
+    private static final long UMBRAL_STOCK_BAJO = 100;
 
     private final PedidoRepository pedidoRepository;
     private final StockRepository stockRepository;

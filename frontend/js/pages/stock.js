@@ -6,15 +6,31 @@ requireRole('ADMIN');
 
 const tablaBody = document.getElementById('stock-tbody');
 const form = document.getElementById('form-ingreso');
+const inputBuscar = document.getElementById('input-buscar-stock');
+
+let stocksCache = [];
 
 async function cargarStock() {
   mostrarSpinner(tablaBody);
   try {
-    const stocks = await apiFetch('/admin/stocks');
-    renderizarTabla(stocks);
-    poblarSelectInsumos(stocks);
+    stocksCache = await apiFetch('/admin/stocks');
+    renderizarTabla(stocksCache);
   } catch (error) {
     mostrarToast(error?.message || 'Error al cargar stock', 'error');
+  }
+}
+
+// El select de ingreso lista TODOS los insumos (no solo los que ya tienen stock),
+// para poder registrar el primer ingreso de un insumo recién creado.
+async function cargarInsumosSelect() {
+  const select = document.getElementById('select-insumo');
+  if (!select) return;
+  try {
+    const insumos = await apiFetch('/admin/insumos');
+    select.innerHTML = '<option value="">Seleccionar insumo...</option>' +
+      insumos.map(i => `<option value="${i.idInsumo}">${i.nombreInsumo}${i.unidad ? ` (${i.unidad})` : ''}</option>`).join('');
+  } catch (error) {
+    mostrarToast(error?.message || 'Error al cargar insumos', 'error');
   }
 }
 
@@ -33,12 +49,11 @@ function renderizarTabla(stocks) {
   `).join('');
 }
 
-function poblarSelectInsumos(stocks) {
-  const select = document.getElementById('select-insumo');
-  if (!select) return;
-  select.innerHTML = '<option value="">Seleccionar insumo...</option>' +
-    stocks.map(s => `<option value="${s.insumoId}">${s.nombreInsumo}</option>`).join('');
-}
+// Filtro de la tabla de stock por nombre de insumo.
+inputBuscar?.addEventListener('input', () => {
+  const q = inputBuscar.value.trim().toLowerCase();
+  renderizarTabla(stocksCache.filter(s => s.nombreInsumo.toLowerCase().includes(q)));
+});
 
 async function cargarAlmacenes() {
   const select = document.getElementById('select-almacen');
@@ -76,4 +91,5 @@ form?.addEventListener('submit', async (e) => {
 });
 
 cargarAlmacenes();
+cargarInsumosSelect();
 cargarStock();

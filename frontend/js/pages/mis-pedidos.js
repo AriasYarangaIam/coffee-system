@@ -6,12 +6,15 @@ import { formatearMoneda } from '../utils/format.js';
 requireRole('MESERO');
 
 const tablaBody = document.getElementById('pedidos-tbody');
+const inputBuscar = document.getElementById('input-buscar-pedido');
+
+let pedidosCache = [];
 
 async function cargarPedidos() {
   mostrarSpinner(tablaBody);
   try {
-    const pedidos = await apiFetch('/pedidos');
-    renderizarPedidos(pedidos);
+    pedidosCache = await apiFetch('/pedidos');
+    renderizarPedidos(pedidosCache);
   } catch (error) {
     mostrarToast(error?.message || 'Error al cargar pedidos', 'error');
   }
@@ -25,10 +28,18 @@ function renderizarPedidos(pedidos) {
   tablaBody.innerHTML = pedidos.map(p => `
     <tr>
       <td><span class="font-semibold">${p.aliasTicket}</span></td>
-      <td>${p.detalle.map(d => `${d.nombreProducto} x${d.cantidadPedida}`).join(', ')}</td>
+      <td>${(p.detalle ?? []).map(d => `${d.nombreProducto} x${d.cantidadPedida}`).join(', ')}</td>
       <td>${formatearMoneda(p.total)}</td>
     </tr>
   `).join('');
 }
+
+// Filtro por ticket o nombre de producto.
+inputBuscar?.addEventListener('input', () => {
+  const q = inputBuscar.value.trim().toLowerCase();
+  renderizarPedidos(pedidosCache.filter(p =>
+    p.aliasTicket.toLowerCase().includes(q) ||
+    (p.detalle ?? []).some(d => d.nombreProducto.toLowerCase().includes(q))));
+});
 
 cargarPedidos();
