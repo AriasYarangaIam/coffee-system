@@ -2,12 +2,10 @@ import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast, mostrarSpinner, mostrarVacio, escaparHtml } from '../utils/dom.js';
 import { formatearMoneda } from '../utils/format.js';
-import { Pila } from '../utils/pila.js';
 
 requireRole('MESERO');
 
 let carrito = [];
-const historial = new Pila(); // RF-DS-03: snapshots del carrito para "Deshacer"
 const productosGrid = document.getElementById('productos-grid');
 const cartItemsEl = document.getElementById('cart-items');
 const cartTotalEl = document.getElementById('cart-total');
@@ -92,8 +90,8 @@ function renderizarProductos(productos) {
   });
 }
 
-function agregarAlCarrito(producto) {
-  historial.push(structuredClone(carrito));
+async function agregarAlCarrito(producto) {
+  await pushSnapshot();
   const existente = carrito.find(i => i.productoId === producto.productoId);
   if (existente) {
     existente.cantidad++;
@@ -103,17 +101,42 @@ function agregarAlCarrito(producto) {
   renderizarCarrito();
 }
 
-function cambiarCantidad(productoId, delta) {
+async function cambiarCantidad(productoId, delta) {
   const item = carrito.find(i => i.productoId === productoId);
   if (!item) return;
-  historial.push(structuredClone(carrito));
+  await pushSnapshot();
   item.cantidad += delta;
   if (item.cantidad <= 0) carrito = carrito.filter(i => i.productoId !== productoId);
   renderizarCarrito();
 }
 
+async function actualizarEstadoDeshacer() {
+  try {
+    const estado = await apiFetch('/pedidos/undo');
+    btnDeshacer.disabled = !estado?.canUndo;
+  } catch {
+    btnDeshacer.disabled = true;
+  }
+}
+
+async function pushSnapshot() {
+  try {
+    await apiFetch('/pedidos/undo/push', {
+      method: 'POST',
+      body: JSON.stringify({ items: structuredClone(carrito), total: calcularTotal(carrito) })
+    });
+  } catch (error) {
+    // No bloquear la mutación del carrito si el snapshot falla; el undo será best-effort.
+    console.warn('No se pudo guardar snapshot de deshacer', error);
+  }
+}
+
+function calcularTotal(items) {
+  return items.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
+}
+
 function renderizarCarrito() {
-  btnDeshacer.disabled = historial.estaVacia();
+  actualizarEstadoDeshacer();
   if (!carrito.length) {
     cartItemsEl.innerHTML = '<p class="text-muted text-sm" style="text-align:center;padding:16px">El carrito está vacío</p>';
     cartTotalEl.textContent = formatearMoneda(0);
@@ -133,8 +156,7 @@ function renderizarCarrito() {
     </div>
   `).join('');
 
-  const total = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
-  cartTotalEl.textContent = formatearMoneda(total);
+  cartTotalEl.textContent = formatearMoneda(calcularTotal(carrito));
   btnConfirmar.disabled = false;
 }
 
@@ -145,6 +167,7 @@ btnConfirmar.addEventListener('click', async () => {
       detalles: carrito.map(i => ({ productoId: i.productoId, cantidadPedida: i.cantidad })),
     };
     const pedido = await apiFetch('/pedidos', { method: 'POST', body: JSON.stringify(body) });
+    await apiFetch('/pedidos/undo', { method: 'DELETE' });
     localStorage.setItem('ultimo_pedido_id', pedido.pedidoId);
     window.location.href = '/pages/mesero/boleta.html';
   } catch (error) {
@@ -153,10 +176,16 @@ btnConfirmar.addEventListener('click', async () => {
   }
 });
 
-btnDeshacer.addEventListener('click', () => {
-  if (historial.estaVacia()) return;
-  carrito = historial.pop();
-  renderizarCarrito();
+btnDeshacer.addEventListener('click', async () => {
+  try {
+    const data = await apiFetch('/pedidos/undo', { method: 'POST' });
+    if (!data?.snapshot?.items) return;
+    carrito = data.snapshot.items;
+    renderizarCarrito();
+  } catch (error) {
+    // 409 u otro error: mostrar feedback suave sin romper la UI.
+    mostrarToast(error?.message || 'No hay acciones para deshacer', 'info');
+  }
 });
 
 // Exponer para los botones inline del carrito
