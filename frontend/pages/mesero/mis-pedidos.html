@@ -38,6 +38,26 @@
           </button>
         </div>
 
+        <!-- Métricas del turno -->
+        <div class="kpi-grid" style="margin-bottom:var(--spacing-lg)">
+          <div class="kpi-card">
+            <p class="kpi-card__label">Pedidos atendidos</p>
+            <p class="kpi-card__value" id="metrica-pedidos">—</p>
+          </div>
+          <div class="kpi-card">
+            <p class="kpi-card__label">Total vendido</p>
+            <p class="kpi-card__value" id="metrica-total">—</p>
+          </div>
+          <div class="kpi-card">
+            <p class="kpi-card__label">Ticket promedio</p>
+            <p class="kpi-card__value" id="metrica-promedio">—</p>
+          </div>
+          <div class="kpi-card">
+            <p class="kpi-card__label">Producto estrella</p>
+            <p class="kpi-card__value" id="metrica-estrella" style="font-size:1.25rem">—</p>
+          </div>
+        </div>
+
         <!-- Barra de búsqueda + chips de filtro -->
         <div style="display:flex;flex-wrap:wrap;gap:var(--spacing-md);align-items:center;margin-bottom:var(--spacing-lg)">
           <div class="search-bar">
@@ -74,15 +94,9 @@
         <button class="modal-close" id="modal-detalle-cerrar" aria-label="Cerrar">&times;</button>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
-        <div>
-          <p class="text-muted text-sm">Fecha</p>
-          <p class="font-semibold" id="modal-detalle-fecha">—</p>
-        </div>
-        <div style="text-align:right">
-          <p class="text-muted text-sm">Estado</p>
-          <span id="modal-detalle-estado"></span>
-        </div>
+      <div style="margin-bottom:16px">
+        <p class="text-muted text-sm">Fecha</p>
+        <p class="font-semibold" id="modal-detalle-fecha">—</p>
       </div>
 
       <div style="margin-bottom:16px">
@@ -109,7 +123,7 @@
   <script type="module" src="/js/pages/mis-pedidos.js"></script>
   <script type="module">
     import { obtenerUsuario, logout } from '/js/core/auth.js';
-    document.getElementById('sidebar-usuario').textContent = obtenerUsuario().nombre ?? '';
+    document.getElementById('sidebar-usuario').textContent = obtenerUsuario().nombreCompleto ?? '';
     document.getElementById('btn-logout').addEventListener('click', logout);
   </script>
 </body>

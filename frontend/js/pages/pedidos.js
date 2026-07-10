@@ -1,6 +1,6 @@
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
-import { mostrarToast, mostrarSpinner, mostrarVacio } from '../utils/dom.js';
+import { mostrarToast, mostrarSpinner, mostrarVacio, escaparHtml } from '../utils/dom.js';
 import { formatearMoneda } from '../utils/format.js';
 
 requireRole('MESERO');
@@ -11,24 +11,48 @@ const cartItemsEl = document.getElementById('cart-items');
 const cartTotalEl = document.getElementById('cart-total');
 const btnConfirmar = document.getElementById('btn-confirmar');
 const btnDeshacer = document.getElementById('btn-deshacer');
+const filtroCategorias = document.getElementById('filtro-categorias');
 
 let productosCache = [];
+let categoriaActiva = 'todas';
 const inputBuscarProducto = document.getElementById('input-buscar-producto-mesero');
 
 async function cargarProductos() {
   mostrarSpinner(productosGrid);
   try {
     productosCache = await apiFetch('/productos');
-    renderizarProductos(productosCache);
+    renderizarChips();
+    aplicarFiltros();
   } catch (error) {
     mostrarToast(error?.message || 'Error al cargar productos', 'error');
   }
 }
 
-inputBuscarProducto?.addEventListener('input', () => {
+// Chips de categoría derivados del catálogo (más "Todas").
+function renderizarChips() {
+  const categorias = [...new Set(productosCache.map(p => p.categoria).filter(Boolean))];
+  filtroCategorias.innerHTML = [
+    `<button class="chip ${categoriaActiva === 'todas' ? 'active' : ''}" data-cat="todas">Todas</button>`,
+    ...categorias.map(c => `<button class="chip ${categoriaActiva === c ? 'active' : ''}" data-cat="${escaparHtml(c)}">${escaparHtml(c)}</button>`),
+  ].join('');
+  filtroCategorias.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      categoriaActiva = chip.dataset.cat;
+      renderizarChips();
+      aplicarFiltros();
+    });
+  });
+}
+
+// Búsqueda y categoría se combinan.
+function aplicarFiltros() {
   const q = inputBuscarProducto.value.trim().toLowerCase();
-  renderizarProductos(productosCache.filter(p => p.nombreProducto.toLowerCase().includes(q)));
-});
+  renderizarProductos(productosCache.filter(p =>
+    (categoriaActiva === 'todas' || p.categoria === categoriaActiva) &&
+    p.nombreProducto.toLowerCase().includes(q)));
+}
+
+inputBuscarProducto?.addEventListener('input', aplicarFiltros);
 
 function renderizarProductos(productos) {
   if (!productos.length) {
@@ -38,11 +62,11 @@ function renderizarProductos(productos) {
   productosGrid.innerHTML = productos.map(p => `
     <div class="product-card ${!p.disponible ? 'out-of-stock' : ''}"
          data-id="${p.productoId}"
-         data-nombre="${p.nombreProducto}"
+         data-nombre="${escaparHtml(p.nombreProducto)}"
          data-precio="${p.precio}">
       <div class="product-card__body">
-        <p class="product-card__name">${p.nombreProducto}</p>
-        <p class="product-card__category">${p.categoria ?? ''}</p>
+        <p class="product-card__name">${escaparHtml(p.nombreProducto)}</p>
+        <p class="product-card__category">${escaparHtml(p.categoria ?? '')}</p>
         <div class="product-card__footer">
           <span class="product-card__price">${formatearMoneda(p.precio)}</span>
           ${!p.disponible ? '<span class="product-card__stock-badge">Sin stock</span>' : ''}
@@ -52,11 +76,17 @@ function renderizarProductos(productos) {
   `).join('');
 
   productosGrid.querySelectorAll('.product-card:not(.out-of-stock)').forEach(card => {
-    card.addEventListener('click', () => agregarAlCarrito({
-      productoId: Number(card.dataset.id),
-      nombre: card.dataset.nombre,
-      precio: Number(card.dataset.precio),
-    }));
+    card.addEventListener('click', () => {
+      agregarAlCarrito({
+        productoId: Number(card.dataset.id),
+        nombre: card.dataset.nombre,
+        precio: Number(card.dataset.precio),
+      });
+      // Feedback: pulso breve en la card agregada.
+      card.classList.remove('product-card--added');
+      void card.offsetWidth; // reinicia la animación si se hace clic seguido
+      card.classList.add('product-card--added');
+    });
   });
 }
 
@@ -116,7 +146,7 @@ function renderizarCarrito() {
 
   cartItemsEl.innerHTML = carrito.map(item => `
     <div class="cart-item">
-      <span class="cart-item__name">${item.nombre}</span>
+      <span class="cart-item__name">${escaparHtml(item.nombre)}</span>
       <div class="cart-item__controls">
         <button class="qty-btn" onclick="cambiarCantidad(${item.productoId}, -1)">−</button>
         <span class="qty-value">${item.cantidad}</span>

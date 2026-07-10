@@ -147,3 +147,13 @@
   font-weight: 700;
   margin-bottom: var(--spacing-md);
 }
+
+/* Pulso de feedback al agregar al carrito */
+.product-card--added {
+  animation: card-added 0.35s ease;
+}
+@keyframes card-added {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.96); border-color: var(--color-success); }
+  100% { transform: scale(1); }
+}

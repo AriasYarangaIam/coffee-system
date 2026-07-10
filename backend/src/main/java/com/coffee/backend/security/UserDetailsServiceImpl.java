@@ -21,11 +21,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         String rol = usuario.getRoles().getNombreRol(); // "ADMIN" o "MESERO"
 
-        return new User(
-                usuario.getCorreoUsuario(),
-                usuario.getClaveCifrada(),
-                List.of(new SimpleGrantedAuthority("ROLE_" + rol))
-        );
+        // enabled = activo: un usuario dado de baja (borrado lógico) no puede autenticarse.
+        return User.withUsername(usuario.getCorreoUsuario())
+                .password(usuario.getClaveCifrada())
+                .disabled(!usuario.isActivo())
+                .authorities(new SimpleGrantedAuthority("ROLE_" + rol))
+                .build();
     }
 
 }

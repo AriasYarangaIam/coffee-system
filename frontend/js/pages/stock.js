@@ -1,12 +1,15 @@
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
-import { mostrarToast, mostrarSpinner } from '../utils/dom.js';
+import { mostrarToast, mostrarSpinner, escaparHtml } from '../utils/dom.js';
+import { formatearFecha } from '../utils/format.js';
 
 requireRole('ADMIN');
 
 const tablaBody = document.getElementById('stock-tbody');
 const form = document.getElementById('form-ingreso');
 const inputBuscar = document.getElementById('input-buscar-stock');
+const historial = document.getElementById('stock-historial');
+const btnDeshacer = document.getElementById('btn-deshacer');
 
 let stocksCache = [];
 
@@ -18,6 +21,38 @@ async function cargarStock() {
   } catch (error) {
     mostrarToast(error?.message || 'Error al cargar stock', 'error');
   }
+}
+
+// "Últimos Ingresos": traza de movimientos vigentes. Habilita "Deshacer" si hay alguno.
+async function cargarMovimientos() {
+  mostrarSpinner(historial);
+  try {
+    const movimientos = await apiFetch('/admin/stocks/movimientos');
+    renderizarHistorial(movimientos);
+    btnDeshacer.disabled = movimientos.length === 0;
+  } catch (error) {
+    historial.innerHTML = '<p class="text-muted text-sm">No se pudo cargar el historial</p>';
+    mostrarToast(error?.message || 'Error al cargar el historial', 'error');
+  }
+}
+
+function renderizarHistorial(movimientos) {
+  if (!movimientos.length) {
+    historial.innerHTML = '<div class="empty-state"><p>Aún no hay ingresos registrados</p></div>';
+    return;
+  }
+  historial.innerHTML = movimientos.map(m => `
+    <div class="stock-mov">
+      <div class="stock-mov__main">
+        <span class="stock-mov__name">${escaparHtml(m.nombreInsumo)}</span>
+        <span class="stock-mov__qty">+${m.cantidad}${m.unidad ? ` ${escaparHtml(m.unidad)}` : ''}</span>
+      </div>
+      <div class="stock-mov__meta">
+        <span>${escaparHtml(m.registradoPor)}</span>
+        <span>${formatearFecha(m.fecha)}</span>
+      </div>
+    </div>
+  `).join('');
 }
 
 // El select de ingreso lista TODOS los insumos (no solo los que ya tienen stock),
@@ -83,6 +118,7 @@ form?.addEventListener('submit', async (e) => {
     mostrarToast('Ingreso registrado correctamente', 'success');
     form.reset();
     cargarStock();
+    cargarMovimientos();
   } catch (error) {
     mostrarToast(error?.message || 'No se pudo registrar el ingreso', 'error');
   } finally {
@@ -90,6 +126,21 @@ form?.addEventListener('submit', async (e) => {
   }
 });
 
+// Deshacer el último ingreso (LIFO). El backend revierte el saldo y marca el movimiento.
+btnDeshacer?.addEventListener('click', async () => {
+  btnDeshacer.disabled = true;
+  try {
+    await apiFetch('/admin/stocks/deshacer', { method: 'POST' });
+    mostrarToast('Último ingreso deshecho', 'success');
+    cargarStock();
+    cargarMovimientos();
+  } catch (error) {
+    mostrarToast(error?.message || 'No se pudo deshacer', 'error');
+    btnDeshacer.disabled = false; // reintentable si falló
+  }
+});
+
 cargarAlmacenes();
 cargarInsumosSelect();
 cargarStock();
+cargarMovimientos();

@@ -9,9 +9,10 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(StockInsuficienteException.class)
-    public ResponseEntity<Map<String, String>> handleStockInsuficiente(
-            StockInsuficienteException ex) {
+    // 409 para conflictos de estado: stock insuficiente e invariantes de negocio
+    // (auto-borrado, último admin, deshacer sin ingresos).
+    @ExceptionHandler({StockInsuficienteException.class, ReglaNegocioException.class})
+    public ResponseEntity<Map<String, String>> handleConflicto(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of("error", ex.getMessage()));
     }

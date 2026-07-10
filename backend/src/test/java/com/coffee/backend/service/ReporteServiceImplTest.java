@@ -1,7 +1,10 @@
 package com.coffee.backend.service;
 
+import com.coffee.backend.dto.response.ComparativaMensualResponseDTO;
+import com.coffee.backend.dto.response.IngresoSemanalResponseDTO;
 import com.coffee.backend.dto.response.ReporteMensualResponseDTO;
 import com.coffee.backend.repository.PedidoRepository;
+import com.coffee.backend.repository.PedidoRepository.IngresoSemana;
 import com.coffee.backend.repository.PedidoRepository.VentaProductoDia;
 import com.coffee.backend.service.implement.ReporteServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -59,5 +62,52 @@ class ReporteServiceImplTest {
         assertThat(r.productos()).isEmpty();
         assertThat(r.celdas()).isEmpty();
         assertThat(r.dias()).hasSize(LocalDate.now().lengthOfMonth());
+    }
+
+    // --- Módulo de ingresos ---
+
+    @Test
+    void comparativa_calculaVariacionPorcentual() {
+        PedidoRepository repo = mock(PedidoRepository.class);
+        // Primera llamada = mes actual (120), segunda = mes previo (100).
+        given(repo.sumarVentasEntre(any(), any())).willReturn(120.0, 100.0);
+
+        ComparativaMensualResponseDTO r = new ReporteServiceImpl(repo).comparativa(2026, 7);
+
+        assertThat(r.totalMesActual()).isEqualByComparingTo("120.00");
+        assertThat(r.totalMesAnterior()).isEqualByComparingTo("100.00");
+        assertThat(r.variacionPorcentual()).isEqualByComparingTo("20.00"); // +20%
+    }
+
+    @Test
+    void comparativa_mesPrevioSinVentas_variacionNull() {
+        PedidoRepository repo = mock(PedidoRepository.class);
+        given(repo.sumarVentasEntre(any(), any())).willReturn(80.0, 0.0);
+
+        ComparativaMensualResponseDTO r = new ReporteServiceImpl(repo).comparativa(2026, 7);
+
+        assertThat(r.variacionPorcentual()).isNull(); // sin división por cero
+    }
+
+    @Test
+    void ingresosSemanales_calculaTendenciaEntreSemanas() {
+        PedidoRepository repo = mock(PedidoRepository.class);
+        given(repo.ingresosPorSemana(any(), any())).willReturn(List.<IngresoSemana>of(
+                semana(LocalDate.of(2026, 7, 6), 100.0),
+                semana(LocalDate.of(2026, 7, 13), 150.0)));
+
+        IngresoSemanalResponseDTO r = new ReporteServiceImpl(repo)
+                .ingresosSemanales(LocalDate.of(2026, 7, 1), LocalDate.of(2026, 7, 31));
+
+        assertThat(r.semanas()).hasSize(2);
+        assertThat(r.semanas().get(0).variacionPct()).isNull();          // sin previa
+        assertThat(r.semanas().get(1).variacionPct()).isEqualByComparingTo("50.00"); // +50%
+    }
+
+    private static IngresoSemana semana(LocalDate inicio, double total) {
+        return new IngresoSemana() {
+            public LocalDate getSemana() { return inicio; }
+            public double getTotal() { return total; }
+        };
     }
 }

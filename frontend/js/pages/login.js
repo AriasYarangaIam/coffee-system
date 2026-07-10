@@ -34,12 +34,19 @@ tabPersonal.addEventListener('click', () => activarTab('personal'));
 tabAdmin.addEventListener('click',    () => activarTab('admin'));
 
 // Ojito: mostrar/ocultar la contraseña.
+const iconEye    = document.getElementById('icon-eye');
+const iconEyeOff = document.getElementById('icon-eye-off');
+
 toggleClave?.addEventListener('click', () => {
-  const ocultar = inputClave.type === 'text';
-  inputClave.type = ocultar ? 'password' : 'text';
-  toggleClave.setAttribute('aria-label', ocultar ? 'Mostrar contraseña' : 'Ocultar contraseña');
-  document.getElementById('icon-eye').hidden = !ocultar;
-  document.getElementById('icon-eye-off').hidden = ocultar;
+  const ocultar = inputClave.type === 'password';
+
+  inputClave.type = ocultar ? 'text' : 'password';
+
+  // Ojo abierto = contraseña visible | Ojo tachado = contraseña oculta
+  iconEye.style.display    = ocultar ? 'block' : 'none';
+  iconEyeOff.style.display = ocultar ? 'none'  : 'block';
+
+  toggleClave.setAttribute('aria-label', ocultar ? 'Ocultar contraseña' : 'Mostrar contraseña');
 });
 
 form.addEventListener('submit', async (e) => {
