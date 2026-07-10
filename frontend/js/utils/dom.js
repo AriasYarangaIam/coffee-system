@@ -10,6 +10,14 @@ export function mostrarSpinner(contenedor) {
   contenedor.innerHTML = '<div class="spinner"></div>';
 }
 
+// Escapa texto para interpolarlo en innerHTML sin riesgo de inyección (B-F-11).
+export function escaparHtml(valor) {
+  if (valor == null) return '';
+  const div = document.createElement('div');
+  div.textContent = String(valor);
+  return div.innerHTML;
+}
+
 export function mostrarVacio(contenedor, mensaje = 'No hay datos disponibles') {
   contenedor.innerHTML = `
     <div class="empty-state">

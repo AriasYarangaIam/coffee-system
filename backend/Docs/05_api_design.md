@@ -82,5 +82,43 @@ expone HOY. Lo que el front consume pero el back no expone aún está al final (
 
 > Detalle y propuestas de resolución en [09_backlog_brechas.md](09_backlog_brechas.md).
 
+## Addendum 2026-07-10 — Ingresos, stock con traza, métricas y guardas de usuarios
+
+Nuevos endpoints (contrato as-built). Todos bajo `Authorization: Bearer`.
+
+### Ingresos / BI — `ReporteController` (`/api/admin/reportes`, `ROLE_ADMIN`)
+
+| Método | Ruta | Request | Response 2xx |
+|---|---|---|---|
+| GET | `/api/admin/reportes/ingresos/comparativa?anio&mes` | query opcional (sin params ⇒ mes actual) | `200` `{ anio, mes, totalMesActual, totalMesAnterior, variacionPorcentual }` (`BigDecimal`; `variacionPorcentual` `null` si el mes previo fue 0) |
+| GET | `/api/admin/reportes/ingresos/semanal?desde&hasta` | fechas ISO `yyyy-MM-dd` | `200` `{ semanas:[{ inicioSemana, total, variacionPct }] }` |
+| GET | `/api/admin/reportes/boletas?desde&hasta` | fechas ISO `yyyy-MM-dd` | `200` `[{ pedidoId, aliasTicket, fecha, mesero, total }]` |
+
+### Stock: histórico y deshacer — `StockController` (`/api/admin/stocks`, `ROLE_ADMIN`)
+
+| Método | Ruta | Request | Response 2xx | Errores |
+|---|---|---|---|---|
+| POST | `/api/admin/stocks` | `{ insumoId, almacenId, cantidad }` (sin cambios; ahora deriva el autor del JWT y registra la traza) | `201` `StockResponseDTO` | — |
+| GET | `/api/admin/stocks/movimientos` | — | `200` `[{ id, insumoId, nombreInsumo, unidad, almacenId, nombreAlmacen, cantidad, fecha, registradoPor, estado }]` | — |
+| POST | `/api/admin/stocks/deshacer` | — | `200` `StockResponseDTO` (saldo tras revertir) | `409 {error}` sin ingresos que deshacer o saldo ya consumido |
+
+### Métricas del mesero — `PedidoController` (`/api/pedidos`)
+
+| Método | Ruta | Auth | Response 2xx |
+|---|---|---|---|
+| GET | `/api/pedidos/mis-metricas` | `ROLE_MESERO` | `200` `{ pedidosAtendidos, totalVendido, ticketPromedio, productoEstrella }` (del día) |
+
+### Usuarios (contrato corregido) — `UsuarioController` (`/api/admin/usuarios`, `ROLE_ADMIN`)
+
+| Método | Ruta | Request | Response 2xx | Errores |
+|---|---|---|---|---|
+| PUT | `/api/admin/usuarios/{id}` | `{ nombreUsuario?, apellidoUsuario?, correoUsuario?, telefonoUsuario?, rol?, claveUsuario? }` (`ActualizarUsuarioRequestDTO`; `claveUsuario` vacío ⇒ no cambia la clave) | `200` (vacío) | `404` id inexistente |
+| DELETE | `/api/admin/usuarios/{id}` | — (autor del JWT) | `200` (vacío) — **borrado lógico** (`activo=false`) | `409 {error}` auto-borrado o último ADMIN |
+
+> El `DELETE /api/admin/usuarios` con `{ correo }` en el body y su `DeleteUserDTO`
+> **fueron eliminados** (reemplazados por `DELETE /{id}`). Los errores 409 los emite
+> `ReglaNegocioException` vía `GlobalExceptionHandler`. **Nota a backend (Jose/Iam/Jonathan):**
+> este cambio quita el endpoint legacy de borrado.
+
 ---
 Anterior: [« 04 · Base de datos](04_database.md) · Siguiente: [07 · Seguridad »](07_security.md)

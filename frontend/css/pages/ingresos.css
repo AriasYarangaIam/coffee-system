@@ -1,0 +1,57 @@
+/* Página de Ingresos (BI del admin) */
+
+.ingresos-comp-header,
+.ingresos-boletas-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.ingresos-boletas-header {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 0;
+}
+
+.ingresos-mes-picker {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+.ingresos-mes-picker .form-input { height: 38px; width: auto; }
+
+.ingresos-comp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.ingresos-comp-cell {
+  padding: var(--spacing-md);
+  background: var(--color-surface-high);
+  border-radius: var(--border-radius-md);
+}
+
+.ingresos-var {
+  display: inline-block;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+.ingresos-var--up   { color: var(--color-success); }
+.ingresos-var--down { color: var(--color-danger); }
+
+.ingresos-rango {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+.ingresos-rango .form-input { height: 38px; width: auto; }
+
+.chart-container {
+  position: relative;
+  width: 100%;
+}

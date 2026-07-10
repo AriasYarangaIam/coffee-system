@@ -13,5 +13,4 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuarios, Long> {
     Optional<Usuarios> findByCorreoUsuario(String correoUsuario);
     List<Usuarios> findByRoles_NombreRol(String nombreRol);
-    void deleteByCorreoUsuario(String correo);
 }

@@ -100,5 +100,19 @@ integre en el Sprint 2.
 > Diferido sin riesgo de nota: migraciones versionadas (B-21), tipos de insumo
 > fraccionarios (B-19), zona horaria (B-20). Quedan en 09 para después de la entrega.
 
+### Ciclo extra (2026-07-10) — Ingresos, traza de stock, métricas y guardas ✅
+
+| # | Tarea | Estructura / Nota | Estado |
+|---|---|---|---|
+| E1 | **RF-DS-03 Pila en Java** (`tad/Pila`+`PilaEnlazada`, TAD propio) para deshacer el último ingreso de stock | Pila LIFO, test `PilaEnlazadaTest` | ✅ |
+| E2 | Entidad `MovimientoStock` + `POST /stocks/deshacer` + `GET /stocks/movimientos` ("Últimos Ingresos") | requiere `db/001_movimientos_stock.sql` | ✅ |
+| E3 | Módulo de ingresos: `/reportes/ingresos/comparativa`, `/ingresos/semanal`, `/boletas` (DTOs en `BigDecimal`) | reutiliza `sumarVentasEntre` | ✅ |
+| E4 | `GET /pedidos/mis-metricas` (turno del mesero: pedidos, total, ticket promedio, estrella) | — | ✅ |
+| E5 | Usuarios: `PUT`/`DELETE /admin/usuarios/{id}`; borrado **lógico** (`activo`); guardas 409 (auto-borrado, último admin); quitado `DELETE` legacy con body y `CascadeType.REMOVE` | requiere `db/002_usuarios_activo.sql` | ✅ |
+
+> **Antes de arrancar el back tras este ciclo:** ejecutar en Supabase `backend/db/001` y `002`
+> (`ddl-auto: validate`). Suite completa: **55 tests verdes** (`./mvnw test`). Pendiente de nota:
+> demo e2e integrada. `DELETE` legacy de usuarios eliminado — avisar a Jose/Iam/Jonathan en el PR.
+
 ---
 Anterior: [« 07 · Seguridad](07_security.md) · Siguiente: [09 · Backlog de brechas »](09_backlog_brechas.md)

@@ -2,6 +2,7 @@ package com.coffee.backend.controller;
 
 import com.coffee.backend.dto.request.PedidoRequestDTO;
 import com.coffee.backend.dto.response.BoletaResponseDTO;
+import com.coffee.backend.dto.response.MisMetricasResponseDTO;
 import com.coffee.backend.dto.response.PedidoListadoResponseDTO;
 import com.coffee.backend.dto.response.PedidoResponseDTO;
 import com.coffee.backend.service.PedidoService;
@@ -43,5 +44,13 @@ public class PedidoController {
     @GetMapping("/{id}/boleta")
     public ResponseEntity<BoletaResponseDTO> obtenerBoleta(@PathVariable Long id) {
         return ResponseEntity.ok(pedidoService.obtenerBoleta(id));
+    }
+
+    // Métricas del turno del mesero autenticado (día en curso).
+    @PreAuthorize("hasRole('MESERO')")
+    @GetMapping("/mis-metricas")
+    public ResponseEntity<MisMetricasResponseDTO> misMetricas(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(pedidoService.misMetricas(userDetails.getUsername()));
     }
 }

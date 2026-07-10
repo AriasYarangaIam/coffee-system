@@ -171,3 +171,23 @@
   background: var(--color-border);
   color: var(--color-text);
 }
+
+/* Lista de ingredientes con bajo stock (dashboard) */
+.stock-alert-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.stock-alert-item:last-child { border-bottom: none; }
+.stock-alert-item__name { font-weight: 500; }
+.stock-alert-item__qty {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #92400E;
+  background: #FEF3C7;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+}

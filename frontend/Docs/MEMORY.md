@@ -33,14 +33,24 @@ un `.html` por pantalla + un controlador en `js/pages/`. Detalle en [00_index.md
 
 ## Gotchas (no tropezar de nuevo)
 
-- El back ya expone `/admin/{productos,insumos,stocks,usuarios,categorias,almacenes}` y
-  ahora **`/admin/dashboard`** (Sprint 2 ✅: `{ totalVentasDia, totalPedidosDia,
-  productoEstrella, stockBajo:[{nombreInsumo, cantidad, unidad}] }`; `unidad` puede venir
-  `null`). `GET /api/productos` ya lo lee ADMIN además de MESERO. **Aún falta**
-  `/admin/reportes/mensual` (matriz, tarea de Jonathan): `dashboard.js` lo pide en el mismo
-  `Promise.all` que `/admin/dashboard`, así que **mientras ese GET no exista el panel no
-  pinta** aunque el dashboard ya responda.
-- `usuarios.js` parte el nombre por espacios (corrompe compuestos) y lee `rol`/`usuarioId` que el DTO no trae.
+- El back expone `/admin/{productos,insumos,stocks,usuarios,categorias,almacenes,dashboard}` y
+  **`/admin/reportes/mensual` ya existe** (la nota antigua de que rompía el `Promise.all` de
+  `dashboard.js` **ya no aplica**). `GET /api/productos` lo lee ADMIN además de MESERO.
+- **La sesión guarda `nombreCompleto`**, no `nombre`. Los sidebars leen
+  `obtenerUsuario().nombreCompleto` (antes leían `.nombre` y el nombre salía vacío en todas las páginas).
+- **Pantalla nueva `pages/admin/ingresos.html`** (BI admin): comparativa mes vs anterior
+  (`/admin/reportes/ingresos/comparativa`), gráfico semanal (`/admin/reportes/ingresos/semanal`,
+  Chart.js) y tabla de boletas con filtro de fechas (`/admin/reportes/boletas`). Enlazada en el
+  sidebar de las 6 páginas admin.
+- **Stock**: "Últimos Ingresos" se puebla desde `/admin/stocks/movimientos` (antes era un spinner
+  eterno, código que no existía) y el botón "Deshacer" llama `/admin/stocks/deshacer`.
+- **Mesero**: `mis-pedidos.js` cablea el modal de detalle, el botón Refrescar y las métricas del
+  turno (`/pedidos/mis-metricas`, KPIs arriba de la tabla). El POS (`pedidos.js`) suma filtro por
+  categoría (chips) y pulso al agregar. La **Pila del carrito sigue en JS** (RF-DS-03 front).
+- **Usuarios**: editar/eliminar apuntan a `/admin/usuarios/{id}` (antes rotos). La propia fila del
+  admin no ofrece "Eliminar" (badge "Tú"); el backend igual lo rechaza con 409.
+- Render con `innerHTML` escapa datos de usuario con `escaparHtml` (`js/utils/dom.js`) — usarlo en
+  toda tabla nueva (B-F-11).
 
 ## Decisiones
 
@@ -50,5 +60,8 @@ un `.html` por pantalla + un controlador en `js/pages/`. Detalle en [00_index.md
 
 ## Próximos pasos
 
-Sprint 1 cerrado. Pasar al **Sprint 2 (F7–F11)**, empezando por **F7** (Pila para deshacer
-en el carrito, RF-DS-03) que es 100% front y no depende del back.
+Sprints 1 y 2 cerrados. Añadido este ciclo: pantalla de ingresos (BI admin), historial+deshacer
+de stock, métricas y modal del mesero, guarda de auto-borrado en usuarios, y el arreglo del nombre
+en el sidebar. **Requiere el backend al día** (con `db/001` y `db/002` aplicados en Supabase).
+Deuda viva: escapar `innerHTML` en las tablas antiguas (B-F-11), manejo de 403 (B-F-13) y
+responsive/media queries (no hay ninguna hoy).

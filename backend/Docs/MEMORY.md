@@ -45,25 +45,46 @@ PostgreSQL en Supabase. Auth JWT stateless. Detalle en [00_index.md](00_index.md
 - `GET /api/admin/dashboard` (B-05 ✅, Sprint 2): KPIs admin →
   `{ totalVentasDia, totalPedidosDia, productoEstrella, stockBajo:[{nombreInsumo, cantidad, unidad}] }`.
   Ventas/pedidos = del día; producto estrella = más vendido del mes; stock bajo = `cantidad < 10`
-  (umbral constante, `Insumos` no modela `unidad` → llega `null`). El front lo consume en
-  `dashboard.js` junto a `/api/admin/reportes/mensual` (matriz RF-DS-02, tarea de Jonathan,
-  aún pendiente: si falta, el `Promise.all` del front no pinta el panel).
+  (umbral constante, `Insumos` no modela `unidad` → llega `null`).
+- **`GET /api/admin/reportes/mensual` SÍ existe** (`ReporteController` + `ReporteServiceImpl.java:50`,
+  matriz `double[][]`, RF-DS-02). La nota antigua de "pendiente / rompe el `Promise.all`" **ya no aplica**.
+- **DDL primero (crítico)**: `ddl-auto: validate` no crea tablas. Antes de arrancar tras estos
+  cambios hay que ejecutar en Supabase `backend/db/001_movimientos_stock.sql` y
+  `002_usuarios_activo.sql` (ver `backend/db/README.md`), o el arranque falla la validación.
+- **Módulo de ingresos** (extiende `ReporteController`, ADMIN): `GET /reportes/ingresos/comparativa?anio&mes`
+  (mes vs anterior, `variacionPorcentual` null si el previo fue 0), `GET /reportes/ingresos/semanal?desde&hasta`,
+  `GET /reportes/boletas?desde&hasta`. DTOs exponen dinero como `BigDecimal` (solo presentación; la
+  acumulación sigue en `double`).
+- **Stock con traza + deshacer** (RF-DS-03): `POST /admin/stocks` ahora registra un `MovimientoStock`
+  y lo apila; `GET /admin/stocks/movimientos` ("Últimos Ingresos") y `POST /admin/stocks/deshacer`
+  (LIFO: revierte saldo y marca `REVERSADO`; 409 si el saldo ya se consumió o la pila está vacía).
+  La **Pila propia** (`tad/Pila`+`PilaEnlazada`) reside en `StockUndoServiceImpl` (singleton, estado
+  en memoria de UNA instancia) y se rehidrata al arrancar con `StockUndoBootstrapRunner`.
+- **Métricas del mesero**: `GET /api/pedidos/mis-metricas` (MESERO, del día) →
+  `{ pedidosAtendidos, totalVendido, ticketPromedio, productoEstrella }`.
+- **Usuarios**: contrato alineado con el front → `PUT /api/admin/usuarios/{id}` y
+  `DELETE /api/admin/usuarios/{id}` (el viejo `DELETE` con correo en el body y `DeleteUserDTO`
+  **fueron eliminados**). Borrado = **lógico** (`usuarios.activo`, un inactivo no loguea ni se lista;
+  quitado `CascadeType.REMOVE` sobre `pedidos` para no perder el histórico). Guardas 409
+  (`ReglaNegocioException`): no auto-eliminarse, no eliminar al último ADMIN.
 - Dinero como `Double`/`double precision` (B-18); insumos enteros (B-19).
-- Esquema por `ddl-auto`, sin migraciones (B-21).
+- Esquema por `ddl-auto: validate`; migraciones a mano en `backend/db/*.sql` (B-21, sin Flyway).
 
 ## Decisiones
 
 - SDD brownfield: el código es la verdad as-built; la spec
   (`PROMPT_MAESTRO_CAFETERIA_MYPE.md`) arbitra alcance y contrato. DDL real de Supabase
   = verdad del modelo de datos.
-- Estructuras del sílabo a implementar en backend: **matriz** (reporte mensual, RF-DS-02)
-  y **cola FIFO+prioridad** de despacho (RF-DS-04). Ver [02](02_requirements.md).
+- Estructuras del sílabo en backend: **matriz** (reporte mensual, RF-DS-02), **cola FIFO+prioridad**
+  de despacho (RF-DS-04) y ahora **Pila** (deshacer ingreso de stock, RF-DS-03 aplicada también en
+  Java, con consumidor real). Ver [02](02_requirements.md).
+- Deshacer marca `estado=REVERSADO`, no borra: "Últimos Ingresos" es un filtro trivial y se
+  conserva la auditoría. La Pila es la estructura residente; la tabla es la verdad durable.
 
 ## Próximos pasos
 
-Sprint S1 ✅ completado al 100% (B-01..B-08, B-11, B-12, B-14) + solicitud del front de
-listas atendida (`GET /api/admin/categorias` y `/api/admin/almacenes`). **Sprint S2** ([08](08_sprints.md)):
-Jose ✅ `GET /api/admin/dashboard` (B-05) y ampliar `GET /api/productos` a ADMIN (B-10).
-Pendiente S2: reporte mensual matriz (RF-DS-02) y cola FIFO+prioridad (RF-DS-04, Jonathan;
-TAD `tad/Cola`+`tad/ColaPrioridad` aún sin mergear a develop → integración de despacho de
-Iam bloqueada), precisión monetaria `BigDecimal` (B-18, Iam, si da tiempo).
+Sprints S1/S2 cerrados. Añadido este ciclo: traza+deshacer de stock (Pila RF-DS-03), módulo de
+ingresos (comparativa/semanal/boletas), métricas del mesero, y guardas + borrado lógico de
+usuarios. **Antes de arrancar: correr `backend/db/001` y `002` en Supabase.** 55 tests en verde
+(`./mvnw test`). Deuda viva: dinero a `BigDecimal`/`numeric` en el esquema (B-18) y migraciones
+versionadas con Flyway (B-21).
