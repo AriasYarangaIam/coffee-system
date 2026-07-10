@@ -21,6 +21,7 @@
       </div>
       <nav class="sidebar-nav">
         <a href="/pages/admin/dashboard.html" class="sidebar-link"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+        <a href="/pages/admin/ingresos.html" class="sidebar-link"><span class="material-symbols-outlined">payments</span>Ingresos</a>
         <a href="/pages/admin/productos.html" class="sidebar-link"><span class="material-symbols-outlined">coffee</span>Productos</a>
         <a href="/pages/admin/insumos.html" class="sidebar-link active"><span class="material-symbols-outlined">category</span>Insumos</a>
         <a href="/pages/admin/stock.html" class="sidebar-link"><span class="material-symbols-outlined">inventory_2</span>Control de Stock</a>
@@ -120,7 +121,7 @@
   <script type="module" src="/js/pages/insumos.js"></script>
   <script type="module">
     import { obtenerUsuario, logout } from '/js/core/auth.js';
-    document.getElementById('sidebar-usuario').textContent = obtenerUsuario().nombre ?? '';
+    document.getElementById('sidebar-usuario').textContent = obtenerUsuario().nombreCompleto ?? '';
     document.getElementById('btn-logout').addEventListener('click', logout);
   </script>
 </body>

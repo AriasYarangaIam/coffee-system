@@ -1,6 +1,7 @@
 package com.coffee.backend.web;
 
 import com.coffee.backend.controller.ReporteController;
+import com.coffee.backend.dto.response.ComparativaMensualResponseDTO;
 import com.coffee.backend.dto.response.ReporteMensualResponseDTO;
 import com.coffee.backend.exception.GlobalExceptionHandler;
 import com.coffee.backend.security.JwtUtil;
@@ -20,8 +21,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -72,6 +75,33 @@ class ReporteControllerWebMvcTest {
     @WithMockUser(roles = "MESERO")
     void meseroObtieneReporte_denegado403() throws Exception {
         mockMvc.perform(get("/api/admin/reportes/mensual"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void adminObtieneComparativa_shape() throws Exception {
+        given(reporteService.comparativa(any(), any())).willReturn(
+                new ComparativaMensualResponseDTO(2026, 7,
+                        new BigDecimal("120.00"), new BigDecimal("100.00"), new BigDecimal("20.00")));
+
+        mockMvc.perform(get("/api/admin/reportes/ingresos/comparativa"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalMesActual").value(120.00))
+                .andExpect(jsonPath("$.variacionPorcentual").value(20.00));
+    }
+
+    @Test
+    @WithMockUser(roles = "MESERO")
+    void meseroObtieneComparativa_denegado403() throws Exception {
+        mockMvc.perform(get("/api/admin/reportes/ingresos/comparativa"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "MESERO")
+    void meseroObtieneBoletas_denegado403() throws Exception {
+        mockMvc.perform(get("/api/admin/reportes/boletas?desde=2026-07-01&hasta=2026-07-31"))
                 .andExpect(status().isForbidden());
     }
 

@@ -5,6 +5,7 @@ import com.coffee.backend.dto.request.PedidoRequestDTO;
 import com.coffee.backend.dto.response.BoletaResponseDTO;
 import com.coffee.backend.dto.response.DetalleBoletaResponseDTO;
 import com.coffee.backend.dto.response.PedidoDespachoTokenView;
+import com.coffee.backend.dto.response.MisMetricasResponseDTO;
 import com.coffee.backend.dto.response.PedidoListadoResponseDTO;
 import com.coffee.backend.dto.response.PedidoResponseDTO;
 import com.coffee.backend.entity.*;
@@ -13,9 +14,13 @@ import com.coffee.backend.repository.*;
 import com.coffee.backend.service.PedidoDespachoService;
 import com.coffee.backend.service.PedidoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -176,6 +181,32 @@ public class PedidoServiceImpl implements PedidoService {
                     );
                 })
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MisMetricasResponseDTO misMetricas(String correoUsuarioLogueado) {
+        // Turno = día en curso (la pantalla es "Mis Pedidos del Turno").
+        LocalDateTime inicio = LocalDate.now().atStartOfDay();
+        LocalDateTime fin = inicio.plusDays(1);
+
+        long pedidos = pedidosRepository.contarPedidosDeMeseroEntre(correoUsuarioLogueado, inicio, fin);
+        double total = pedidosRepository.sumarVentasDeMeseroEntre(correoUsuarioLogueado, inicio, fin);
+        // Ticket promedio: guard contra división por cero cuando aún no hay pedidos.
+        double promedio = (pedidos == 0) ? 0.0 : total / pedidos;
+
+        List<String> estrella = pedidosRepository.productosMasVendidosDeMesero(
+                correoUsuarioLogueado, inicio, fin, PageRequest.of(0, 1));
+
+        return new MisMetricasResponseDTO(
+                pedidos,
+                dinero(total),
+                dinero(promedio),
+                estrella.isEmpty() ? null : estrella.get(0));
+    }
+
+    private static BigDecimal dinero(double valor) {
+        return BigDecimal.valueOf(valor).setScale(2, RoundingMode.HALF_UP);
     }
 
     // Alias de boleta único y corto (UUID de 8 chars en mayúsculas).

@@ -88,3 +88,35 @@ tr.stock-row-critico:hover {
   border-radius: var(--border-radius-sm);
   white-space: nowrap;
 }
+
+/* Últimos ingresos (traza de movimientos) */
+.stock-mov {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.stock-mov:last-child { border-bottom: none; }
+
+.stock-mov__main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+.stock-mov__name { font-weight: 500; }
+.stock-mov__qty {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #27500A;
+  background: #EAF3DE;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+}
+.stock-mov__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-top: 3px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}

@@ -52,6 +52,17 @@ tiempo es **compartida**.
 > Diferido sin riesgo de nota: unificar patrones de modal (B-F-10), escape XSS (B-F-11),
 > búsqueda/filtros (B-F-14). Quedan en [09](09_backlog_brechas.md) para después.
 
+### Ciclo extra (2026-07-10) — Ingresos, stock, mesero y arreglos ✅
+
+| # | Tarea | Nota | Estado |
+|---|---|---|---|
+| FE1 | **Pantalla nueva `ingresos.html`** (BI admin): comparativa mes vs anterior, gráfico semanal (Chart.js) y tabla de boletas con filtro de fechas | enlazada en el sidebar de las 6 páginas admin | ✅ |
+| FE2 | Stock: "Últimos Ingresos" real (`/admin/stocks/movimientos`) + botón "Deshacer" (`/admin/stocks/deshacer`) | antes era un spinner eterno | ✅ |
+| FE3 | Mesero: cablear modal de detalle y botón Refrescar en `mis-pedidos`; KPIs del turno (`/pedidos/mis-metricas`); POS con filtro por categoría y pulso al agregar | — | ✅ |
+| FE4 | Usuarios: la propia fila del admin no ofrece "Eliminar" (el back devuelve 409 igual) | guarda de cortesía en UI | ✅ |
+| FE5 | Fix: el nombre del usuario no salía en ningún sidebar (`.nombre` → `.nombreCompleto`); quitado el enlace muerto "¿Olvidó su contraseña?" del login | transversal a 7 HTML | ✅ |
+| FE6 | Helper `escaparHtml` en `js/utils/dom.js`, usado en todo el render nuevo con `innerHTML` (B-F-11 en el código nuevo) | — | ✅ |
+
 ## Definition of Done (front)
 
 - [ ] La pantalla consume el endpoint real del back (sin datos hardcodeados de más).
