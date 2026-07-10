@@ -92,6 +92,26 @@ class PedidoUndoServiceImplTest {
     }
 
     @Test
+    void undo_conUnSoloSnapshot_remueveEntradaDelMapa() throws Exception {
+        service.push("luis", snapshot("A", 1));
+        assertThat(obtenerStack("luis")).isNotNull();
+
+        service.undo("luis");
+
+        assertThat(obtenerStack("luis")).isNull();
+    }
+
+    @Test
+    void clearForUser_remueveEntradaDelMapa() throws Exception {
+        service.push("luis", snapshot("A", 1));
+        assertThat(obtenerStack("luis")).isNotNull();
+
+        service.clearForUser("luis");
+
+        assertThat(obtenerStack("luis")).isNull();
+    }
+
+    @Test
     void push_conUsuarioVacio_lanzaExcepcion() {
         assertThatThrownBy(() -> service.push("", snapshot("A", 1)))
                 .isInstanceOf(IllegalArgumentException.class);

@@ -58,6 +58,7 @@ public class PedidoUndoServiceImpl implements PedidoUndoService {
             } else {
                 log.warn("Intento de undo con pila vacía para usuario={}", username);
             }
+            removerSiVacio(stack, username);
             return snapshot;
         }
     }
@@ -68,6 +69,7 @@ public class PedidoUndoServiceImpl implements PedidoUndoService {
         synchronized (stack) {
             evitarSiExpirado(stack);
             stack.lastAccessedAt = Instant.now();
+            removerSiVacio(stack, username);
             return new UndoState(!stack.pila.isEmpty(), stack.pila.size());
         }
     }
@@ -80,6 +82,7 @@ public class PedidoUndoServiceImpl implements PedidoUndoService {
             stack.pila.clear();
             stack.lastAccessedAt = Instant.now();
             log.info("Undo stack limpiado para usuario={}", username);
+            removerSiVacio(stack, username);
         }
     }
 
@@ -93,6 +96,12 @@ public class PedidoUndoServiceImpl implements PedidoUndoService {
         if (Duration.between(stack.lastAccessedAt, ahora).compareTo(TTL) > 0) {
             log.info("Pila de undo expirada; se limpia antes de continuar");
             stack.pila.clear();
+        }
+    }
+
+    private void removerSiVacio(UserUndoStack stack, String username) {
+        if (stack.pila.isEmpty()) {
+            stacks.remove(username, stack);
         }
     }
 
