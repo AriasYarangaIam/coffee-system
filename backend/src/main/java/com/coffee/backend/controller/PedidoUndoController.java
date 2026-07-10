@@ -31,7 +31,7 @@ public class PedidoUndoController {
 
     private final PedidoUndoService pedidoUndoService;
 
-    @PreAuthorize("hasAnyRole('MESERO','ADMIN')")
+    @PreAuthorize("hasRole('MESERO')")
     @PostMapping("/push")
     public ResponseEntity<Void> push(
             @Valid @RequestBody CartSnapshotRequestDTO dto,
@@ -40,7 +40,7 @@ public class PedidoUndoController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PreAuthorize("hasAnyRole('MESERO','ADMIN')")
+    @PreAuthorize("hasRole('MESERO')")
     @PostMapping
     public ResponseEntity<UndoSnapshotResponseDTO> undo(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -49,7 +49,7 @@ public class PedidoUndoController {
         return ResponseEntity.ok(new UndoSnapshotResponseDTO(snapshot));
     }
 
-    @PreAuthorize("hasAnyRole('MESERO','ADMIN')")
+    @PreAuthorize("hasRole('MESERO')")
     @GetMapping
     public ResponseEntity<UndoStateResponseDTO> state(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -57,7 +57,7 @@ public class PedidoUndoController {
         return ResponseEntity.ok(new UndoStateResponseDTO(state.canUndo(), state.depth()));
     }
 
-    @PreAuthorize("hasAnyRole('MESERO','ADMIN')")
+    @PreAuthorize("hasRole('MESERO')")
     @DeleteMapping
     public ResponseEntity<Void> clear(
             @AuthenticationPrincipal UserDetails userDetails) {

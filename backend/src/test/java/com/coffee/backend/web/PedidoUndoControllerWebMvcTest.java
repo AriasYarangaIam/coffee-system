@@ -114,9 +114,9 @@ class PedidoUndoControllerWebMvcTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@coffee.com")
-    void adminPuedeConsultarEstado_ok200() throws Exception {
-        given(pedidoUndoService.state("admin@coffee.com"))
+    @WithMockUser(roles = "MESERO", username = "luis@coffee.com")
+    void meseroPuedeConsultarEstado_ok200() throws Exception {
+        given(pedidoUndoService.state("luis@coffee.com"))
                 .willReturn(new UndoState(true, 2));
 
         mockMvc.perform(get("/api/pedidos/undo"))
