@@ -12,6 +12,7 @@ import com.coffee.backend.exception.StockInsuficienteException;
 import com.coffee.backend.repository.*;
 import com.coffee.backend.service.PedidoDespachoService;
 import com.coffee.backend.service.PedidoService;
+import com.coffee.backend.service.PedidoUndoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,7 @@ public class PedidoServiceImpl implements PedidoService {
     private final ProductoRepository productosRepository;
     private final UsuarioRepository usuariosRepository;
     private final PedidoDespachoService pedidoDespachoService;
+    private final PedidoUndoService pedidoUndoService;
 
     // DetallePedidoRepository eliminado — usa Cascada
 
@@ -110,7 +112,10 @@ public class PedidoServiceImpl implements PedidoService {
         // 5. UN SOLO GUARDADO — Spring guarda pedido y detalles por Cascada
         pedidosRepository.save(pedido);
 
-        // 6. Encolar para despacho (RF-DS-04). Última sentencia tras el save: si el save
+        // 6. Limpiar pila de deshacer del mesero tras confirmar el pedido.
+        pedidoUndoService.clearForUser(correoUsuarioLogueado);
+
+        // 7. Encolar para despacho (RF-DS-04). Última sentencia tras el save: si el save
         //    falla, el rollback ocurre antes y la cola en memoria no recibe un token fantasma.
         pedidoDespachoService.enqueueDespacho(new PedidoDespachoTokenView(
                 pedido.getPedidoId(), pedido.getAliasTicket(), pedido.getFechaPedido()));
