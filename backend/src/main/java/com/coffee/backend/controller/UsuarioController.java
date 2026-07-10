@@ -1,6 +1,6 @@
 package com.coffee.backend.controller;
 
-import com.coffee.backend.dto.request.DeleteUserDTO;
+import com.coffee.backend.dto.request.ActualizarUsuarioRequestDTO;
 import com.coffee.backend.dto.request.RegistrarUsuarioRequestDTO;
 import com.coffee.backend.dto.request.UsuarioPatchDTO;
 import com.coffee.backend.dto.response.UsuarioResponseDTO;
@@ -33,10 +33,22 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioServiceImple.obtenerUsuarios());
     }
 
+    // Edición de un usuario por id desde el panel admin.
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping
-    public ResponseEntity<?> deleteUsuarios(@RequestBody DeleteUserDTO deleteUserDTO) {
-        usuarioServiceImple.deleteMesero(deleteUserDTO.correo());
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarPorId(@PathVariable Long id,
+                                             @RequestBody ActualizarUsuarioRequestDTO dto) {
+        usuarioServiceImple.actualizarPorId(id, dto);
+        return ResponseEntity.ok().build();
+    }
+
+    // Borrado lógico por id. El admin autenticado (del JWT) no puede borrarse a sí mismo
+    // ni dejar al sistema sin ADMIN (ambos ⇒ 409).
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarPorId(@PathVariable Long id,
+                                           @AuthenticationPrincipal UserDetails actor) {
+        usuarioServiceImple.eliminarPorId(id, actor.getUsername());
         return ResponseEntity.ok().build();
     }
 

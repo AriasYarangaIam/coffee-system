@@ -72,4 +72,87 @@ public interface PedidoRepository extends JpaRepository<Pedidos,Long> {
     List<String> productosMasVendidos(@Param("inicio") LocalDateTime inicio,
                                        @Param("fin") LocalDateTime fin,
                                        Pageable pageable);
+
+    // --- Ingresos / BI del admin (módulo de ingresos) ---
+
+    // Proyección de una semana (fecha de inicio de semana, ventas del periodo).
+    interface IngresoSemana {
+        java.time.LocalDate getSemana();
+        double getTotal();
+    }
+
+    // Ventas agrupadas por semana ISO (lunes). Alias en minúscula: Postgres pliega los
+    // identificadores sin comillas, como en ventasPorProductoYDia.
+    @Query(value = """
+            SELECT date_trunc('week', p.fecha_pedido)::date AS semana,
+                   COALESCE(SUM(d.cantidad_pedida * d.precio_unitario), 0) AS total
+            FROM detalle_pedido d
+            JOIN pedidos p ON d.pedido_id = p.pedido_id
+            WHERE p.fecha_pedido >= :inicio AND p.fecha_pedido < :fin
+            GROUP BY 1
+            ORDER BY 1
+            """, nativeQuery = true)
+    List<IngresoSemana> ingresosPorSemana(@Param("inicio") LocalDateTime inicio,
+                                          @Param("fin") LocalDateTime fin);
+
+    // Proyección de una boleta emitida (resumen para el detalle transaccional).
+    interface BoletaResumen {
+        Long getPedido();
+        String getAlias();
+        LocalDateTime getFecha();
+        String getMesero();
+        double getTotal();
+    }
+
+    // Todas las boletas del rango con su mesero y total. LEFT JOIN a detalle para no
+    // perder pedidos sin líneas (total 0).
+    @Query(value = """
+            SELECT p.pedido_id AS pedido,
+                   p.alias_ticket AS alias,
+                   p.fecha_pedido AS fecha,
+                   (u.nombre_usuario || ' ' || u.apellido_usuario) AS mesero,
+                   COALESCE(SUM(d.cantidad_pedida * d.precio_unitario), 0) AS total
+            FROM pedidos p
+            JOIN usuarios u ON p.usuario_id = u.usuario_id
+            LEFT JOIN detalle_pedido d ON d.pedido_id = p.pedido_id
+            WHERE p.fecha_pedido >= :inicio AND p.fecha_pedido < :fin
+            GROUP BY p.pedido_id, p.alias_ticket, p.fecha_pedido, u.nombre_usuario, u.apellido_usuario
+            ORDER BY p.fecha_pedido DESC
+            """, nativeQuery = true)
+    List<BoletaResumen> boletasEntre(@Param("inicio") LocalDateTime inicio,
+                                     @Param("fin") LocalDateTime fin);
+
+    // --- Métricas del turno del mesero (filtradas por su correo y rango del día) ---
+
+    @Query("""
+            SELECT COUNT(p) FROM Pedidos p
+            WHERE p.usuario.correoUsuario = :correo
+              AND p.fechaPedido >= :inicio AND p.fechaPedido < :fin
+            """)
+    long contarPedidosDeMeseroEntre(@Param("correo") String correo,
+                                    @Param("inicio") LocalDateTime inicio,
+                                    @Param("fin") LocalDateTime fin);
+
+    @Query("""
+            SELECT COALESCE(SUM(d.cantidadPedida * d.precioUnitario), 0)
+            FROM DetallePedido d
+            WHERE d.pedidos.usuario.correoUsuario = :correo
+              AND d.pedidos.fechaPedido >= :inicio AND d.pedidos.fechaPedido < :fin
+            """)
+    double sumarVentasDeMeseroEntre(@Param("correo") String correo,
+                                    @Param("inicio") LocalDateTime inicio,
+                                    @Param("fin") LocalDateTime fin);
+
+    @Query("""
+            SELECT d.productos.nombreProducto
+            FROM DetallePedido d
+            WHERE d.pedidos.usuario.correoUsuario = :correo
+              AND d.pedidos.fechaPedido >= :inicio AND d.pedidos.fechaPedido < :fin
+            GROUP BY d.productos.nombreProducto
+            ORDER BY SUM(d.cantidadPedida) DESC
+            """)
+    List<String> productosMasVendidosDeMesero(@Param("correo") String correo,
+                                              @Param("inicio") LocalDateTime inicio,
+                                              @Param("fin") LocalDateTime fin,
+                                              Pageable pageable);
 }

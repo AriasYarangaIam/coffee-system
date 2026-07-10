@@ -45,14 +45,20 @@ El gemelo del front está en [`../../frontend/Docs/09_backlog_brechas.md`](../..
 | B-18 | Dinero como `double precision` (D1) | Migrar a `NUMERIC(10,2)` / `BigDecimal` |
 | B-19 | `cantidad_usada`/`cantidad` `bigint` (D2) | `NUMERIC(10,3)` si se requieren insumos fraccionarios |
 | B-20 | `fecha_pedido` sin zona (D3) | `timestamptz` (UTC) |
-| B-21 | Sin migraciones versionadas (D4) | Adoptar Flyway/Liquibase; fijar `ddl-auto=validate` en prod |
+| B-21 | Sin migraciones versionadas (D4) | 🟡 **Parcial** (2026-07-10): se estrenó `backend/db/*.sql` versionado (a mano, sin Flyway). Falta adoptar Flyway con baseline |
+
+> Nueva (2026-07-10): borrar un usuario ya **no** arrastra sus pedidos — se quitó
+> `CascadeType.REMOVE` de `Usuarios.pedidos` y el borrado es lógico (`usuarios.activo`). Guardas
+> 409 (`ReglaNegocioException`): no auto-borrarse, no borrar al último ADMIN. El `DELETE` legacy
+> con correo en el body (`DeleteUserDTO`) se eliminó.
 
 ## E. Académico — estructuras pendientes (sílabo)
 
 | ID | Estructura | Estado | Nota |
 |---|---|---|---|
-| B-22 | RF-DS-02 Matriz reporte mensual (U1) | ⏳ | implementar junto con B-05 |
-| B-23 | RF-DS-04 Cola de despacho FIFO+prioridad (U3) | ⏳ | TAD propio en backend; cola lógica, sin estados de cocina |
+| B-22 | RF-DS-02 Matriz reporte mensual (U1) | ✅ | `ReporteServiceImpl` arma `double[][]`; `GET /admin/reportes/mensual` |
+| B-23 | RF-DS-04 Cola de despacho FIFO+prioridad (U3) | ✅ | TAD propio `tad/ColaPrioridad`; `GET /admin/despacho` |
+| B-26 | RF-DS-03 Pila en Java (U3) | ✅ | TAD propio `tad/Pila`+`PilaEnlazada`; deshacer último ingreso de stock (`POST /admin/stocks/deshacer`) |
 | B-24 | *(opcional)* Lista enlazada en detalle de pedido (U2) | 💡 | cubriría U2 del sílabo |
 | B-25 | *(opcional)* Árbol Categoría→Producto / ABB de búsqueda (U4) | 💡 | cubriría U4 del sílabo |
 

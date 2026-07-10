@@ -1,13 +1,21 @@
 package com.coffee.backend.service.implement;
 
+import com.coffee.backend.dto.response.BoletaResumenResponseDTO;
+import com.coffee.backend.dto.response.ComparativaMensualResponseDTO;
+import com.coffee.backend.dto.response.IngresoSemanalResponseDTO;
+import com.coffee.backend.dto.response.IngresoSemanalResponseDTO.SemanaIngreso;
 import com.coffee.backend.dto.response.ReporteMensualResponseDTO;
 import com.coffee.backend.repository.PedidoRepository;
+import com.coffee.backend.repository.PedidoRepository.BoletaResumen;
+import com.coffee.backend.repository.PedidoRepository.IngresoSemana;
 import com.coffee.backend.repository.PedidoRepository.VentaProductoDia;
 import com.coffee.backend.service.ReporteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,5 +65,65 @@ public class ReporteServiceImpl implements ReporteService {
         }
 
         return new ReporteMensualResponseDTO(productos, dias, celdas);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ComparativaMensualResponseDTO comparativa(Integer anio, Integer mes) {
+        LocalDate hoy = LocalDate.now();
+        int a = (anio == null) ? hoy.getYear() : anio;
+        int m = (mes == null) ? hoy.getMonthValue() : mes;
+
+        LocalDateTime inicioMes = LocalDate.of(a, m, 1).atStartOfDay();
+        LocalDateTime finMes = inicioMes.plusMonths(1);
+        LocalDateTime inicioPrev = inicioMes.minusMonths(1);
+
+        double actual = pedidoRepository.sumarVentasEntre(inicioMes, finMes);
+        double previo = pedidoRepository.sumarVentasEntre(inicioPrev, inicioMes);
+
+        // Sin ventas el mes previo no hay base para el porcentaje.
+        BigDecimal variacion = (previo == 0)
+                ? null
+                : dinero((actual - previo) / previo * 100.0);
+
+        return new ComparativaMensualResponseDTO(a, m, dinero(actual), dinero(previo), variacion);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public IngresoSemanalResponseDTO ingresosSemanales(LocalDate desde, LocalDate hasta) {
+        LocalDateTime inicio = desde.atStartOfDay();
+        LocalDateTime fin = hasta.plusDays(1).atStartOfDay(); // rango inclusivo en 'hasta'
+
+        List<IngresoSemana> filas = pedidoRepository.ingresosPorSemana(inicio, fin);
+
+        List<SemanaIngreso> semanas = new ArrayList<>(filas.size());
+        Double totalPrevio = null;
+        for (IngresoSemana fila : filas) {
+            double total = fila.getTotal();
+            BigDecimal variacion = (totalPrevio == null || totalPrevio == 0)
+                    ? null
+                    : dinero((total - totalPrevio) / totalPrevio * 100.0);
+            semanas.add(new SemanaIngreso(fila.getSemana(), dinero(total), variacion));
+            totalPrevio = total;
+        }
+        return new IngresoSemanalResponseDTO(semanas);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BoletaResumenResponseDTO> boletas(LocalDate desde, LocalDate hasta) {
+        LocalDateTime inicio = desde.atStartOfDay();
+        LocalDateTime fin = hasta.plusDays(1).atStartOfDay();
+        return pedidoRepository.boletasEntre(inicio, fin).stream()
+                .map(b -> new BoletaResumenResponseDTO(
+                        b.getPedido(), b.getAlias(), b.getFecha(), b.getMesero(), dinero(b.getTotal())))
+                .toList();
+    }
+
+    // Envuelve el double acumulado en la consulta a 2 decimales. Corrige la presentación,
+    // no la acumulación (los @Query siguen sumando en double); suficiente para esta app.
+    private static BigDecimal dinero(double valor) {
+        return BigDecimal.valueOf(valor).setScale(2, RoundingMode.HALF_UP);
     }
 }

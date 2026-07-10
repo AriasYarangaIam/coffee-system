@@ -147,19 +147,6 @@ body {
 }
 
 
-.logo_password {
-  display: block;
-  text-align: center;
-  margin-top: 18px;
-  font-size: .82rem;
-  color: var(--color-text-light);
-  text-decoration: none;
-}
-
-.logo_password:hover{
-  color: var(--color-mocha);
-}
-
 .form-group {
   display: flex;
   flex-direction: column;

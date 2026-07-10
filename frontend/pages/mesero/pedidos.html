@@ -38,6 +38,7 @@
           <div class="search-bar" style="margin-bottom:16px">
             <input type="text" id="input-buscar-producto-mesero" placeholder="Buscar producto...">
           </div>
+          <div class="filter-chips" id="filtro-categorias" style="margin-bottom:16px"></div>
           <div class="products-grid" id="productos-grid"></div>
         </section>
 
@@ -67,7 +68,7 @@
   <script type="module" src="/js/pages/pedidos.js"></script>
   <script type="module">
     import { obtenerUsuario, logout } from '/js/core/auth.js';
-    document.getElementById('sidebar-usuario').textContent = obtenerUsuario().nombre ?? '';
+    document.getElementById('sidebar-usuario').textContent = obtenerUsuario().nombreCompleto ?? '';
     document.getElementById('btn-logout').addEventListener('click', logout);
   </script>
 </body>

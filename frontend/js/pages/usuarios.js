@@ -1,8 +1,10 @@
-import { requireRole } from '../core/auth.js';
+import { requireRole, obtenerUsuario } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast, mostrarSpinner } from '../utils/dom.js';
 
 requireRole('ADMIN');
+
+const correoActual = obtenerUsuario().correo;
 
 const tablaBody = document.getElementById('usuarios-tbody');
 const btnNuevo = document.getElementById('btn-nuevo-usuario');
@@ -43,17 +45,24 @@ function renderizarTabla(usuarios) {
     tablaBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted" style="padding:24px">Sin usuarios registrados</td></tr>';
     return;
   }
-  tablaBody.innerHTML = usuarios.map(u => `
+  tablaBody.innerHTML = usuarios.map(u => {
+    const esYo = u.correoUsuario === correoActual;
+    // En la propia fila no se ofrece eliminar (el backend igual lo rechaza con 409).
+    const accionEliminar = esYo
+      ? '<span class="badge badge-pagado" style="margin-left:4px">Tú</span>'
+      : `<button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarUsuario(${u.usuarioId}, '${u.nombreUsuario}')">Eliminar</button>`;
+    return `
     <tr>
       <td>${u.nombreUsuario} ${u.apellidoUsuario}</td>
       <td>${u.correoUsuario}</td>
       <td><span class="badge ${u.rol === 'ADMIN' ? 'badge-pagado' : 'badge-pendiente'}">${u.rol}</span></td>
       <td style="text-align:right">
         <button class="btn btn-outline btn-sm" onclick="editarUsuario(${u.usuarioId})">Editar</button>
-        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarUsuario(${u.usuarioId}, '${u.nombreUsuario}')">Eliminar</button>
+        ${accionEliminar}
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 }
 
 // ── Modal crear/editar ─────────────────────────────────────────────────────
