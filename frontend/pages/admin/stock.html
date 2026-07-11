@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Stock — Cafetería MYPE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/pages/stock.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        Cafetería MYPE
+        <span id="sidebar-usuario"></span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/pages/admin/dashboard.html" class="sidebar-link"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+        <a href="/pages/admin/ingresos.html" class="sidebar-link"><span class="material-symbols-outlined">payments</span>Ingresos</a>
+        <a href="/pages/admin/productos.html" class="sidebar-link"><span class="material-symbols-outlined">coffee</span>Productos</a>
+        <a href="/pages/admin/insumos.html" class="sidebar-link"><span class="material-symbols-outlined">category</span>Insumos</a>
+        <a href="/pages/admin/stock.html" class="sidebar-link active"><span class="material-symbols-outlined">inventory_2</span>Control de Stock</a>
+        <a href="/pages/admin/usuarios.html" class="sidebar-link"><span class="material-symbols-outlined">group</span>Usuarios</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" id="btn-logout" style="width:100%">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="page-content">
+        <div class="section-header" style="margin-bottom:var(--spacing-lg)">
+          <div>
+            <h1 class="section-title">Control de Stock</h1>
+            <p class="text-muted text-sm" style="margin-top:4px">Gestiona y monitorea el inventario de insumos</p>
+          </div>
+        </div>
+
+        <div class="stock-layout">
+          <!-- Columna izquierda: Formulario + Historial -->
+          <div style="display:flex;flex-direction:column;gap:var(--spacing-lg)">
+
+            <!-- Formulario ingreso -->
+            <div class="card">
+              <h2 class="font-semibold" style="margin-bottom:var(--spacing-lg);display:flex;align-items:center;gap:8px">
+                <span class="material-symbols-outlined" style="color:var(--color-primary)">add_box</span>
+                Registrar Ingreso
+              </h2>
+              <form id="form-ingreso">
+                <div class="form-group" style="margin-bottom:16px">
+                  <label class="form-label" for="select-insumo">Insumo</label>
+                  <select class="form-select" id="select-insumo" required>
+                    <option value="">Cargando...</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom:16px">
+                  <label class="form-label" for="input-cantidad">Cantidad</label>
+                  <input class="form-input" type="number" id="input-cantidad" min="0.001" step="0.001" placeholder="0.00" required>
+                </div>
+                <div class="form-group" style="margin-bottom:20px">
+                  <label class="form-label" for="select-almacen">Almacén</label>
+                  <select class="form-select" id="select-almacen" required>
+                    <option value="">Seleccionar almacén...</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary" type="submit" style="width:100%">
+                  <span class="material-symbols-outlined">check</span>
+                  Registrar
+                </button>
+              </form>
+            </div>
+
+            <!-- Últimos ingresos -->
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-md)">
+                <h3 class="font-semibold">Últimos Ingresos</h3>
+                <button class="btn btn-outline btn-sm" id="btn-deshacer" disabled>
+                  <span class="material-symbols-outlined">undo</span>
+                  Deshacer
+                </button>
+              </div>
+              <div id="stock-historial">
+                <div class="spinner" style="margin:16px auto"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Columna derecha: Tabla de stock -->
+          <div class="card" style="padding:0;overflow:hidden">
+            <!-- Cabecera con búsqueda -->
+            <div style="padding:var(--spacing-lg);border-bottom:1px solid var(--color-border);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--spacing-md)">
+              <h2 class="font-semibold" style="font-size:1.125rem">Stock Actual</h2>
+              <div class="search-bar">
+                <span class="material-symbols-outlined">search</span>
+                <input type="text" id="input-buscar-stock" placeholder="Buscar insumo...">
+              </div>
+            </div>
+            <div class="table-wrapper">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Insumo</th>
+                    <th style="text-align:right">Cantidad</th>
+                    <th style="width:90px">Unidad</th>
+                    <th>Almacén</th>
+                  </tr>
+                </thead>
+                <tbody id="stock-tbody">
+                  <tr><td colspan="4"><div class="spinner"></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/pages/stock.js"></script>
+  <script type="module">
+    import { obtenerUsuario, logout } from '/js/core/auth.js';
+    document.getElementById('sidebar-usuario').textContent = obtenerUsuario().nombreCompleto ?? '';
+    document.getElementById('btn-logout').addEventListener('click', logout);
+  </script>
+</body>
+</html>

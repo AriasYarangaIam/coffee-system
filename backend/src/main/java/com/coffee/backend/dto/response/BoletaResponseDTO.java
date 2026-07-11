@@ -1,0 +1,23 @@
+package com.coffee.backend.dto.response;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+// Boleta de un pedido: cabecera, lineas de detalle y total.
+public record BoletaResponseDTO(
+        Long pedidoId,
+        String aliasTicket,
+
+        @JsonFormat(
+                shape = JsonFormat.Shape.STRING,
+                pattern = "dd/MM/yyyy HH:mm:ss")
+        LocalDateTime fechaPedido,
+
+        List<DetalleBoletaResponseDTO> detalle,
+
+        BigDecimal total
+) {
+}

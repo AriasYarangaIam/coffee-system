@@ -1,0 +1,126 @@
+/* ── Tipografías ─────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+/* ── Variables globales + Reset ─────────────────────────────────────── */
+:root {
+  /* Paleta — Café con Crema */
+  --color-primary:         #5C3317;   /* café tostado */
+  --color-primary-dark:    #3A1F0A;   /* espresso oscuro */
+  --color-secondary:       #8B6347;   /* latte */
+  --color-secondary-light: #EDD9C0;   /* crema suave */
+  --color-success:         #4A7A1E;
+  --color-danger:          #BA1A1A;
+  --color-warning:         #C07830;   /* caramelo */
+  --color-bg:              #F7EDE0;   /* crema de fondo */
+  --color-surface:         #FDF6EE;   /* leche espumada */
+  --color-surface-high:    #F0DFC8;   /* crema media */
+  --color-text:            #1E0F06;   /* café muy oscuro */
+  --color-text-muted:      #6B4A2E;   /* café con leche */
+  --color-border:          #D9C4AA;   /* borde crema */
+
+  /* Tipografía */
+  --font-family:     'DM Sans', sans-serif;
+  --font-heading:    'DM Serif Display', serif;
+  --font-size-sm:    0.875rem;
+  --font-size-base:  1rem;
+  --font-size-lg:    1.125rem;
+  --font-size-xl:    1.5rem;
+  --font-size-2xl:   2rem;
+
+  /* Espaciado */
+  --spacing-xs:  4px;
+  --spacing-sm:  8px;
+  --spacing-md:  16px;
+  --spacing-lg:  24px;
+  --spacing-xl:  40px;
+
+  /* Radios */
+  --border-radius-sm:  4px;
+  --border-radius-md:  8px;
+  --border-radius-lg:  16px;
+  --border-radius-xl:  24px;
+  --border-radius-full: 9999px;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(58, 31, 10, 0.10);
+  --shadow-md: 0 4px 12px rgba(58, 31, 10, 0.14);
+  --shadow-lg: 0 8px 24px rgba(58, 31, 10, 0.18);
+}
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-family);
+}
+
+input, select, textarea {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-secondary); }
+
+/* Utilidades */
+.text-muted    { color: var(--color-text-muted); }
+.text-sm       { font-size: var(--font-size-sm); }
+.text-center   { text-align: center; }
+.font-semibold { font-weight: 600; }
+.font-bold     { font-weight: 700; }
+.hidden        { display: none !important; }
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-size: 20px;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+}
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}

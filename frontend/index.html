@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Cafetería MYPE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/login.css">
+
+</head>
+<body>
+  <main class="login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="logo-icon">
+
+        </div>
+
+        <h1>Cafetería MYPE</h1>
+      </div>
+
+      <p class="role-label">Acceder como</p>
+
+      <div class="role-tabs">
+
+        <button class="role-tab active" type="button" id="tab-personal">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21a8 8 0 0 0-16 0"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          Personal
+        </button>
+
+        <button class="role-tab" type="button" id="tab-admin">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Administrador
+        </button>
+      </div>
+
+      <div class="linea-division"></div>
+
+      <form class="login-form" id="login-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="correo">Correo electrónico</label>
+          <input class="form-input" type="email" id="correo" placeholder="usuario@ejemplo.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="clave">Contraseña</label>
+          <div style="position:relative">
+            <input class="form-input" type="password" id="clave" placeholder="•••••••••••" required style="padding-right:42px">
+            <button type="button" id="toggle-clave" aria-label="Mostrar contraseña"
+              style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;padding:6px;cursor:pointer;color:var(--color-text-muted);display:flex">
+              <svg id="icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg id="icon-eye-off" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-7-10-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <p id="error-msg" class="form-error"></p>
+
+        <button class="btn btn-primary" type="submit" id="btn-login" style="width:100%">
+          Ingresar
+        </button>
+      </form>
+
+    </div>
+  </main>
+
+  <script type="module" src="/js/pages/login.js"></script>
+</body>
+</html>
