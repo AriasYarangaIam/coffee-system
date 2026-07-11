@@ -1,10 +1,13 @@
 package com.coffee.backend.controller;
 
+import com.coffee.backend.dto.request.CarritoSnapshotDTO;
 import com.coffee.backend.dto.request.PedidoRequestDTO;
 import com.coffee.backend.dto.response.BoletaResponseDTO;
+import com.coffee.backend.dto.response.CarritoUndoResponseDTO;
 import com.coffee.backend.dto.response.MisMetricasResponseDTO;
 import com.coffee.backend.dto.response.PedidoListadoResponseDTO;
 import com.coffee.backend.dto.response.PedidoResponseDTO;
+import com.coffee.backend.service.CarritoUndoService;
 import com.coffee.backend.service.PedidoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +26,17 @@ import java.util.List;
 public class PedidoController {
 
     private final PedidoService pedidoService;
+    private final CarritoUndoService carritoUndoService;
 
     @PreAuthorize("hasRole('MESERO')")
     @PostMapping
     public ResponseEntity<PedidoResponseDTO> registrarPedido(
             @Valid @RequestBody PedidoRequestDTO dto, @AuthenticationPrincipal UserDetails userDetails) {
         // El usuario se deriva del JWT (correo = username).
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(pedidoService.registrarPedido(dto, userDetails.getUsername()));
+        String correo = userDetails.getUsername();
+        PedidoResponseDTO pedido = pedidoService.registrarPedido(dto, correo);
+        carritoUndoService.limpiar(correo); // el carrito se cerró: vaciar su pila de deshacer
+        return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
     }
 
     @PreAuthorize("hasRole('MESERO')")
@@ -52,5 +58,30 @@ public class PedidoController {
     public ResponseEntity<MisMetricasResponseDTO> misMetricas(
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(pedidoService.misMetricas(userDetails.getUsername()));
+    }
+
+    // --- Pila de deshacer del carrito (RF-DS-03, en Java) ---
+
+    // Apila el estado del carrito antes de una mutación.
+    @PreAuthorize("hasRole('MESERO')")
+    @PostMapping("/carrito/push")
+    public ResponseEntity<CarritoUndoResponseDTO> pushCarrito(
+            @RequestBody CarritoSnapshotDTO snapshot, @AuthenticationPrincipal UserDetails userDetails) {
+        String correo = userDetails.getUsername();
+        carritoUndoService.push(correo, snapshot);
+        return ResponseEntity.ok(new CarritoUndoResponseDTO(
+                snapshot.items(), carritoUndoService.profundidad(correo)));
+    }
+
+    // Desapila y devuelve el snapshot anterior (vacío si no hay nada que deshacer).
+    @PreAuthorize("hasRole('MESERO')")
+    @PostMapping("/carrito/undo")
+    public ResponseEntity<CarritoUndoResponseDTO> undoCarrito(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String correo = userDetails.getUsername();
+        List<com.coffee.backend.dto.request.CarritoItemDTO> items = carritoUndoService.undo(correo)
+                .map(CarritoSnapshotDTO::items)
+                .orElseGet(List::of);
+        return ResponseEntity.ok(new CarritoUndoResponseDTO(items, carritoUndoService.profundidad(correo)));
     }
 }

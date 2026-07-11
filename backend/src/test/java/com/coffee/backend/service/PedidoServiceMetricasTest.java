@@ -5,6 +5,7 @@ import com.coffee.backend.repository.PedidoRepository;
 import com.coffee.backend.service.implement.PedidoServiceImpl;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +27,7 @@ class PedidoServiceMetricasTest {
     @Test
     void misMetricas_calculaTicketPromedio() {
         given(pedidoRepository.contarPedidosDeMeseroEntre(eq("m@x.com"), any(), any())).willReturn(4L);
-        given(pedidoRepository.sumarVentasDeMeseroEntre(eq("m@x.com"), any(), any())).willReturn(100.0);
+        given(pedidoRepository.sumarVentasDeMeseroEntre(eq("m@x.com"), any(), any())).willReturn(new BigDecimal("100.00"));
         given(pedidoRepository.productosMasVendidosDeMesero(eq("m@x.com"), any(), any(), any()))
                 .willReturn(List.of("Capuchino"));
 
@@ -41,7 +42,7 @@ class PedidoServiceMetricasTest {
     @Test
     void misMetricas_sinPedidos_ticketCeroYEstrellaNull() {
         given(pedidoRepository.contarPedidosDeMeseroEntre(any(), any(), any())).willReturn(0L);
-        given(pedidoRepository.sumarVentasDeMeseroEntre(any(), any(), any())).willReturn(0.0);
+        given(pedidoRepository.sumarVentasDeMeseroEntre(any(), any(), any())).willReturn(BigDecimal.ZERO);
         given(pedidoRepository.productosMasVendidosDeMesero(any(), any(), any(), any()))
                 .willReturn(List.of());
 

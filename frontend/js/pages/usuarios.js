@@ -1,6 +1,6 @@
 import { requireRole, obtenerUsuario } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
-import { mostrarToast, mostrarSpinner } from '../utils/dom.js';
+import { mostrarToast, mostrarSpinner, escaparHtml } from '../utils/dom.js';
 
 requireRole('ADMIN');
 
@@ -50,12 +50,12 @@ function renderizarTabla(usuarios) {
     // En la propia fila no se ofrece eliminar (el backend igual lo rechaza con 409).
     const accionEliminar = esYo
       ? '<span class="badge badge-pagado" style="margin-left:4px">Tú</span>'
-      : `<button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarUsuario(${u.usuarioId}, '${u.nombreUsuario}')">Eliminar</button>`;
+      : `<button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarUsuario(${u.usuarioId}, '${escaparHtml(u.nombreUsuario)}')">Eliminar</button>`;
     return `
     <tr>
-      <td>${u.nombreUsuario} ${u.apellidoUsuario}</td>
-      <td>${u.correoUsuario}</td>
-      <td><span class="badge ${u.rol === 'ADMIN' ? 'badge-pagado' : 'badge-pendiente'}">${u.rol}</span></td>
+      <td>${escaparHtml(u.nombreUsuario)} ${escaparHtml(u.apellidoUsuario)}</td>
+      <td>${escaparHtml(u.correoUsuario)}</td>
+      <td><span class="badge ${u.rol === 'ADMIN' ? 'badge-pagado' : 'badge-pendiente'}">${escaparHtml(u.rol)}</span></td>
       <td style="text-align:right">
         <button class="btn btn-outline btn-sm" onclick="editarUsuario(${u.usuarioId})">Editar</button>
         ${accionEliminar}

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public interface PedidoRepository extends JpaRepository<Pedidos,Long> {
     interface VentaProductoDia {
         String getProducto();
         int getDia();
-        double getTotal();
+        BigDecimal getTotal();
     }
 
     // Ventas (cantidad * precio) agrupadas por producto y día del mes. EXTRACT(DAY ...)
@@ -51,7 +52,7 @@ public interface PedidoRepository extends JpaRepository<Pedidos,Long> {
             FROM DetallePedido d
             WHERE d.pedidos.fechaPedido >= :inicio AND d.pedidos.fechaPedido < :fin
             """)
-    double sumarVentasEntre(@Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
+    BigDecimal sumarVentasEntre(@Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
 
     // Cantidad de pedidos del rango [inicio, fin).
     @Query("""
@@ -78,7 +79,7 @@ public interface PedidoRepository extends JpaRepository<Pedidos,Long> {
     // Proyección de una semana (fecha de inicio de semana, ventas del periodo).
     interface IngresoSemana {
         java.time.LocalDate getSemana();
-        double getTotal();
+        BigDecimal getTotal();
     }
 
     // Ventas agrupadas por semana ISO (lunes). Alias en minúscula: Postgres pliega los
@@ -101,7 +102,7 @@ public interface PedidoRepository extends JpaRepository<Pedidos,Long> {
         String getAlias();
         LocalDateTime getFecha();
         String getMesero();
-        double getTotal();
+        BigDecimal getTotal();
     }
 
     // Todas las boletas del rango con su mesero y total. LEFT JOIN a detalle para no
@@ -139,9 +140,9 @@ public interface PedidoRepository extends JpaRepository<Pedidos,Long> {
             WHERE d.pedidos.usuario.correoUsuario = :correo
               AND d.pedidos.fechaPedido >= :inicio AND d.pedidos.fechaPedido < :fin
             """)
-    double sumarVentasDeMeseroEntre(@Param("correo") String correo,
-                                    @Param("inicio") LocalDateTime inicio,
-                                    @Param("fin") LocalDateTime fin);
+    BigDecimal sumarVentasDeMeseroEntre(@Param("correo") String correo,
+                                        @Param("inicio") LocalDateTime inicio,
+                                        @Param("fin") LocalDateTime fin);
 
     @Query("""
             SELECT d.productos.nombreProducto

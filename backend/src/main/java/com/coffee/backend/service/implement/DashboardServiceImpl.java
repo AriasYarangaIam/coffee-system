@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +36,7 @@ public class DashboardServiceImpl implements DashboardService {
         LocalDateTime inicioMes = hoy.withDayOfMonth(1).atStartOfDay();
         LocalDateTime finMes = inicioMes.plusMonths(1);
 
-        double totalVentasDia = pedidoRepository.sumarVentasEntre(inicioDia, finDia);
+        BigDecimal totalVentasDia = pedidoRepository.sumarVentasEntre(inicioDia, finDia);
         long totalPedidosDia = pedidoRepository.contarPedidosEntre(inicioDia, finDia);
 
         List<String> masVendidos = pedidoRepository.productosMasVendidos(

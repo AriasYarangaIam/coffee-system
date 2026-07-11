@@ -2,12 +2,14 @@ import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast, mostrarSpinner, mostrarVacio, escaparHtml } from '../utils/dom.js';
 import { formatearMoneda } from '../utils/format.js';
-import { Pila } from '../utils/pila.js';
 
 requireRole('MESERO');
 
 let carrito = [];
-const historial = new Pila(); // RF-DS-03: snapshots del carrito para "Deshacer"
+// RF-DS-03: la Pila de "Deshacer" vive en el backend (Java). Aquí solo llevamos cuántos
+// snapshots hay apilados para habilitar/deshabilitar el botón. Cada acción del carrito es
+// una ida al servidor (decisión de diseño: la estructura corre en el back).
+let profundidadUndo = 0;
 const productosGrid = document.getElementById('productos-grid');
 const cartItemsEl = document.getElementById('cart-items');
 const cartTotalEl = document.getElementById('cart-total');
@@ -92,8 +94,21 @@ function renderizarProductos(productos) {
   });
 }
 
-function agregarAlCarrito(producto) {
-  historial.push(structuredClone(carrito));
+// Apila el estado ACTUAL del carrito en la Pila del backend, antes de mutarlo (RF-DS-03).
+async function apilarSnapshot() {
+  try {
+    const r = await apiFetch('/pedidos/carrito/push', {
+      method: 'POST',
+      body: JSON.stringify({ items: carrito }),
+    });
+    profundidadUndo = r.profundidad;
+  } catch (error) {
+    mostrarToast(error?.message || 'No se pudo guardar el estado para deshacer', 'error');
+  }
+}
+
+async function agregarAlCarrito(producto) {
+  await apilarSnapshot();
   const existente = carrito.find(i => i.productoId === producto.productoId);
   if (existente) {
     existente.cantidad++;
@@ -103,17 +118,17 @@ function agregarAlCarrito(producto) {
   renderizarCarrito();
 }
 
-function cambiarCantidad(productoId, delta) {
+async function cambiarCantidad(productoId, delta) {
   const item = carrito.find(i => i.productoId === productoId);
   if (!item) return;
-  historial.push(structuredClone(carrito));
+  await apilarSnapshot();
   item.cantidad += delta;
   if (item.cantidad <= 0) carrito = carrito.filter(i => i.productoId !== productoId);
   renderizarCarrito();
 }
 
 function renderizarCarrito() {
-  btnDeshacer.disabled = historial.estaVacia();
+  btnDeshacer.disabled = profundidadUndo === 0;
   if (!carrito.length) {
     cartItemsEl.innerHTML = '<p class="text-muted text-sm" style="text-align:center;padding:16px">El carrito está vacío</p>';
     cartTotalEl.textContent = formatearMoneda(0);
@@ -153,10 +168,17 @@ btnConfirmar.addEventListener('click', async () => {
   }
 });
 
-btnDeshacer.addEventListener('click', () => {
-  if (historial.estaVacia()) return;
-  carrito = historial.pop();
-  renderizarCarrito();
+btnDeshacer.addEventListener('click', async () => {
+  btnDeshacer.disabled = true;
+  try {
+    const r = await apiFetch('/pedidos/carrito/undo', { method: 'POST' });
+    carrito = r.items ?? [];
+    profundidadUndo = r.profundidad;
+    renderizarCarrito();
+  } catch (error) {
+    mostrarToast(error?.message || 'No se pudo deshacer', 'error');
+    btnDeshacer.disabled = profundidadUndo === 0;
+  }
 });
 
 // Exponer para los botones inline del carrito

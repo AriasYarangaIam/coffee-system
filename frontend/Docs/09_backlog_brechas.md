@@ -33,9 +33,9 @@ Brechas del frontend y divergencias con el back. El backlog del back (B-xx) est�
 |---|---|---|---|
 | B-F-09 | `select-almacen` nunca se puebla | `stock.js` solo llena `select-insumo`; `stock.html:66` `<select id="select-almacen">` vacío | ✅ **RESUELTO** (`e887998`): poblado desde `GET /admin/almacenes` (back `5aea1ae`); ingreso envía `almacenId` |
 | B-F-10 | Dos estilos de modal conviven | `crearModal` (factory) sin uso vs modales `hidden` en HTML | Unificar a un solo patrón |
-| B-F-11 | Render con `innerHTML` sin escape | varias páginas interpolan datos del back | 🟡 **Parcial** (2026-07-10): helper `escaparHtml` en `js/utils/dom.js`, usado en todo el render nuevo (ingresos, stock, mesero). Falta aplicarlo a las tablas antiguas (usuarios/insumos/productos) |
+| B-F-11 | Render con `innerHTML` sin escape | varias páginas interpolan datos del back | ✅ **RESUELTO** (2026-07-10): `escaparHtml` aplicado también a usuarios/insumos/productos/dashboard; todas las tablas escapan los datos del servidor |
 | B-F-12 | Sin estado de carga global ni dedupe | `apiFetch` | Aceptable hoy; revisar si crece |
-| B-F-13 | Manejo de 403 inexistente | `api.js` solo trata 401 | Mensaje claro de "sin permiso" |
+| B-F-13 | Manejo de 403 inexistente | `api.js` solo trata 401 | ✅ **RESUELTO** (2026-07-10): `api.js` lanza "No tienes permiso para esta acción" en 403 |
 | B-F-14 | Búsqueda/filtros declarados pero no implementados | inputs de búsqueda en HTML sin lógica | ✅ **RESUELTO** (2026-07-10): filtros cableados en mis-pedidos, stock, usuarios y POS (búsqueda + chips de categoría) |
 | B-F-16 | El nombre del usuario no salía en ningún sidebar | los 7 HTML leían `obtenerUsuario().nombre`; la sesión guarda `nombreCompleto` | ✅ **RESUELTO** (2026-07-10): unificado a `.nombreCompleto` |
 
@@ -43,7 +43,7 @@ Brechas del frontend y divergencias con el back. El backlog del back (B-xx) est�
 
 | ID | Estructura | Estado | Nota |
 |---|---|---|---|
-| B-F-15 | RF-DS-03 Pila para deshacer en el carrito (U3) | ✅ | TAD propio en JS (`js/utils/pila.js`); push al modificar el carrito, pop para deshacer |
+| B-F-15 | RF-DS-03 Pila para deshacer en el carrito (U3) | ✅ | **Movida al backend (2026-07-10)**: el carrito consume `/pedidos/carrito/{push,undo}` (Pila en Java). Se borró `js/utils/pila.js` |
 
 ---
 Anterior: [« 07 · Seguridad](07_security.md) · Fin del set numerado. Ver [MEMORY](MEMORY.md) y [design](design.md).

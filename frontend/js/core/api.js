@@ -21,6 +21,11 @@ export async function apiFetch(endpoint, options = {}) {
     return;
   }
 
+  if (response.status === 403) {
+    // Autenticado pero sin permiso para el recurso: mensaje claro (B-F-13).
+    throw { message: 'No tienes permiso para esta acción' };
+  }
+
   if (response.status === 204) return null;
 
   if (!response.ok) {

@@ -143,10 +143,7 @@ public class PedidoServiceImpl implements PedidoService {
                 ))
                 .toList();
 
-        double total = pedido.getDetalles()
-                .stream()
-                .mapToDouble(d -> d.getCantidadPedida() * d.getPrecioUnitario())
-                .sum();
+        BigDecimal total = sumaLineas(pedido.getDetalles());
 
         return new BoletaResponseDTO(
                 pedido.getPedidoId(),
@@ -163,9 +160,7 @@ public class PedidoServiceImpl implements PedidoService {
         return pedidosRepository.findByUsuario_CorreoUsuario(correoUsuarioLogueado)
                 .stream()
                 .map(pedido -> {
-                    double total = pedido.getDetalles().stream()
-                            .mapToDouble(d -> d.getCantidadPedida() * d.getPrecioUnitario())
-                            .sum();
+                    BigDecimal total = sumaLineas(pedido.getDetalles());
                     List<DetalleBoletaResponseDTO> detalle = pedido.getDetalles().stream()
                             .map(d -> new DetalleBoletaResponseDTO(
                                     d.getProductos().getNombreProducto(),
@@ -191,9 +186,11 @@ public class PedidoServiceImpl implements PedidoService {
         LocalDateTime fin = inicio.plusDays(1);
 
         long pedidos = pedidosRepository.contarPedidosDeMeseroEntre(correoUsuarioLogueado, inicio, fin);
-        double total = pedidosRepository.sumarVentasDeMeseroEntre(correoUsuarioLogueado, inicio, fin);
+        BigDecimal total = pedidosRepository.sumarVentasDeMeseroEntre(correoUsuarioLogueado, inicio, fin);
         // Ticket promedio: guard contra división por cero cuando aún no hay pedidos.
-        double promedio = (pedidos == 0) ? 0.0 : total / pedidos;
+        BigDecimal promedio = (pedidos == 0)
+                ? BigDecimal.ZERO
+                : total.divide(BigDecimal.valueOf(pedidos), 2, RoundingMode.HALF_UP);
 
         List<String> estrella = pedidosRepository.productosMasVendidosDeMesero(
                 correoUsuarioLogueado, inicio, fin, PageRequest.of(0, 1));
@@ -205,8 +202,16 @@ public class PedidoServiceImpl implements PedidoService {
                 estrella.isEmpty() ? null : estrella.get(0));
     }
 
-    private static BigDecimal dinero(double valor) {
-        return BigDecimal.valueOf(valor).setScale(2, RoundingMode.HALF_UP);
+    private static BigDecimal dinero(BigDecimal valor) {
+        return (valor == null ? BigDecimal.ZERO : valor).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    // Suma (precio unitario × cantidad) de las líneas de un pedido.
+    private static BigDecimal sumaLineas(List<DetallePedido> detalles) {
+        return detalles.stream()
+                .map(d -> d.getPrecioUnitario().multiply(BigDecimal.valueOf(d.getCantidadPedida())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     // Alias de boleta único y corto (UUID de 8 chars en mayúsculas).

@@ -41,7 +41,7 @@ Estado: ✅ implementado · 🟡 parcial · ⏳ pendiente (depende del back) · 
 | ID | Estructura | Unidad | Uso | Estado |
 |---|---|---|---|---|
 | RF-DS-01 | Arreglos 1D | U1 | `carrito` (array de líneas) — ya en uso | ✅ |
-| RF-DS-03 | **Pila (Stack)** | U3 | **deshacer** la última acción del carrito (push al agregar/+/−, pop al deshacer) | ⏳ |
+| RF-DS-03 | **Pila (Stack)** | U3 | **deshacer** la última acción del carrito — la Pila **corre en el backend** (Java); el front hace push/pop vía `/pedidos/carrito/{push,undo}` | ✅ |
 
 ### Mapeo Sílabo ↔ Estructuras (visión global)
 
@@ -49,7 +49,7 @@ Estado: ✅ implementado · 🟡 parcial · ⏳ pendiente (depende del back) · 
 |---|---|---|---|
 | U1 | Arreglos 1D / Matriz 2D | front / back | RF-DS-01 (carrito) · RF-DS-02 matriz (back) |
 | U2 | Listas enlazadas, TAD | back | *(opcional)* — ver backend 09 |
-| U3 | Pilas y Colas | front / back | **RF-DS-03 Pila (front)** · RF-DS-04 Cola (back) |
+| U3 | Pilas y Colas | back | **RF-DS-03 Pila (back)** · RF-DS-04 Cola (back) |
 | U4 | Árboles, ABB, AVL | back | *(opcional)* — ver backend 09 |
 
 > El catálogo completo (incl. matriz y cola del backend) está en

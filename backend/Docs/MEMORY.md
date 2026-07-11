@@ -67,8 +67,15 @@ PostgreSQL en Supabase. Auth JWT stateless. Detalle en [00_index.md](00_index.md
   **fueron eliminados**). Borrado = **lógico** (`usuarios.activo`, un inactivo no loguea ni se lista;
   quitado `CascadeType.REMOVE` sobre `pedidos` para no perder el histórico). Guardas 409
   (`ReglaNegocioException`): no auto-eliminarse, no eliminar al último ADMIN.
-- Dinero como `Double`/`double precision` (B-18); insumos enteros (B-19).
+- **Pila del carrito (RF-DS-03) en Java** (2026-07-10): `CarritoUndoService` (una `PilaEnlazada`
+  por mesero, en memoria) + `POST /api/pedidos/carrito/{push,undo}`; se vacía al confirmar el pedido.
+  La Pila de JS (`frontend/js/utils/pila.js`) **se eliminó**.
+- **Dinero en `BigDecimal`** (B-18 ✅, 2026-07-10): `productos.precio_actual` y
+  `detalle_pedido.precio_unitario` son `numeric(10,2)` (correr `db/003`); entidades, DTOs y sumas de
+  ventas usan `BigDecimal`. La matriz del reporte mensual se queda en `double` (display derivado).
+  Insumos aún enteros (B-19).
 - Esquema por `ddl-auto: validate`; migraciones a mano en `backend/db/*.sql` (B-21, sin Flyway).
+  **Correr `001`, `002` y `003` en Supabase antes de arrancar.**
 
 ## Decisiones
 

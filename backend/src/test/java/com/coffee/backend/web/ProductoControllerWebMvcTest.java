@@ -59,7 +59,7 @@ class ProductoControllerWebMvcTest {
     @WithMockUser(roles = "MESERO")
     void meseroListaProductos_ok200() throws Exception {
         given(productoService.listarProductos()).willReturn(List.of(
-                new ProductoListadoResponseDTO(1L, "Capuchino", "Bebidas", 8.5, true)));
+                new ProductoListadoResponseDTO(1L, "Capuchino", "Bebidas", new java.math.BigDecimal("8.50"), true)));
 
         mockMvc.perform(get("/api/productos"))
                 .andExpect(status().isOk())
@@ -71,7 +71,7 @@ class ProductoControllerWebMvcTest {
     void adminListaProductos_ok200() throws Exception {
         // B-10: ADMIN ahora también puede leer el catálogo (antes recibía 403).
         given(productoService.listarProductos()).willReturn(List.of(
-                new ProductoListadoResponseDTO(1L, "Capuchino", "Bebidas", 8.5, true)));
+                new ProductoListadoResponseDTO(1L, "Capuchino", "Bebidas", new java.math.BigDecimal("8.50"), true)));
 
         mockMvc.perform(get("/api/productos"))
                 .andExpect(status().isOk())

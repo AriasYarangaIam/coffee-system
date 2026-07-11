@@ -2,6 +2,7 @@ package com.coffee.backend.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,6 +17,6 @@ public record BoletaResponseDTO(
 
         List<DetalleBoletaResponseDTO> detalle,
 
-        Double total
+        BigDecimal total
 ) {
 }

@@ -49,7 +49,7 @@ Estado: ✅ implementado · 🟡 parcial · ⏳ pendiente · ⚠️ divergencia 
 |---|---|---|---|---|---|
 | RF-DS-01 | Arreglos 1D | U1 | A | catálogo, líneas de pedido (ya en uso) | ✅ |
 | RF-DS-02 | **Matriz (arreglo 2D)** | U1 | B (Java) | reporte mensual producto × día → `GET /api/admin/reportes/mensual` | ✅ |
-| RF-DS-03 | **Pila (Stack)** | U3 | F (JS) + B (Java) | deshacer última acción del carrito (`frontend/js/utils/pila.js`) **y** deshacer último ingreso de stock (`tad/Pila`+`PilaEnlazada` → `POST /api/admin/stocks/deshacer`) | ✅ |
+| RF-DS-03 | **Pila (Stack)** | U3 | **B (Java)** | deshacer del carrito del mesero (`CarritoUndoService` → `POST /api/pedidos/carrito/{push,undo}`) **y** deshacer último ingreso de stock (`POST /api/admin/stocks/deshacer`); TAD propio `tad/Pila`+`PilaEnlazada` | ✅ |
 | RF-DS-04 | **Cola FIFO + prioridad** | U3 | B (Java) | cola lógica de **despacho** → `tad/ColaPrioridad` + `GET /api/admin/despacho` | ✅ |
 
 ### Mapeo Sílabo ↔ Estructuras

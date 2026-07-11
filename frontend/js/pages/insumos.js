@@ -1,6 +1,6 @@
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
-import { mostrarToast, mostrarSpinner } from '../utils/dom.js';
+import { mostrarToast, mostrarSpinner, escaparHtml } from '../utils/dom.js';
 
 requireRole('ADMIN');
 
@@ -42,11 +42,11 @@ function renderizarTabla(insumos) {
   }
   tablaBody.innerHTML = insumos.map(i => `
     <tr>
-      <td>${i.nombreInsumo}</td>
-      <td>${i.unidad ?? '—'}</td>
+      <td>${escaparHtml(i.nombreInsumo)}</td>
+      <td>${escaparHtml(i.unidad ?? '—')}</td>
       <td style="text-align:right">
         <button class="btn btn-outline btn-sm" onclick="editarInsumo(${i.idInsumo})">Editar</button>
-        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarInsumo(${i.idInsumo}, '${i.nombreInsumo}')">Eliminar</button>
+        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarInsumo(${i.idInsumo}, '${escaparHtml(i.nombreInsumo)}')">Eliminar</button>
       </td>
     </tr>
   `).join('');

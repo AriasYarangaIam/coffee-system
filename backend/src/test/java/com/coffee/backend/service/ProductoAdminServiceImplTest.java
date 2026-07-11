@@ -1,6 +1,7 @@
 package com.coffee.backend.service;
 
 import com.coffee.backend.dto.request.ProductoRequestDTO;
+import java.math.BigDecimal;
 import com.coffee.backend.dto.request.RecetaItemRequestDTO;
 import com.coffee.backend.dto.response.ProductoAdminResponseDTO;
 import com.coffee.backend.entity.Categorias;
@@ -50,7 +51,7 @@ class ProductoAdminServiceImplTest {
 
     @Test
     void crear_armaLaRecetaConSusInsumos() {
-        ProductoRequestDTO dto = new ProductoRequestDTO("Latte", 12.0, 1L, List.of(
+        ProductoRequestDTO dto = new ProductoRequestDTO("Latte", new BigDecimal("12.0"), 1L, List.of(
                 new RecetaItemRequestDTO(10L, 200L),
                 new RecetaItemRequestDTO(20L, 18L)));
 
@@ -69,7 +70,7 @@ class ProductoAdminServiceImplTest {
         existente.setRecetas(new java.util.ArrayList<>()); // tenía receta previa (vacía aquí)
         given(productoRepository.findById(5L)).willReturn(Optional.of(existente));
 
-        ProductoRequestDTO dto = new ProductoRequestDTO("Latte", 12.0, 1L, List.of(
+        ProductoRequestDTO dto = new ProductoRequestDTO("Latte", new BigDecimal("12.0"), 1L, List.of(
                 new RecetaItemRequestDTO(10L, 150L)));
 
         ProductoAdminResponseDTO res = service.actualizar(5L, dto);
@@ -81,7 +82,7 @@ class ProductoAdminServiceImplTest {
 
     @Test
     void crear_conInsumoInexistente_lanza404() {
-        ProductoRequestDTO dto = new ProductoRequestDTO("X", 1.0, 1L, List.of(
+        ProductoRequestDTO dto = new ProductoRequestDTO("X", new BigDecimal("1.0"), 1L, List.of(
                 new RecetaItemRequestDTO(999L, 1L)));
 
         assertThatThrownBy(() -> service.crear(dto))
@@ -91,7 +92,7 @@ class ProductoAdminServiceImplTest {
 
     @Test
     void crear_conInsumoDuplicado_lanzaIllegalArgument() {
-        ProductoRequestDTO dto = new ProductoRequestDTO("X", 1.0, 1L, List.of(
+        ProductoRequestDTO dto = new ProductoRequestDTO("X", new BigDecimal("1.0"), 1L, List.of(
                 new RecetaItemRequestDTO(10L, 100L),
                 new RecetaItemRequestDTO(10L, 50L)));
 
@@ -102,7 +103,7 @@ class ProductoAdminServiceImplTest {
 
     @Test
     void crear_sinReceta_productoValidoSinInsumos() {
-        ProductoRequestDTO dto = new ProductoRequestDTO("Agua embotellada", 3.0, 1L, null);
+        ProductoRequestDTO dto = new ProductoRequestDTO("Agua embotellada", new BigDecimal("3.0"), 1L, null);
 
         ProductoAdminResponseDTO res = service.crear(dto);
 

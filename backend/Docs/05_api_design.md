@@ -120,5 +120,27 @@ Nuevos endpoints (contrato as-built). Todos bajo `Authorization: Bearer`.
 > `ReglaNegocioException` vía `GlobalExceptionHandler`. **Nota a backend (Jose/Iam/Jonathan):**
 > este cambio quita el endpoint legacy de borrado.
 
+## Addendum 2026-07-10 (2) — Pila del carrito + dinero BigDecimal
+
+### Pila de deshacer del carrito — `PedidoController` (`/api/pedidos`, `ROLE_MESERO`)
+
+RF-DS-03 en Java: la Pila del "Deshacer" del carrito se movió del front al back
+(`CarritoUndoService`, una `PilaEnlazada` por mesero en memoria).
+
+| Método | Ruta | Request | Response 2xx |
+|---|---|---|---|
+| POST | `/api/pedidos/carrito/push` | `{ items:[{ productoId, nombre, precio, cantidad }] }` (`CarritoSnapshotDTO`) | `200` `{ items, profundidad }` |
+| POST | `/api/pedidos/carrito/undo` | — | `200` `{ items, profundidad }` (snapshot anterior; `items:[]` si no hay nada que deshacer) |
+
+Al confirmar un pedido (`POST /api/pedidos`) la pila del mesero se vacía.
+
+### Dinero como `BigDecimal` (B-18)
+
+`productos.precio_actual` y `detalle_pedido.precio_unitario` pasaron a `numeric(10,2)`
+(DDL `db/003`) y las entidades/DTOs de dinero a `BigDecimal`: precios, totales de boleta
+y de listado, `totalVentasDia` del dashboard, y las sumas de ventas. El JSON sigue siendo
+numérico (`12.30`), sin cambios para el front. La matriz del reporte mensual se mantiene en
+`double` (display derivado).
+
 ---
 Anterior: [« 04 · Base de datos](04_database.md) · Siguiente: [07 · Seguridad »](07_security.md)

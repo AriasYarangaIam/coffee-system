@@ -3,6 +3,7 @@ package com.coffee.backend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -15,8 +16,8 @@ public class Productos {
     private Long productoId;
     @Column(name = "nombre_producto",nullable = false)
     private String nombreProducto;
-    @Column(name = "precio_actual")
-    private Double precioActual;
+    @Column(name = "precio_actual", precision = 10, scale = 2)
+    private BigDecimal precioActual;
     @ManyToOne
     @JoinColumn(name = "categoria_id",nullable = false)
     private Categorias categorias;

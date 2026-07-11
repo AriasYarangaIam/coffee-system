@@ -58,7 +58,7 @@ class DashboardControllerWebMvcTest {
     @WithMockUser(roles = "ADMIN")
     void adminObtieneDashboard_shapeDeKpis() throws Exception {
         DashboardResponseDTO dto = new DashboardResponseDTO(
-                125.5, 8, "Capuchino",
+                new java.math.BigDecimal("125.50"), 8, "Capuchino",
                 List.of(new StockBajoDTO("Leche", 4L, null)));
 
         given(dashboardService.obtenerResumen()).willReturn(dto);

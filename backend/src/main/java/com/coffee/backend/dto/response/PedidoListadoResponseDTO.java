@@ -1,6 +1,7 @@
 package com.coffee.backend.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,7 +12,7 @@ public record PedidoListadoResponseDTO(
         String aliasTicket,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
         LocalDateTime fechaPedido,
-        double total,
+        BigDecimal total,
         List<DetalleBoletaResponseDTO> detalle)
 {
 }

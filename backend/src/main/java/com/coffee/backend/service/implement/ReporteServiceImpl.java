@@ -60,7 +60,9 @@ public class ReporteServiceImpl implements ReporteService {
             int i = indicePorProducto.get(fila.getProducto());
             int j = fila.getDia() - 1; // día 1 → columna 0
             if (j >= 0 && j < diasDelMes) {
-                celdas[i][j] = fila.getTotal();
+                // ponytail: la matriz del reporte se queda en double (display derivado, no
+                // dinero persistido); convertir arrays de BigDecimal sería ruido.
+                celdas[i][j] = fila.getTotal().doubleValue();
             }
         }
 
@@ -78,15 +80,11 @@ public class ReporteServiceImpl implements ReporteService {
         LocalDateTime finMes = inicioMes.plusMonths(1);
         LocalDateTime inicioPrev = inicioMes.minusMonths(1);
 
-        double actual = pedidoRepository.sumarVentasEntre(inicioMes, finMes);
-        double previo = pedidoRepository.sumarVentasEntre(inicioPrev, inicioMes);
+        BigDecimal actual = pedidoRepository.sumarVentasEntre(inicioMes, finMes);
+        BigDecimal previo = pedidoRepository.sumarVentasEntre(inicioPrev, inicioMes);
 
-        // Sin ventas el mes previo no hay base para el porcentaje.
-        BigDecimal variacion = (previo == 0)
-                ? null
-                : dinero((actual - previo) / previo * 100.0);
-
-        return new ComparativaMensualResponseDTO(a, m, dinero(actual), dinero(previo), variacion);
+        return new ComparativaMensualResponseDTO(
+                a, m, dinero(actual), dinero(previo), variacionPct(actual, previo));
     }
 
     @Override
@@ -98,12 +96,10 @@ public class ReporteServiceImpl implements ReporteService {
         List<IngresoSemana> filas = pedidoRepository.ingresosPorSemana(inicio, fin);
 
         List<SemanaIngreso> semanas = new ArrayList<>(filas.size());
-        Double totalPrevio = null;
+        BigDecimal totalPrevio = null;
         for (IngresoSemana fila : filas) {
-            double total = fila.getTotal();
-            BigDecimal variacion = (totalPrevio == null || totalPrevio == 0)
-                    ? null
-                    : dinero((total - totalPrevio) / totalPrevio * 100.0);
+            BigDecimal total = fila.getTotal();
+            BigDecimal variacion = (totalPrevio == null) ? null : variacionPct(total, totalPrevio);
             semanas.add(new SemanaIngreso(fila.getSemana(), dinero(total), variacion));
             totalPrevio = total;
         }
@@ -121,9 +117,17 @@ public class ReporteServiceImpl implements ReporteService {
                 .toList();
     }
 
-    // Envuelve el double acumulado en la consulta a 2 decimales. Corrige la presentación,
-    // no la acumulación (los @Query siguen sumando en double); suficiente para esta app.
-    private static BigDecimal dinero(double valor) {
-        return BigDecimal.valueOf(valor).setScale(2, RoundingMode.HALF_UP);
+    // Normaliza a 2 decimales para la respuesta.
+    private static BigDecimal dinero(BigDecimal valor) {
+        return (valor == null ? BigDecimal.ZERO : valor).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    // Variación porcentual (actual vs previo). null si el previo fue 0 (no hay base).
+    private static BigDecimal variacionPct(BigDecimal actual, BigDecimal previo) {
+        if (previo == null || previo.signum() == 0) return null;
+        return actual.subtract(previo)
+                .divide(previo, 4, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(2, RoundingMode.HALF_UP);
     }
 }

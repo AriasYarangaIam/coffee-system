@@ -1,5 +1,6 @@
 package com.coffee.backend.dto.response;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 // Respuesta de gestión de productos (ADMIN): id/nombre de categoría + la receta
@@ -7,7 +8,7 @@ import java.util.List;
 public record ProductoAdminResponseDTO(
         Long productoId,
         String nombreProducto,
-        Double precioActual,
+        BigDecimal precioActual,
         Long categoriaId,
         String nombreCategoria,
         List<InsumoRecetaDTO> receta

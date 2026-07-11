@@ -114,5 +114,16 @@ integre en el Sprint 2.
 > (`ddl-auto: validate`). Suite completa: **55 tests verdes** (`./mvnw test`). Pendiente de nota:
 > demo e2e integrada. `DELETE` legacy de usuarios eliminado — avisar a Jose/Iam/Jonathan en el PR.
 
+### Ciclo 2 (2026-07-10) — Pila del carrito a Java, dinero, endurecimiento ✅
+
+| # | Tarea | Estructura / Nota | Estado |
+|---|---|---|---|
+| E6 | **RF-DS-03 Pila del carrito movida a Java** (`CarritoUndoService`, `/pedidos/carrito/{push,undo}`); se vacía al confirmar | Pila propia por mesero | ✅ |
+| E7 | **Dinero a `BigDecimal`/`numeric(10,2)`** (B-18): entidades, DTOs y sumas; matriz mensual queda en `double` | requiere `db/003_dinero_numeric.sql` | ✅ |
+| E8 | Test de contrato `PUT`/`DELETE /admin/usuarios/{id}` (200/403/409) | blinda edición de roles | ✅ |
+
+> **Antes de arrancar:** ejecutar además `backend/db/003`. Suite: **63 tests verdes**.
+> `frontend/js/utils/pila.js` se eliminó (la Pila del carrito ahora vive en el back).
+
 ---
 Anterior: [« 07 · Seguridad](07_security.md) · Siguiente: [09 · Backlog de brechas »](09_backlog_brechas.md)

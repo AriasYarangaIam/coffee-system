@@ -1,6 +1,6 @@
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
-import { mostrarToast } from '../utils/dom.js';
+import { mostrarToast, escaparHtml } from '../utils/dom.js';
 import { formatearMoneda } from '../utils/format.js';
 
 requireRole('ADMIN');
@@ -70,8 +70,8 @@ function renderizarStockBajo(items) {
   }
   lista.innerHTML = items.map(i => `
     <div class="stock-alert-item">
-      <span class="stock-alert-item__name">${i.nombreInsumo}</span>
-      <span class="stock-alert-item__qty">${i.cantidad} ${i.unidad ?? ''}</span>
+      <span class="stock-alert-item__name">${escaparHtml(i.nombreInsumo)}</span>
+      <span class="stock-alert-item__qty">${i.cantidad} ${escaparHtml(i.unidad ?? '')}</span>
     </div>
   `).join('');
 }

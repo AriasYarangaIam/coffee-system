@@ -20,10 +20,21 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.coffee.backend.exception.ReglaNegocioException;
+import org.springframework.http.MediaType;
+
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -84,6 +95,53 @@ class UsuarioControllerWebMvcTest {
         // REQ-UMR-03: rol no-ADMIN recibe 403 (re-afirma @PreAuthorize existente).
         mockMvc.perform(get("/api/admin/usuarios"))
                 .andExpect(status().isForbidden());
+    }
+
+    // --- PUT/DELETE por id (editar rol / borrado lógico con guardas) ---
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void adminActualizaUsuarioPorId_ok200() throws Exception {
+        doNothing().when(usuarioServiceImple).actualizarPorId(eq(5L), any());
+        mockMvc.perform(put("/api/admin/usuarios/5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nombreUsuario\":\"Ana\",\"rol\":\"ADMIN\"}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "MESERO")
+    void meseroActualizaUsuarioPorId_denegado403() throws Exception {
+        mockMvc.perform(put("/api/admin/usuarios/5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"rol\":\"ADMIN\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void adminEliminaUsuarioPorId_ok200() throws Exception {
+        doNothing().when(usuarioServiceImple).eliminarPorId(eq(5L), anyString());
+        mockMvc.perform(delete("/api/admin/usuarios/5"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "MESERO")
+    void meseroEliminaUsuarioPorId_denegado403() throws Exception {
+        mockMvc.perform(delete("/api/admin/usuarios/5"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void eliminarViolaGuarda_devuelve409() throws Exception {
+        // Ej.: intentar borrar al último ADMIN → ReglaNegocioException → 409.
+        willThrow(new ReglaNegocioException("No puedes eliminar al último administrador"))
+                .given(usuarioServiceImple).eliminarPorId(anyLong(), anyString());
+        mockMvc.perform(delete("/api/admin/usuarios/5"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("No puedes eliminar al último administrador"));
     }
 
     @EnableWebSecurity

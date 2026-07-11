@@ -63,6 +63,16 @@ tiempo es **compartida**.
 | FE5 | Fix: el nombre del usuario no salía en ningún sidebar (`.nombre` → `.nombreCompleto`); quitado el enlace muerto "¿Olvidó su contraseña?" del login | transversal a 7 HTML | ✅ |
 | FE6 | Helper `escaparHtml` en `js/utils/dom.js`, usado en todo el render nuevo con `innerHTML` (B-F-11 en el código nuevo) | — | ✅ |
 
+### Ciclo 2 (2026-07-10) — Pila al back, XSS, responsive, 403 ✅
+
+| # | Tarea | Nota | Estado |
+|---|---|---|---|
+| FE7 | **Deshacer del carrito movido al backend**: `pedidos.js` consume `/pedidos/carrito/{push,undo}`; se borró `js/utils/pila.js` y `pila.test.js` | RF-DS-03 ahora en Java | ✅ |
+| FE8 | Escape XSS completado en tablas viejas (usuarios/insumos/productos/dashboard) — cierra B-F-11 | — | ✅ |
+| FE9 | Responsive: media query en `layout.css` (sidebar → barra superior, grids apilados en ≤768px) | CSS-only | ✅ |
+| FE10 | Manejo de 403 en `api.js` (toast "No tienes permiso") — cierra B-F-13 | — | ✅ |
+| FE11 | Fix login: el toggle de contraseña usa la clase `.hidden` (SVG no respetaba el atributo) | — | ✅ |
+
 ## Definition of Done (front)
 
 - [ ] La pantalla consume el endpoint real del back (sin datos hardcodeados de más).

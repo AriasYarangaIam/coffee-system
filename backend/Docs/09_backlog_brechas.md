@@ -42,7 +42,7 @@ El gemelo del front está en [`../../frontend/Docs/09_backlog_brechas.md`](../..
 
 | ID | Brecha | Propuesta |
 |---|---|---|
-| B-18 | Dinero como `double precision` (D1) | Migrar a `NUMERIC(10,2)` / `BigDecimal` |
+| B-18 | Dinero como `double precision` (D1) | ✅ **RESUELTO** (2026-07-10): `precio_actual`/`precio_unitario` a `numeric(10,2)` (`db/003`) y entidades/DTOs/sumas a `BigDecimal` |
 | B-19 | `cantidad_usada`/`cantidad` `bigint` (D2) | `NUMERIC(10,3)` si se requieren insumos fraccionarios |
 | B-20 | `fecha_pedido` sin zona (D3) | `timestamptz` (UTC) |
 | B-21 | Sin migraciones versionadas (D4) | 🟡 **Parcial** (2026-07-10): se estrenó `backend/db/*.sql` versionado (a mano, sin Flyway). Falta adoptar Flyway con baseline |
@@ -58,7 +58,7 @@ El gemelo del front está en [`../../frontend/Docs/09_backlog_brechas.md`](../..
 |---|---|---|---|
 | B-22 | RF-DS-02 Matriz reporte mensual (U1) | ✅ | `ReporteServiceImpl` arma `double[][]`; `GET /admin/reportes/mensual` |
 | B-23 | RF-DS-04 Cola de despacho FIFO+prioridad (U3) | ✅ | TAD propio `tad/ColaPrioridad`; `GET /admin/despacho` |
-| B-26 | RF-DS-03 Pila en Java (U3) | ✅ | TAD propio `tad/Pila`+`PilaEnlazada`; deshacer último ingreso de stock (`POST /admin/stocks/deshacer`) |
+| B-26 | RF-DS-03 Pila en Java (U3) | ✅ | TAD propio `tad/Pila`+`PilaEnlazada`; deshacer del carrito (`/pedidos/carrito/{push,undo}`) **y** deshacer ingreso de stock (`/admin/stocks/deshacer`) |
 | B-24 | *(opcional)* Lista enlazada en detalle de pedido (U2) | 💡 | cubriría U2 del sílabo |
 | B-25 | *(opcional)* Árbol Categoría→Producto / ABB de búsqueda (U4) | 💡 | cubriría U4 del sílabo |
 

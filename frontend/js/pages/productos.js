@@ -1,6 +1,6 @@
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
-import { mostrarToast, mostrarSpinner } from '../utils/dom.js';
+import { mostrarToast, mostrarSpinner, escaparHtml } from '../utils/dom.js';
 import { formatearMoneda } from '../utils/format.js';
 
 requireRole('ADMIN');
@@ -44,7 +44,7 @@ async function cargarProductos() {
 async function cargarCategorias() {
   try {
     const categorias = await apiFetch('/admin/categorias');
-    const opciones = categorias.map(c => `<option value="${c.categoriaId}">${c.nombreCategoria}</option>`).join('');
+    const opciones = categorias.map(c => `<option value="${c.categoriaId}">${escaparHtml(c.nombreCategoria)}</option>`).join('');
     inputCategoria.innerHTML = '<option value="">Seleccionar categoría...</option>' + opciones;
     if (selectFiltroCategoria) {
       selectFiltroCategoria.innerHTML = '<option value="">Todas las categorías</option>' + opciones;
@@ -74,7 +74,7 @@ async function cargarInsumos() {
 // ── Receta (filas dinámicas insumo + cantidad) ──────────────────────────────
 function opcionesInsumos() {
   return '<option value="">Insumo...</option>' +
-    insumosCache.map(i => `<option value="${i.idInsumo}">${i.nombreInsumo}</option>`).join('');
+    insumosCache.map(i => `<option value="${i.idInsumo}">${escaparHtml(i.nombreInsumo)}</option>`).join('');
 }
 
 function unidadDeInsumo(insumoId) {
@@ -128,12 +128,12 @@ function renderizarTabla(productos) {
   }
   tablaBody.innerHTML = productos.map(p => `
     <tr>
-      <td>${p.nombreProducto}</td>
-      <td>${p.nombreCategoria ?? '—'}</td>
+      <td>${escaparHtml(p.nombreProducto)}</td>
+      <td>${escaparHtml(p.nombreCategoria ?? '—')}</td>
       <td style="text-align:right">${formatearMoneda(p.precioActual)}</td>
       <td style="text-align:right">
         <button class="btn btn-outline btn-sm" onclick="editarProducto(${p.productoId})">Editar</button>
-        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarProducto(${p.productoId}, '${p.nombreProducto}')">Eliminar</button>
+        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarProducto(${p.productoId}, '${escaparHtml(p.nombreProducto)}')">Eliminar</button>
       </td>
     </tr>
   `).join('');

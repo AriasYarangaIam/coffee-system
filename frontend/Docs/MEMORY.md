@@ -46,7 +46,13 @@ un `.html` por pantalla + un controlador en `js/pages/`. Detalle en [00_index.md
   eterno, código que no existía) y el botón "Deshacer" llama `/admin/stocks/deshacer`.
 - **Mesero**: `mis-pedidos.js` cablea el modal de detalle, el botón Refrescar y las métricas del
   turno (`/pedidos/mis-metricas`, KPIs arriba de la tabla). El POS (`pedidos.js`) suma filtro por
-  categoría (chips) y pulso al agregar. La **Pila del carrito sigue en JS** (RF-DS-03 front).
+  categoría (chips) y pulso al agregar.
+- **Pila del carrito ahora en el backend** (2026-07-10): `pedidos.js` hace push/undo contra
+  `/pedidos/carrito/{push,undo}`; cada acción del carrito es una ida al servidor. Se borró
+  `js/utils/pila.js`. RF-DS-03 pasó a Java.
+- **Dinero llega como número JSON** desde `BigDecimal` (`12.30`); `formatearMoneda` y Chart.js no
+  cambian. `api.js` ahora también trata el **403** (toast "No tienes permiso").
+- **Responsive**: `layout.css` tiene una media query ≤768px (sidebar → barra superior; grids apilados).
 - **Usuarios**: editar/eliminar apuntan a `/admin/usuarios/{id}` (antes rotos). La propia fila del
   admin no ofrece "Eliminar" (badge "Tú"); el backend igual lo rechaza con 409.
 - Render con `innerHTML` escapa datos de usuario con `escaparHtml` (`js/utils/dom.js`) — usarlo en
