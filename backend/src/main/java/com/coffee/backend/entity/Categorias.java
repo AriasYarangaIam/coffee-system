@@ -5,6 +5,10 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * Categoría de la carta (ej.: Bebidas, Postres) para agrupar productos. Mapea la tabla
+ * {@code categorias}. Una categoría agrupa muchos {@link Productos}.
+ */
 @Entity
 @Table(name = "categorias")
 @Data

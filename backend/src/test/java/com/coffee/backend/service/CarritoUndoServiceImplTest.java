@@ -46,6 +46,18 @@ class CarritoUndoServiceImplTest {
     }
 
     @Test
+    void push_respetaElTopeDeProfundidad() {
+        // Muchos más pushes que el tope (100): la profundidad nunca debe dispararse.
+        for (int i = 0; i < 250; i++) {
+            service.push("m@x.com", snapshot("Café", i + 1));
+        }
+        assertThat(service.profundidad("m@x.com")).isLessThanOrEqualTo(100);
+        // Y el tope de la pila sigue siendo el último snapshot (el más reciente).
+        assertThat(service.undo("m@x.com")).get()
+                .extracting(s -> s.items().get(0).cantidad()).isEqualTo(250L);
+    }
+
+    @Test
     void limpiar_vaciaSoloAlUsuarioDado() {
         service.push("ana@x.com", snapshot("Latte", 1));
         service.push("beto@x.com", snapshot("Té", 5));

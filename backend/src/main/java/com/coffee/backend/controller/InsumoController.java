@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// CRUD de insumos / materia prima (ADMIN).
 @RestController
 @RequestMapping("/api/admin/insumos")
 @RequiredArgsConstructor

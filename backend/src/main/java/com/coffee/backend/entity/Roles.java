@@ -5,6 +5,10 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * Rol de usuario (ADMIN o MESERO). Mapea la tabla {@code roles}. Define los permisos:
+ * las rutas {@code /api/admin/**} exigen ADMIN. Un rol lo tienen muchos {@link Usuarios}.
+ */
 @Entity
 @Data
 @Table(name = "roles")

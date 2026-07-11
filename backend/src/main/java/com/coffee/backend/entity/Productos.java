@@ -6,6 +6,12 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Producto vendible de la carta (ej.: Capuchino). Mapea la tabla {@code productos}.
+ * Pertenece a una {@link Categorias}, tiene una {@link Recetas} (insumos que consume) y
+ * aparece en los {@link DetallePedido}. El precio es {@code BigDecimal} para exactitud
+ * monetaria.
+ */
 @Entity
 @Table(name = "productos")
 @Data

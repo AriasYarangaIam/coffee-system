@@ -1,3 +1,4 @@
+// Utilidades de UI: toast, spinner, estado vacio, modal y escaparHtml (anti-XSS).
 export function mostrarToast(mensaje, tipo = 'success') {
   const toast = document.createElement('div');
   toast.className = `toast toast--${tipo}`;

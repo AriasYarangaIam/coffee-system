@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Lista las categorias mapeadas a DTO (para selects del admin).
 @Service
 @RequiredArgsConstructor
 public class CategoriaServiceImpl implements CategoriaService {

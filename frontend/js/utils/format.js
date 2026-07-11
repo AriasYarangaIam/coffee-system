@@ -1,3 +1,4 @@
+// Formateadores es-PE: moneda (S/) y fechas.
 export function formatearMoneda(monto) {
   return new Intl.NumberFormat('es-PE', {
     style: 'currency',

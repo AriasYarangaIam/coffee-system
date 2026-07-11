@@ -4,6 +4,7 @@ import com.coffee.backend.entity.Almacenes;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+// Repositorio JPA de Almacenes.
 @Repository
 public interface AlmacenRepository extends JpaRepository<Almacenes, Long> {
 }

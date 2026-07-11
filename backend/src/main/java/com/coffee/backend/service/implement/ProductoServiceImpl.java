@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Consulta del catalogo (con disponibilidad segun stock) y de la receta de un producto.
 @Service
 @RequiredArgsConstructor
 public class ProductoServiceImpl implements ProductoService {

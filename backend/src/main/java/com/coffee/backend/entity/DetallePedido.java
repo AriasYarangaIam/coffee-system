@@ -6,6 +6,11 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+/**
+ * Línea de un pedido: un {@link Productos}, la {@code cantidadPedida} y el
+ * {@code precioUnitario} congelado al momento de la venta (por eso se guarda aquí y no se
+ * lee del producto, que puede cambiar de precio después). Pertenece a un {@link Pedidos}.
+ */
 @Entity
 @Data
 public class DetallePedido {

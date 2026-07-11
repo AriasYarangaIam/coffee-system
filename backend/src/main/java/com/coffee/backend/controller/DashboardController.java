@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// Expone los KPIs del panel admin: ventas y pedidos del dia, producto estrella, stock bajo.
 @RestController
 @RequestMapping("/api/admin/dashboard")
 @RequiredArgsConstructor

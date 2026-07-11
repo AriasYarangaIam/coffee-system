@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+// Lista las categorias de la carta (ADMIN) para poblar los selects del front.
 @RestController
 @RequestMapping("/api/admin/categorias")
 @RequiredArgsConstructor

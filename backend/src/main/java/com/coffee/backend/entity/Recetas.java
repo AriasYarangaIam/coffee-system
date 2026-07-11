@@ -3,8 +3,11 @@ package com.coffee.backend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
-
+/**
+ * Receta: cuánto de un {@link Insumos} consume un {@link Productos} (línea producto↔insumo
+ * con {@code cantidadUsada}). Al vender el producto, el sistema descuenta esa cantidad del
+ * stock. Mapea la tabla {@code recetas}.
+ */
 @Entity
 @Table(name = "recetas")
 @Data

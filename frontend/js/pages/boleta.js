@@ -1,3 +1,4 @@
+// Boleta/recibo de un pedido: la carga por id y la muestra (con opcion de imprimir).
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast } from '../utils/dom.js';

@@ -5,6 +5,11 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * Insumo: materia prima que se consume al preparar productos (leche, café, azúcar...).
+ * Mapea la tabla {@code insumos}. Un insumo aparece en varias {@link Recetas} y tiene su
+ * saldo en {@link Stocks}. {@code @Data} (Lombok) genera getters/setters.
+ */
 @Entity
 @Table(name = "insumos")
 @Data

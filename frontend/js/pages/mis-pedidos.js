@@ -1,3 +1,4 @@
+// Pedidos del turno del mesero: tabla, busqueda, metricas del dia y modal de detalle.
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast, mostrarSpinner, escaparHtml } from '../utils/dom.js';

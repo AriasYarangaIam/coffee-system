@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// CRUD de productos de la carta (ADMIN): crear, editar, eliminar, listar (incluye la receta).
 @RestController
 @RequestMapping("/api/admin/productos")
 @RequiredArgsConstructor

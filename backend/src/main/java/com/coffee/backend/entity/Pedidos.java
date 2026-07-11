@@ -9,6 +9,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Pedido (venta) hecho por un mesero. Mapea la tabla {@code pedidos}. Tiene un
+ * {@code aliasTicket} único, la {@code fechaPedido} y sus líneas {@link DetallePedido}
+ * (cascade ALL: se guardan/borran con el pedido). El total no se persiste: se calcula
+ * sumando las líneas.
+ */
 @Entity
 @Data
 @Table(name = "pedidos")

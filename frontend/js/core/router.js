@@ -1,3 +1,4 @@
+// Redireccion inicial segun el rol del usuario (ADMIN -> dashboard, MESERO -> pedidos).
 import { obtenerUsuario, obtenerToken } from './auth.js';
 
 export function redirigirPorRol() {

@@ -5,6 +5,10 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * Almacén/depósito donde se guarda stock de insumos. Mapea la tabla {@code almacenes}.
+ * Un almacén tiene muchos {@link Stocks} (un saldo por insumo).
+ */
 @Entity
 @Table(name = "almacenes")
 @Data

@@ -1,3 +1,4 @@
+// Control de stock (admin): registrar ingreso, ver Ultimos Ingresos y Deshacer (Pila en el backend).
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast, mostrarSpinner, escaparHtml } from '../utils/dom.js';

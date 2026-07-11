@@ -1,3 +1,4 @@
+// Sesion en el navegador: guardar/leer usuario y token en localStorage, logout y guardia de rol por pagina.
 export function guardarSesion(token, usuario) {
   localStorage.setItem('jwt_token', token);
   localStorage.setItem('usuario', JSON.stringify(usuario));

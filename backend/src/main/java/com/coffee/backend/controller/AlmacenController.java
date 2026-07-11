@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+// Lista los almacenes (ADMIN) para poblar selects al registrar stock.
 @RestController
 @RequestMapping("/api/admin/almacenes")
 @RequiredArgsConstructor

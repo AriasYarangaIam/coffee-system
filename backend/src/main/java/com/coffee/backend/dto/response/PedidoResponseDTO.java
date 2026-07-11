@@ -3,6 +3,7 @@ package com.coffee.backend.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
+// Respuesta al crear un pedido (id, alias de ticket, fecha).
 public record PedidoResponseDTO(
         Long pedidoId,
         String aliasTicket,

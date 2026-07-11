@@ -1,3 +1,4 @@
+// Gestion de usuarios (admin): crear/editar/eliminar, con guardas (no auto-eliminarse).
 import { requireRole, obtenerUsuario } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast, mostrarSpinner, escaparHtml } from '../utils/dom.js';
@@ -50,7 +51,7 @@ function renderizarTabla(usuarios) {
     // En la propia fila no se ofrece eliminar (el backend igual lo rechaza con 409).
     const accionEliminar = esYo
       ? '<span class="badge badge-pagado" style="margin-left:4px">Tú</span>'
-      : `<button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarUsuario(${u.usuarioId}, '${escaparHtml(u.nombreUsuario)}')">Eliminar</button>`;
+      : `<button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarUsuario(${u.usuarioId})">Eliminar</button>`;
     return `
     <tr>
       <td>${escaparHtml(u.nombreUsuario)} ${escaparHtml(u.apellidoUsuario)}</td>
@@ -166,6 +167,11 @@ inputBuscar?.addEventListener('input', () => {
 });
 
 window.editarUsuario = (id) => abrirModalEditar(id);
-window.eliminarUsuario = (id, nombre) => abrirModalEliminar(id, nombre);
+// El nombre se busca en la caché (no viaja en el onclick) para no inyectar datos del
+// servidor en un contexto HTML/JS: un nombre con comilla rompería el string del onclick.
+window.eliminarUsuario = (id) => {
+  const u = usuariosCache.find(x => x.usuarioId === id);
+  if (u) abrirModalEliminar(id, u.nombreUsuario);
+};
 
 cargarUsuarios();

@@ -1,3 +1,4 @@
+// CRUD de productos/carta (admin), incluida la edicion de la receta (insumos + cantidades).
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast, mostrarSpinner, escaparHtml } from '../utils/dom.js';
@@ -133,7 +134,7 @@ function renderizarTabla(productos) {
       <td style="text-align:right">${formatearMoneda(p.precioActual)}</td>
       <td style="text-align:right">
         <button class="btn btn-outline btn-sm" onclick="editarProducto(${p.productoId})">Editar</button>
-        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarProducto(${p.productoId}, '${escaparHtml(p.nombreProducto)}')">Eliminar</button>
+        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarProducto(${p.productoId})">Eliminar</button>
       </td>
     </tr>
   `).join('');
@@ -241,7 +242,11 @@ document.getElementById('modal-eliminar-producto-cerrar').addEventListener('clic
 document.getElementById('btn-cancelar-eliminar-producto').addEventListener('click', cerrarModalEliminar);
 
 window.editarProducto = (id) => abrirModalEditar(id);
-window.eliminarProducto = (id, nombre) => abrirModalEliminar(id, nombre);
+// El nombre se busca en la caché (no viaja en el onclick) para evitar inyección.
+window.eliminarProducto = (id) => {
+  const producto = productosCache.find(p => p.productoId === id);
+  if (producto) abrirModalEliminar(id, producto.nombreProducto);
+};
 
 cargarCategorias();
 cargarInsumos();

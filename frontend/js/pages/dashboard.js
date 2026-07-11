@@ -1,3 +1,4 @@
+// Panel admin: KPIs del dia, grafico mensual (matriz producto x dia) y alertas de stock bajo.
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast, escaparHtml } from '../utils/dom.js';

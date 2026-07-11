@@ -6,6 +6,7 @@ import com.coffee.backend.tad.Pila;
 import com.coffee.backend.tad.PilaEnlazada;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,11 +22,32 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class CarritoUndoServiceImpl implements CarritoUndoService {
 
+    // ponytail: tope de profundidad por usuario. Un mesero no necesita deshacer 100 pasos
+    // del carrito; sin este límite, pushes ilimitados harían crecer la memoria sin freno.
+    private static final int MAX_SNAPSHOTS = 100;
+
     private final Map<String, Pila<CarritoSnapshotDTO>> pilasPorUsuario = new ConcurrentHashMap<>();
 
     @Override
     public void push(String correo, CarritoSnapshotDTO snapshot) {
-        pilasPorUsuario.computeIfAbsent(correo, k -> new PilaEnlazada<>()).push(snapshot);
+        Pila<CarritoSnapshotDTO> pila = pilasPorUsuario.computeIfAbsent(correo, k -> new PilaEnlazada<>());
+        if (pila.size() >= MAX_SNAPSHOTS) {
+            pila = recortarConservandoRecientes(pila);
+            pilasPorUsuario.put(correo, pila);
+        }
+        pila.push(snapshot);
+    }
+
+    // Reconstruye la pila dejando solo los snapshots más recientes (descarta los más
+    // antiguos, del fondo). aLista() da el orden tope→base; conservamos los primeros
+    // MAX-1 y los re-apilamos base→tope para preservar el orden.
+    private static Pila<CarritoSnapshotDTO> recortarConservandoRecientes(Pila<CarritoSnapshotDTO> pila) {
+        List<CarritoSnapshotDTO> recientes = pila.aLista().subList(0, MAX_SNAPSHOTS - 1);
+        Pila<CarritoSnapshotDTO> nueva = new PilaEnlazada<>();
+        for (int i = recientes.size() - 1; i >= 0; i--) {
+            nueva.push(recientes.get(i));
+        }
+        return nueva;
     }
 
     @Override

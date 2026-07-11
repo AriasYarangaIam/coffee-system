@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Lista los almacenes mapeados a DTO.
 @Service
 @RequiredArgsConstructor
 public class AlmacenServiceImpl implements AlmacenService {

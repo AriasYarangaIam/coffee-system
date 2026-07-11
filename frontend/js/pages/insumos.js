@@ -1,3 +1,4 @@
+// CRUD de insumos/materia prima (admin), con unidad de medida.
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast, mostrarSpinner, escaparHtml } from '../utils/dom.js';
@@ -46,7 +47,7 @@ function renderizarTabla(insumos) {
       <td>${escaparHtml(i.unidad ?? '—')}</td>
       <td style="text-align:right">
         <button class="btn btn-outline btn-sm" onclick="editarInsumo(${i.idInsumo})">Editar</button>
-        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarInsumo(${i.idInsumo}, '${escaparHtml(i.nombreInsumo)}')">Eliminar</button>
+        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="eliminarInsumo(${i.idInsumo})">Eliminar</button>
       </td>
     </tr>
   `).join('');
@@ -137,7 +138,11 @@ document.getElementById('modal-eliminar-insumo-cerrar').addEventListener('click'
 document.getElementById('btn-cancelar-eliminar-insumo').addEventListener('click', cerrarModalEliminar);
 
 window.editarInsumo = (id) => abrirModalEditar(id);
-window.eliminarInsumo = (id, nombre) => abrirModalEliminar(id, nombre);
+// El nombre se busca en la caché (no viaja en el onclick) para evitar inyección.
+window.eliminarInsumo = (id) => {
+  const insumo = insumosCache.find(i => i.idInsumo === id);
+  if (insumo) abrirModalEliminar(id, insumo.nombreInsumo);
+};
 
 // Filtro por nombre.
 const inputBuscar = document.getElementById('input-buscar-insumo');

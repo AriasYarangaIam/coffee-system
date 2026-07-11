@@ -1,3 +1,4 @@
+// Pantalla de login: valida rol elegido vs real, ojito de contrasena, guarda sesion y redirige.
 import { apiFetch } from '../core/api.js';
 import { guardarSesion } from '../core/auth.js';
 import { redirigirPorRol } from '../core/router.js';

@@ -1,3 +1,4 @@
+// Ingresos (BI admin): comparativa mensual, grafico semanal y detalle de boletas por rango.
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast, escaparHtml } from '../utils/dom.js';

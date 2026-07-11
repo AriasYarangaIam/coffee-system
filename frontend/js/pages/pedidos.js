@@ -1,3 +1,4 @@
+// POS del mesero: catalogo con filtros, carrito y Deshacer (Pila en el backend, RF-DS-03).
 import { requireRole } from '../core/auth.js';
 import { apiFetch } from '../core/api.js';
 import { mostrarToast, mostrarSpinner, mostrarVacio, escaparHtml } from '../utils/dom.js';

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+// Repositorio JPA de Usuarios: busca por correo y por rol.
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuarios, Long> {
     Optional<Usuarios> findByCorreoUsuario(String correoUsuario);

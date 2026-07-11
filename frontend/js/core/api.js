@@ -1,3 +1,4 @@
+// Cliente HTTP central: toda llamada al backend pasa por apiFetch (agrega el JWT, maneja 401/403/errores).
 import { logout } from './auth.js';
 
 const BASE_URL = 'http://localhost:8080/api';
