@@ -38,8 +38,10 @@ toggleClave?.addEventListener('click', () => {
   const ocultar = inputClave.type === 'text';
   inputClave.type = ocultar ? 'password' : 'text';
   toggleClave.setAttribute('aria-label', ocultar ? 'Mostrar contraseña' : 'Ocultar contraseña');
-  document.getElementById('icon-eye').hidden = !ocultar;
-  document.getElementById('icon-eye-off').hidden = ocultar;
+  // Se usa la clase .hidden (display:none !important) en vez del atributo hidden: en
+  // elementos SVG el atributo hidden no siempre se respeta y se veían los dos iconos.
+  document.getElementById('icon-eye').classList.toggle('hidden', !ocultar);
+  document.getElementById('icon-eye-off').classList.toggle('hidden', ocultar);
 });
 
 form.addEventListener('submit', async (e) => {
