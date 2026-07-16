@@ -14,15 +14,46 @@ const btnRefrescar = document.getElementById('btn-refrescar');
 const modalDetalle = document.getElementById('modal-detalle-pedido');
 
 let pedidosCache = [];
+// Cabeza actual de la cola de despacho (FIFO): solo ese ticket puede entregarse.
+let headId = null;
 
 async function cargarPedidos() {
   mostrarSpinner(tablaBody);
   try {
-    pedidosCache = await apiFetch('/pedidos');
+    // La lista de pedidos y la cabeza de la cola se piden en paralelo.
+    const [pedidos, cabeza] = await Promise.all([
+      apiFetch('/pedidos'),
+      apiFetch('/pedidos/despacho/siguiente'),
+    ]);
+    pedidosCache = pedidos;
+    headId = cabeza?.pedidoId ?? null;
     renderizarPedidos(pedidosCache);
   } catch (error) {
     mostrarToast(error?.message || 'Error al cargar pedidos', 'error');
   }
+}
+
+// Entrega la cabeza de la cola (dequeue en el backend) y refresca la vista.
+async function entregarPedido(pedidoId) {
+  try {
+    await apiFetch('/pedidos/despacho/entregar', { method: 'POST' });
+    mostrarToast('Pedido entregado', 'success');
+    await cargarPedidos();
+    cargarMetricas();
+  } catch (error) {
+    mostrarToast(error?.message || 'No se pudo entregar el pedido', 'error');
+  }
+}
+
+// Celda "Entregado": ✓ si ya salió, botón habilitado solo para la cabeza, resto en cola.
+function celdaEntregado(p) {
+  if (p.entregado) {
+    return '<span style="color:var(--color-success,#16a34a);font-weight:600">✓ Entregado</span>';
+  }
+  if (p.pedidoId === headId) {
+    return `<button class="btn btn-primary btn-sm" data-entregar="${p.pedidoId}">Entregar</button>`;
+  }
+  return '<button class="btn btn-secondary btn-sm" disabled>En cola</button>';
 }
 
 async function cargarMetricas() {
@@ -39,14 +70,21 @@ async function cargarMetricas() {
 
 function renderizarPedidos(pedidos) {
   if (!pedidos.length) {
-    tablaBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted" style="padding:24px">No hay pedidos en este turno</td></tr>';
+    tablaBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted" style="padding:24px">No hay pedidos en este turno</td></tr>';
     return;
   }
-  tablaBody.innerHTML = pedidos.map(p => `
+  // Sensación de cola FIFO: pendientes arriba (el más antiguo = cabeza primero) y ya
+  // entregados al final. El pedidoId (IDENTITY) crece con la llegada ⇒ ordena por llegada.
+  const ordenados = [...pedidos].sort((a, b) => {
+    if (a.entregado !== b.entregado) return a.entregado ? 1 : -1;
+    return a.pedidoId - b.pedidoId;
+  });
+  tablaBody.innerHTML = ordenados.map(p => `
     <tr data-id="${p.pedidoId}" style="cursor:pointer">
       <td><span class="font-semibold">${escaparHtml(p.aliasTicket)}</span></td>
       <td>${(p.detalle ?? []).map(d => `${escaparHtml(d.nombreProducto)} x${d.cantidadPedida}`).join(', ')}</td>
       <td style="text-align:right">${formatearMoneda(p.total)}</td>
+      <td style="text-align:center">${celdaEntregado(p)}</td>
     </tr>
   `).join('');
 }
@@ -82,6 +120,13 @@ function cerrarDetalle() {
 
 // ── Eventos ──────────────────────────────────────────────────────────────────
 tablaBody.addEventListener('click', (e) => {
+  // El botón "Entregar" tiene prioridad y NO abre el modal de detalle.
+  const btnEntregar = e.target.closest('[data-entregar]');
+  if (btnEntregar) {
+    e.stopPropagation();
+    entregarPedido(Number(btnEntregar.dataset.entregar));
+    return;
+  }
   const fila = e.target.closest('tr[data-id]');
   if (fila) abrirDetalle(Number(fila.dataset.id));
 });

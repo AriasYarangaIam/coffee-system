@@ -11,6 +11,8 @@ spring:
       ddl-auto: validate
     open-in-view: false
     # show-sql: true  # descomentar para ver el SQL de Hibernate en consola (debug)
+  jackson:
+    time-zone: America/Lima   # serializa fechas con instante en hora Perú (refuerzo de la TZ del JVM)
   application:
     name: backend
 jwt:

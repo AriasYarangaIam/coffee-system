@@ -28,6 +28,10 @@ public class Pedidos {
     @CurrentTimestamp
     @Column(name = "fecha_pedido")
     private LocalDateTime fechaPedido;
+    // Sello de entrega para la cola de despacho (RF-DS-04): false = pendiente en la cola,
+    // true = ya entregado (dequeue). Persistente ⇒ el estado sobrevive a reinicios.
+    @Column(name = "entregado", nullable = false)
+    private Boolean entregado = false;
     @ManyToOne
     @JoinColumn(name = "usuario_id",nullable = false)
     private Usuarios usuario;

@@ -11,5 +11,6 @@ No hay Flyway todavía (deuda B-21); el prefijo numérico emula el orden de vers
 | `001_movimientos_stock.sql` | Crea `movimientos_stock` (traza de ingresos de stock, RF-DS-03) | Antes de la entidad `MovimientoStock` |
 | `002_usuarios_activo.sql` | Añade `usuarios.activo` (borrado lógico) | Antes de tocar la entidad `Usuarios` |
 | `003_dinero_numeric.sql` | Pasa `productos.precio_actual` y `detalle_pedido.precio_unitario` a `numeric(10,2)` (B-18) | Antes de migrar el dinero a `BigDecimal` |
+| `004_pedidos_entregado.sql` | Añade `pedidos.entregado` (sello de entrega para la cola de despacho, RF-DS-04) | Antes de tocar la entidad `Pedidos` |
 
 Ejecutar en orden ascendente. Son idempotentes solo si la tabla/columna aún no existe (usa `IF NOT EXISTS` a mano si re-corres).

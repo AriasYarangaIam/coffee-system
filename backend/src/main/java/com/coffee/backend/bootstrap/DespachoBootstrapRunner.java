@@ -22,7 +22,8 @@ public class DespachoBootstrapRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        pedidoRepository.findAllByOrderByFechaPedidoAsc().stream()
+        // Solo pendientes (entregado = false): los ya entregados no vuelven a la cola.
+        pedidoRepository.findByEntregadoFalseOrderByFechaPedidoAsc().stream()
                 .map(p -> new PedidoDespachoTokenView(
                         p.getPedidoId(), p.getAliasTicket(), p.getFechaPedido()))
                 .forEach(pedidoDespachoService::enqueueDespacho);

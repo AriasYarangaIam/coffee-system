@@ -35,4 +35,9 @@ public class PedidoDespachoServiceImpl implements PedidoDespachoService {
     public Optional<PedidoDespachoTokenView> siguienteDespacho() {
         return cola.peek();
     }
+
+    @Override
+    public Optional<PedidoDespachoTokenView> entregarCabeza() {
+        return cola.dequeue(); // FIFO: sale el primero que llegó
+    }
 }
