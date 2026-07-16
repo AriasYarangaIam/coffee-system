@@ -45,11 +45,9 @@ async function entregarPedido(pedidoId) {
   }
 }
 
-// Celda "Entregado": ✓ si ya salió, botón habilitado solo para la cabeza, resto en cola.
+// Celda "Entregado": botón habilitado solo para la cabeza de la cola, resto en cola.
+// Los ya entregados no llegan aquí: se filtran del render (desaparecen de la tabla).
 function celdaEntregado(p) {
-  if (p.entregado) {
-    return '<span style="color:var(--color-success,#16a34a);font-weight:600">✓ Entregado</span>';
-  }
   if (p.pedidoId === headId) {
     return `<button class="btn btn-primary btn-sm" data-entregar="${p.pedidoId}">Entregar</button>`;
   }
@@ -69,16 +67,15 @@ async function cargarMetricas() {
 }
 
 function renderizarPedidos(pedidos) {
-  if (!pedidos.length) {
-    tablaBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted" style="padding:24px">No hay pedidos en este turno</td></tr>';
+  // Solo pendientes: al entregar, el pedido queda entregado=true y desaparece de la tabla.
+  const pendientes = pedidos.filter(p => !p.entregado);
+  if (!pendientes.length) {
+    tablaBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted" style="padding:24px">No hay pedidos pendientes en este turno</td></tr>';
     return;
   }
-  // Sensación de cola FIFO: pendientes arriba (el más antiguo = cabeza primero) y ya
-  // entregados al final. El pedidoId (IDENTITY) crece con la llegada ⇒ ordena por llegada.
-  const ordenados = [...pedidos].sort((a, b) => {
-    if (a.entregado !== b.entregado) return a.entregado ? 1 : -1;
-    return a.pedidoId - b.pedidoId;
-  });
+  // Cola FIFO: el más antiguo (cabeza) primero. El pedidoId (IDENTITY) crece con la
+  // llegada ⇒ ordena por orden de llegada.
+  const ordenados = [...pendientes].sort((a, b) => a.pedidoId - b.pedidoId);
   tablaBody.innerHTML = ordenados.map(p => `
     <tr data-id="${p.pedidoId}" style="cursor:pointer">
       <td><span class="font-semibold">${escaparHtml(p.aliasTicket)}</span></td>
