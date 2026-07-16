@@ -9,6 +9,8 @@ import com.coffee.backend.dto.response.MisMetricasResponseDTO;
 import com.coffee.backend.dto.response.PedidoListadoResponseDTO;
 import com.coffee.backend.dto.response.PedidoResponseDTO;
 import com.coffee.backend.entity.*;
+import com.coffee.backend.exception.RecursoNoEncontradoException;
+import com.coffee.backend.exception.ReglaNegocioException;
 import com.coffee.backend.exception.StockInsuficienteException;
 import com.coffee.backend.repository.*;
 import com.coffee.backend.service.PedidoDespachoService;
@@ -172,6 +174,7 @@ public class PedidoServiceImpl implements PedidoService {
                             pedido.getAliasTicket(),
                             pedido.getFechaPedido(),
                             total,
+                            Boolean.TRUE.equals(pedido.getEntregado()),
                             detalle
                     );
                 })
@@ -200,6 +203,29 @@ public class PedidoServiceImpl implements PedidoService {
                 dinero(total),
                 dinero(promedio),
                 estrella.isEmpty() ? null : estrella.get(0));
+    }
+
+    @Override
+    @Transactional
+    public PedidoDespachoTokenView entregarSiguienteDespacho(String correoUsuarioLogueado) {
+        // FIFO estricto: solo se puede entregar la cabeza de la cola de despacho.
+        PedidoDespachoTokenView cabeza = pedidoDespachoService.siguienteDespacho()
+                .orElseThrow(() -> new ReglaNegocioException("No hay pedidos en la cola de despacho"));
+
+        Pedidos pedido = pedidosRepository.findById(cabeza.pedidoId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Pedido no encontrado"));
+
+        // El siguiente en la cola debe ser del propio mesero (no se entrega el de otro).
+        if (!pedido.getUsuario().getCorreoUsuario().equals(correoUsuarioLogueado)) {
+            throw new ReglaNegocioException("El siguiente en la cola no es tuyo");
+        }
+
+        pedidoDespachoService.entregarCabeza(); // dequeue de la cola global (RF-DS-04)
+        pedido.setEntregado(true);
+        pedidosRepository.save(pedido);
+
+        // Nueva cabeza (o null si la cola quedó vacía) para que el front habilite el siguiente.
+        return pedidoDespachoService.siguienteDespacho().orElse(null);
     }
 
     private static BigDecimal dinero(BigDecimal valor) {

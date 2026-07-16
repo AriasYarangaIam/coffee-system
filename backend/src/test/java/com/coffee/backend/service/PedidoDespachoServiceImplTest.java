@@ -47,6 +47,18 @@ class PedidoDespachoServiceImplTest {
     }
 
     @Test
+    void entregarCabeza_desencolaFifo() {
+        PedidoDespachoServiceImpl service = new PedidoDespachoServiceImpl();
+        service.enqueueDespacho(token(1));
+        service.enqueueDespacho(token(2));
+
+        assertThat(service.entregarCabeza()).map(PedidoDespachoTokenView::pedidoId).contains(1L);
+        assertThat(service.listarDespacho())
+                .extracting(PedidoDespachoTokenView::pedidoId)
+                .containsExactly(2L); // el primero salió (dequeue)
+    }
+
+    @Test
     void colaVacia_siguienteDespachoEmpty() {
         PedidoDespachoServiceImpl service = new PedidoDespachoServiceImpl();
         assertThat(service.siguienteDespacho()).isEmpty();
@@ -56,7 +68,7 @@ class PedidoDespachoServiceImplTest {
     @Test
     void bootstrapRunner_rehidrataDesdeBdEnOrden() throws Exception {
         PedidoRepository repo = mock(PedidoRepository.class);
-        given(repo.findAllByOrderByFechaPedidoAsc()).willReturn(List.of(
+        given(repo.findByEntregadoFalseOrderByFechaPedidoAsc()).willReturn(List.of(
                 pedido(10L, "AAA"), pedido(20L, "BBB"), pedido(30L, "CCC")));
 
         PedidoDespachoServiceImpl service = new PedidoDespachoServiceImpl();

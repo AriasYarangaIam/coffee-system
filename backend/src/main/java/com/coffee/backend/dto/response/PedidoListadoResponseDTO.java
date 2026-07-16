@@ -13,6 +13,7 @@ public record PedidoListadoResponseDTO(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
         LocalDateTime fechaPedido,
         BigDecimal total,
+        boolean entregado,
         List<DetalleBoletaResponseDTO> detalle)
 {
 }

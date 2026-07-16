@@ -5,9 +5,11 @@ import com.coffee.backend.dto.request.PedidoRequestDTO;
 import com.coffee.backend.dto.response.BoletaResponseDTO;
 import com.coffee.backend.dto.response.CarritoUndoResponseDTO;
 import com.coffee.backend.dto.response.MisMetricasResponseDTO;
+import com.coffee.backend.dto.response.PedidoDespachoTokenView;
 import com.coffee.backend.dto.response.PedidoListadoResponseDTO;
 import com.coffee.backend.dto.response.PedidoResponseDTO;
 import com.coffee.backend.service.CarritoUndoService;
+import com.coffee.backend.service.PedidoDespachoService;
 import com.coffee.backend.service.PedidoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class PedidoController {
 
     private final PedidoService pedidoService;
     private final CarritoUndoService carritoUndoService;
+    private final PedidoDespachoService pedidoDespachoService;
 
     @PreAuthorize("hasRole('MESERO')")
     @PostMapping
@@ -44,6 +47,24 @@ public class PedidoController {
     public ResponseEntity<List<PedidoListadoResponseDTO>> listarPedidos(
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(pedidoService.listarPedidosDeMesero(userDetails.getUsername()));
+    }
+
+    // --- Cola de despacho del mesero (RF-DS-04) ---
+
+    // Cabeza actual de la cola global (peek). El front la usa para habilitar "Entregar"
+    // solo en el ticket que está primero. Devuelve 200 con null si la cola está vacía.
+    @PreAuthorize("hasRole('MESERO')")
+    @GetMapping("/despacho/siguiente")
+    public ResponseEntity<PedidoDespachoTokenView> siguienteDespacho() {
+        return ResponseEntity.ok(pedidoDespachoService.siguienteDespacho().orElse(null));
+    }
+
+    // Entrega (dequeue) la cabeza de la cola si es de este mesero. Devuelve la nueva cabeza.
+    @PreAuthorize("hasRole('MESERO')")
+    @PostMapping("/despacho/entregar")
+    public ResponseEntity<PedidoDespachoTokenView> entregarSiguiente(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(pedidoService.entregarSiguienteDespacho(userDetails.getUsername()));
     }
 
     @PreAuthorize("hasRole('MESERO')")

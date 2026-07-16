@@ -19,4 +19,7 @@ public interface PedidoDespachoService {
 
     /** Cabeza de la cola (próximo a atender) sin removerla; {@code empty} si vacía. */
     Optional<PedidoDespachoTokenView> siguienteDespacho();
+
+    /** Desencola (dequeue) la cabeza de la cola y la devuelve; {@code empty} si vacía. */
+    Optional<PedidoDespachoTokenView> entregarCabeza();
 }

@@ -19,6 +19,10 @@ public interface PedidoRepository extends JpaRepository<Pedidos,Long> {
     // Rehidratación de la cola de despacho (RF-DS-04): pedidos en orden FIFO de llegada.
     List<Pedidos> findAllByOrderByFechaPedidoAsc();
 
+    // Rehidratación de la cola SOLO con pendientes (no entregados), en orden FIFO. Así los
+    // pedidos ya entregados no reaparecen en la cola tras reiniciar el backend.
+    List<Pedidos> findByEntregadoFalseOrderByFechaPedidoAsc();
+
     // --- Reporte mensual / Matriz producto × día (B-22, RF-DS-02) ---
 
     // Proyección de una celda (producto, día del mes, ventas) del rango [inicio, fin).
