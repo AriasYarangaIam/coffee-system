@@ -2,7 +2,7 @@
 
 # 00 · Índice maestro — Backend
 
-Documentación SDD (Spec-Driven Development, modo *brownfield*) del **backend** del
+Documentación SDD (Spec-Driven Development, holamodo *brownfield*) del **backend** del
 sistema **coffee-system**. Documenta la **realidad del código** (as-built), no un
 diseño ideal. Las divergencias Front↔Back se marcan ⚠️ y viven en
 [`09_backlog_brechas.md`](09_backlog_brechas.md); **no se corrigen en esta fase**.
